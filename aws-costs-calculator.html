@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>AWS Kostenrechner</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-10">
+  <h1 class="text-2xl font-bold mb-5">AWS Kostenrechner</h1>
+  <form class="bg-white p-6 rounded shadow-md">
+    <div class="mb-4">
+      <label for="ondemand" class="block text-gray-700">On-Demand Preis pro Stunde (in USD):</label>
+      <input type="number" step="0.001" id="ondemand" value="0.1" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="riDiscount" class="block text-gray-700">1-Jahres Reserved Instance Rabatt (in %):</label>
+      <input type="number" id="riDiscount" value="40" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="spDiscount" class="block text-gray-700">1-Jahres Savings Plan Rabatt (in %):</label>
+      <input type="number" id="spDiscount" value="50" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <button type="button" onclick="calculate()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Berechnen</button>
+  </form>
+  <div class="mt-5 bg-white p-6 rounded shadow-md">
+    <h2 class="text-xl font-bold mb-4">Ergebnisse:</h2>
+    <p id="result" class="text-gray-700"></p>
+  </div>
+  <div class="mt-5 bg-white p-6 rounded shadow-md">
+    <h2 class="text-xl font-bold my-4">1. Nutzen Sie Reserved Instances und Savings Plans</h2>
+    <p>Wenn Sie vorhersagbare Arbeitslasten haben, können Sie durch den Kauf von Reserved Instances (RIs) oder Savings Plans (SPs) erhebliche Einsparungen erzielen. RIs bieten einen Rabatt im Vergleich zu On-Demand-Preisen, wenn Sie sich für eine bestimmte Nutzungsdauer (in der Regel 1 oder 3 Jahre) verpflichten. SPs hingegen bieten ähnliche Rabatte, sind jedoch flexibler in Bezug auf die Ressourcennutzung.</p>
+
+    <h2 class="text-xl font-bold my-4">2. Optimieren Sie Ihre Instanzgröße und -typ</h2>
+    <p>Überprüfen Sie regelmäßig die Nutzung Ihrer Instanzen und passen Sie die Größe und den Typ an, um sicherzustellen, dass Sie nicht für ungenutzte Ressourcen bezahlen. Nutzen Sie AWS-Dienste wie Amazon CloudWatch, AWS Trusted Advisor und AWS Compute Optimizer, um Ihre Ressourcennutzung zu überwachen und Empfehlungen zur Optimierung Ihrer Infrastruktur zu erhalten.</p>
+
+    <h2 class="text-xl font-bold my-4">3. Schalten Sie ungenutzte Ressourcen ab</h2>
+    <p>Entwicklungs- und Testumgebungen werden häufig nicht rund um die Uhr benötigt. Schalten Sie diese Ressourcen außerhalb der Arbeitszeiten ab, um Kosten zu sparen. Sie können AWS-Dienste wie AWS Lambda und Amazon CloudWatch Events verwenden, um das automatische Starten und Stoppen von Instanzen basierend auf einem Zeitplan zu automatisieren.</p>
+
+    <h2 class="text-xl font-bold my-4">4. Nutzen Sie Spot Instances</h2>
+    <p>Für Arbeitslasten, die unterbrochen werden können, sollten Sie Spot Instances in Betracht ziehen. Spot Instances bieten erhebliche Kosteneinsparungen im Vergleich zu On-Demand-Preisen, da sie ungenutzte EC2-Kapazitäten nutzen. Beachten Sie jedoch, dass Spot Instances jederzeit beendet werden können, wenn AWS die Kapazität benötigt.</p>
+
+    <h2 class="text-xl font-bold my-4">5. Datenspeicher-Optimierung</h2>
+    <p>Stellen Sie sicher, dass Sie den richtigen Speicherdienst für Ihre Anforderungen wählen, um unnötige Kosten zu vermeiden. Nutzen Sie zum Beispiel Amazon S3 Intelligent-Tiering für selten genutzte Daten oder Amazon S3 Glacier für langfristige Archivierung. Löschen Sie regelmäßig veraltete oder unnötige Daten und verwenden Sie Lifecycle Policies, um den Übergang von Daten zwischen Speicherklassenautomatisch zu verwalten.</p>
+
+    <h2 class="text-xl font-bold my-4">6. Optimieren Sie Ihre Datenübertragung</h2>
+    <p>Datenübertragungskosten können einen erheblichen Teil Ihrer AWS-Rechnung ausmachen. Um diese Kosten zu reduzieren, sollten Sie AWS-Dienste wie Amazon CloudFront und AWS Direct Connect nutzen. CloudFront ist ein Content-Delivery-Network (CDN), das Datenübertragungskosten reduziert, indem es Inhalte näher an Ihre Nutzer liefert. Direct Connect bietet eine dedizierte Netzwerkverbindung zwischen Ihrer lokalen Infrastruktur und AWS, die die Datenübertragungskosten im Vergleich zum öffentlichen Internet senken kann.</p>
+
+    <h2 class="text-xl font-bold my-4">7. Nutzen Sie den AWS Cost Explorer und den AWS Trusted Advisor</h2>
+    <p>Überwachen Sie Ihre AWS-Ausgaben kontinuierlich mit dem AWS Cost Explorer, einem Tool, das Ihnen einen detaillierten Einblick in Ihre Kosten gibt und Ihnen hilft, Muster und Trends zu identifizieren. Der AWS Trusted Advisor bietet Best Practices und Ressourcenoptimierungsempfehlungen, die Ihnen helfen können, Ihre AWS-Infrastruktur effizienter zu gestalten und Kosten zu senken.</p>
+
+    <h2 class="text-xl font-bold my-4">8. Nutzen Sie AWS Budgets und Benachrichtigungen</h2>
+    <p>Legen Sie mit AWS Budgets Budgetgrenzen für Ihre AWS-Kosten fest und erhalten Sie Benachrichtigungen, wenn Ihre Ausgaben diese Grenzen überschreiten. Auf diese Weise können Sie proaktiv auf mögliche Kostenüberschreitungen reagieren und geeignete Maßnahmen ergreifen, um Ihre Ausgaben zu kontrollieren.</p>
+
+    <h2 class="text-xl font-bold my-4">9. Implementieren Sie eine Multi-Cloud-Strategie</h2>
+    <p>Einige Unternehmen ziehen es vor, mehrere Cloud-Anbieter zu nutzen, um ihre Anforderungen zu erfüllen und Kosten zu optimieren. Eine Multi-Cloud-Strategie ermöglicht es Ihnen, die besten Angebote und Dienste von verschiedenen Anbietern zu nutzen und das Risiko einer Anbieterabhängigkeit zu verringern.</p>
+
+    <h2 class="text-xl font-bold my-4">10. Schließen Sie sich dem AWS Partner Network an</h2>
+    <p>Das AWS Partner Network (APN) ist ein globales Partnerprogramm, das technische, geschäftliche und vertriebliche Unterstützung für Unternehmen bietet, die ihre Lösungen auf AWS aufbauen oder bereitstellen möchten. APN-Partner können von verschiedenen Vorteilen profitieren, darunter Schulungen, Support, Marketingressourcen und mögliche Preisnachlässe oder Gutschriften.</p>
+
+    <h3 class="my-4">Indem Sie diese Tipps befolgen und Ihre AWS-Infrastruktur kontinuierlich optimieren, können Sie erhebliche Kosteneinsparungen erzielen und Ihre Cloud-Computing-Ausgaben effektiv verwalten.</h3>
+  </div>
+</div>
+<script>
+  function calculate() {
+    const onDemandPrice = parseFloat(document.getElementById('ondemand').value);
+    const riDiscount = parseFloat(document.getElementById('riDiscount').value) / 100;
+    const spDiscount = parseFloat(document.getElementById('spDiscount').value) / 100;
+
+    const hoursPerYear = 24 * 365;
+    const onDemandCost = onDemandPrice * hoursPerYear;
+    const riCost = onDemandCost * (1 - riDiscount);
+    const spCost = onDemandCost * (1 - spDiscount);
+
+    const result = `
+                On-Demand-Kosten (1 Jahr): $${onDemandCost.toFixed(2)}<br>
+                1-Jahres Reserved Instance Kosten: $${riCost.toFixed(2)}<br>
+                1-Jahres Savings Plan Kosten: $${spCost.toFixed(2)}
+            `;
+
+    document.getElementById('result').innerHTML = result;
+  }
+</script>
+</body>
+</html>
