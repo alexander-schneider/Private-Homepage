@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finanzielle Freiheit Rechner</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.17/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-8">
+  <div class="bg-white p-6 rounded-md shadow-md">
+    <div class="mb-4">
+      <label for="monthly_income" class="block text-sm font-medium text-gray-700">Dein monatlicher Netto-Wunschbetrag</label>
+      <input type="number" id="monthly_income" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="investment_return" class="block text-sm font-medium text-gray-700">Erwartete Rendite p.a. (in %)</label>
+      <input type="number" id="investment_return" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="inflation_rate" class="block text-sm font-medium text-gray-700">Inflation (in %)</label>
+      <input type="number" id="inflation_rate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="tax_rate" class="block text-sm font-medium text-gray-700">Steuersatz der Abgeltungssteuer (in %)</label>
+      <input value="26.375" type="number" id="tax_rate" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="current_age" class="block text-sm font-medium text-gray-700">Dein heutiges Alter</label>
+      <input type="number" id="current_age" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="retirement_age" class="block text-sm font-medium text-gray-700">Dein Wunschrenteneintrittsalter</label>
+      <input type="number" id="retirement_age" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+    </div>
+    <div class="mb-4">
+      <label for="current_savings" class="block text-sm font-medium text-gray-700">Bereits vorhandenes Kapital</label>
+      <input type="number" id="current_savings" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+  </div>
+
+    <button id="calculate" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Berechnen</button>
+  </div>
+
+  <div id="result" class="mt-8 bg-white p-6 rounded-md shadow-md"></div>
+  <div class="my-8">
+    <h3 class="text-lg font-bold mb-4">Kapitalentwicklung</h3>
+    <div class="bg-white p-4 rounded-lg shadow-md">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("calculate").addEventListener("click", function() {
+    const monthlyIncome = parseFloat(document.getElementById("monthly_income").value);
+    const investmentReturn = parseFloat(document.getElementById("investment_return").value) / 100;
+    const inflationRate = parseFloat(document.getElementById("inflation_rate").value) / 100;
+    const taxRate = parseFloat(document.getElementById("tax_rate").value) / 100;
+    const currentAge = parseFloat(document.getElementById("current_age").value);
+    const retirementAge = parseFloat(document.getElementById("retirement_age").value);
+    const currentSavings = parseFloat(document.getElementById("current_savings").value);
+
+    const yearsToRetirement = retirementAge - currentAge;
+    const afterInflationReturn = (1 + investmentReturn) / (1 + inflationRate) - 1;
+    const afterTaxReturn = afterInflationReturn * (1 - taxRate);
+    const requiredCapital = monthlyIncome / afterTaxReturn * (1 - Math.pow((1 + afterTaxReturn), -yearsToRetirement));
+
+    const futureValueCurrentSavings = currentSavings * Math.pow((1 + afterTaxReturn), yearsToRetirement);
+    const additionalCapitalRequired = requiredCapital - futureValueCurrentSavings;
+
+    if (additionalCapitalRequired <= 0) {
+      const result = `
+      Mit den gegebenen Angaben kannst du dein Ziel nicht erreichen. Bitte überprüfe deine Angaben und versuche es erneut.
+    `;
+      document.getElementById("result").innerHTML = result;
+      return;
+    }
+
+    const annuityFactor = (1 - Math.pow(1 + afterTaxReturn, -yearsToRetirement)) / afterTaxReturn;
+    const monthlySavings = additionalCapitalRequired / (annuityFactor / 12);
+
+    const result = `
+    Mit den gegebenen Angaben musst du monatlich ${monthlySavings.toFixed(2)}€ sparen, um das benötigte Kapital von ${additionalCapitalRequired.toFixed(2)}€ zu erreichen.
+  `;
+
+    document.getElementById("result").innerHTML = result;
+  });
+</script>
+</body>
+</html>
