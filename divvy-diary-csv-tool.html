@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>MoneyMoney to DivvyDiary CSV Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"/>
+</head>
+
+<body class="bg-gray-100">
+<div class="container mx-auto max-w-xxl">
+  <div class="bg-white rounded-lg p-6 shadow-lg mb-8">
+    <h1 class="text-2xl font-bold mb-4">MoneyMoney zu DivvyDiary CSV Generator</h1>
+    <p class="mb-4">Unser MoneyMoney zu DivvyDiary Tool ist eine einfache Möglichkeit, deine Wertpapiere aus dem OSX Programm "MoneyMoney" nach DivvyDiary zu übertragen. Mit diesem Tool kannst du schnell und einfach deine Wertpapiere kopieren und in eine CSV-Datei umwandeln, die du dann in DivvyDiary importieren kannst.</p>
+    <p class="mb-4">Das Tool verwendet reguläre Ausdrücke, um die Informationen aus dem MoneyMoney-Text zu extrahieren. Es unterstützt auch mehrere Formate, einschließlich Aktien, ETFs und Fonds. Sobald du deine Daten in das Tool kopiert hast, wandelt es sie automatisch in ein CSV-Format um, das für den Import in DivvyDiary geeignet ist.</p>
+    <ul class="list-disc pl-4 mb-4">
+      <li>Öffne MoneyMoney und navigiere zu dem Wertpapier, das du kopieren möchtest.</li>
+      <li>Kopiere die Daten aus MoneyMoney.</li>
+      <li>Füge die Daten in das MoneyMoney zu DivvyDiary Tool ein.</li>
+      <li>Klicke auf den "Konvertieren" Button, um die Daten in eine CSV-Datei umzuwandeln.</li>
+      <li>Importiere die CSV-Datei in DivvyDiary.</li>
+    </ul>
+    <p class="mb-4">Das Tool ist einfach zu bedienen und bietet eine schnelle und effektive Möglichkeit, deine Wertpapiere von MoneyMoney zu DivvyDiary zu übertragen. Wir hoffen, dass es dir hilft, deine Finanzen besser zu verwalten und dir dabei hilft, deine Ziele schneller zu erreichen.</p>
+  </div>
+  <form class="flex flex-col gap-4">
+    <div class="flex flex-col">
+      <label for="input-data" class="font-bold mb-2">Input Data</label>
+      <textarea placeholder="22.03.2023	ISHSIII-CORE MSCI WLD DLA	1.390,09 shares, Purchase price: 40,76 €, Last quote: 71,05 €, Profit: +27.841,55 € / +25,71 %	IE00B4L5Y983 / A0RPWH	Xetra	311.907,17" id="input-data" name="input-data" class="p-2 bg-gray-200 rounded" rows="4"></textarea>
+    </div>
+    <div class="flex justify-center">
+      <button id="convert-button"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button">Convert</button>
+      <button id="csv-button"
+              class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 ml-6 px-4 rounded hidden"
+              type="button">Export CSV</button>
+    </div>
+    <div class="flex flex-col">
+      <label for="output-data" class="font-bold mb-2">Output Data (Number of entries: <span id="counter">0</span>)</label>
+      <textarea id="output-data" name="output-data" class="p-2 bg-gray-200 rounded" rows="20" readonly></textarea>
+    </div>
+  </form>
+</div>
+
+<script>
+  const regex = /^.*?\t.*?\t(.*?) shares?, Purchase price: (.*?) €.*?, (.*?) €.*?: (.*?) %.*?\t(.*?)\t.*$/gm;
+  const regex2 = /^.*?([A-Z\d]+);.*?;(.*?);.*$/gm;
+
+  const convertButton = document.getElementById('convert-button');
+  const outputData = document.getElementById('output-data');
+  const csvButton = document.getElementById('csv-button');
+  const counter = document.getElementById('counter');
+
+  convertButton.addEventListener('click', () => {
+    const inputData = document.getElementById('input-data').value;
+
+    const matches = [];
+    let match;
+    while ((match = regex.exec(inputData)) !== null) {
+      const share = match[1];
+      const taxes = '26,38';
+      const purchasePrice = match[2].replace('.', ',');
+      const stockCode = match[5].split(' / ')[1] || match[5];
+      matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
+    }
+    regex2.lastIndex = 0;
+    while ((match = regex2.exec(inputData)) !== null) {
+      const share = match[2];
+      const taxes = '26,38';
+      const purchasePrice = match[1].replace('.', ',');
+      const stockCode = match[1].split(' / ')[1] || match[1];
+      matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
+    }
+
+    outputData.value = matches.join('\n');
+    csvButton.classList.remove('hidden');
+    counter.innerHTML = ` ${matches.length}`;
+  });
+
+  csvButton.addEventListener('click', () => {
+    const csvContent = "data:text/csv;charset=utf-8," + outputData.value.replace(/\n/g, "\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "divvydiary.csv");
+    document.body.appendChild(link);
+    link.click();
+  });
+</script>
+
+</body>
+</html>
