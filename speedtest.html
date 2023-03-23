@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internet Connection Speed Check</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<div class="text-center">
+  <div id="speed-result" class="text-4xl mb-4">-</div>
+  <button id="start-btn" class="bg-blue-500 text-white px-8 py-4 rounded shadow-md">Speed Check starten</button>
+  <div class="relative w-full h-4 bg-gray-300 mt-8">
+    <div id="progress-bar" class="absolute h-4 bg-green-500" style="width: 0%;"></div>
+  </div>
+</div>
+<script>
+  document.getElementById("start-btn").addEventListener("click", startSpeedTest);
+
+  async function startSpeedTest() {
+    const progressBar = document.getElementById("progress-bar");
+    const speedResult = document.getElementById("speed-result");
+    const fileSizeInBytes = 10 * 1024 * 1024; // 10 MB
+    const downloadUrl = "https://alexander-schneider.org/files/sI2F3vM78xoe"; // URL zu einer großen Datei auf Ihrem Server
+
+    // Setze Ergebnis und Fortschrittsbalken zurück
+    progressBar.style.width = "0%";
+    speedResult.textContent = "-";
+
+    try {
+      const startTime = new Date().getTime();
+      const response = await fetch(downloadUrl);
+
+      if (!response.ok) {
+        throw new Error("Fehler beim Herunterladen der Datei");
+      }
+
+      const reader = response.body.getReader();
+      let receivedLength = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        receivedLength += value.length;
+        const progress = receivedLength / fileSizeInBytes;
+        progressBar.style.width = (progress * 100) + "%";
+      }
+
+      const endTime = new Date().getTime();
+      const durationInSeconds = (endTime - startTime) / 1000;
+      const speedInMbps = (fileSizeInBytes * 8) / (durationInSeconds * 1024 * 1024);
+
+      speedResult.textContent = speedInMbps.toFixed(2) + " Mbit/s";
+    } catch (error) {
+      speedResult.textContent = "Fehler: " + error.message;
+    }
+  }
+</script>
+</body>
+</html>
