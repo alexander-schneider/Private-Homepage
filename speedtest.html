@@ -7,11 +7,35 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-<div class="text-center">
-  <div id="speed-result" class="text-4xl mb-4">-</div>
-  <button id="start-btn" class="bg-blue-500 text-white px-8 py-4 rounded shadow-md">Speed Check starten</button>
-  <div class="relative w-full h-4 bg-gray-300 mt-8">
-    <div id="progress-bar" class="absolute h-4 bg-green-500" style="width: 0%;"></div>
+<div class="max-w-2xl mx-auto p-8 bg-white shadow-lg rounded-lg text-gray-800">
+  <div class="text-center">
+    <h1 class="text-2xl font-bold mb-6">Internet Connection Speed Checker</h1>
+    <div id="speed-result" class="text-4xl mb-4">-</div>
+    <button id="start-btn" class="bg-blue-500 text-white px-8 py-4 rounded shadow-md">Speed Check starten</button>
+    <div class="relative w-full h-4 bg-gray-300 mt-8">
+      <div id="progress-bar" class="absolute h-4 bg-green-500" style="width: 0%;"></div>
+    </div>
+
+    <div class="mt-12">
+      <h2 class="text-xl font-bold mb-4">Wie funktioniert der Geschwindigkeitstest?</h2>
+      <p class="text-lg mb-4">
+        Der Geschwindigkeitstest misst die Downloadgeschwindigkeit Ihrer Internetverbindung. Durch das Herunterladen einer Testdatei und der Messung der dafür benötigten Zeit kann die Downloadgeschwindigkeit in Megabit pro Sekunde (Mbit/s) ermittelt werden. Die Downloadgeschwindigkeit ist ein wichtiger Indikator für die Leistung Ihrer Internetverbindung und beeinflusst die Qualität von Video-Streaming, Online-Gaming und anderen internetbasierten Aktivitäten.
+      </p>
+      <p class="text-lg mb-4">
+        Im Rahmen dieses Tests wird eine 10-MB-Datei von einem Server heruntergeladen. Die Datei wird jedes Mal neu heruntergeladen, wenn der Test ausgeführt wird, um das Caching im Browser zu vermeiden. Die Geschwindigkeitsmessung basiert auf der Zeit, die zum Herunterladen der Datei benötigt wird, und der Größe der Datei.
+      </p>
+      <p class="text-lg mb-4">
+        Beachten Sie, dass dieser Test nur die Downloadgeschwindigkeit misst und nicht die Uploadgeschwindigkeit oder die Latenz (Ping) Ihrer Verbindung. Um umfassendere Informationen über Ihre Internetverbindung zu erhalten, können Sie spezielle Geschwindigkeitstest-Dienste nutzen, die auch diese Werte messen.
+      </p>
+      <h3 class="text-lg font-bold mb-2">Zusammenfassung:</h3>
+      <ul class="list-disc list-inside text-lg mb-4">
+        <li>Messung der Downloadgeschwindigkeit in Mbit/s</li>
+        <li>Herunterladen einer 10-MB-Testdatei</li>
+        <li>Vermeidung von Browser-Caching durch zufällige URL-Parameter</li>
+        <li>Downloadgeschwindigkeit als Indikator für die Leistung der Internetverbindung</li>
+        <li>Nicht enthalten: Messung von Uploadgeschwindigkeit und Latenz (Ping)</li>
+      </ul>
+    </div>
   </div>
 </div>
 <script>
@@ -22,6 +46,7 @@
     const speedResult = document.getElementById("speed-result");
     const fileSizeInBytes = 10 * 1024 * 1024; // 10 MB
     const downloadUrl = "https://alexander-schneider.org/files/sI2F3vM78xoe"; // URL zu einer großen Datei auf Ihrem Server
+    const downloadUrlWithCacheBuster = `${downloadUrl}?cache_buster=${Math.random()}`;
 
     // Setze Ergebnis und Fortschrittsbalken zurück
     progressBar.style.width = "0%";
@@ -29,7 +54,7 @@
 
     try {
       const startTime = new Date().getTime();
-      const response = await fetch(downloadUrl);
+      const response = await fetch(downloadUrlWithCacheBuster);
 
       if (!response.ok) {
         throw new Error("Fehler beim Herunterladen der Datei");
