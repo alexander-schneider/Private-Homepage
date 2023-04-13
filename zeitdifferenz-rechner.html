@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zeitdifferenz-Rechner</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.17/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<header class="bg-blue-500 py-4 mb-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="https://alexander-schneider.org/" class="text-white font-bold text-xl">Zurück zur Startseite</a>
+  </div>
+</header>
+
+<div class="container mx-auto p-10">
+  <h1 class="text-3xl font-bold mb-5">Zeitdifferenz-Rechner</h1>
+  <p>
+    Das Zeitdifferenz-Rechner-Tool ist ein nützliches und effizientes Werkzeug, das die Differenz zwischen zwei Zeitpunkten am Tag berechnet. Es verwendet HTML, Tailwind CSS und JavaScript, um eine benutzerfreundliche Oberfläche zu schaffen, die sowohl optisch ansprechend als auch funktional ist.
+  </p>
+
+  <div class="grid grid-cols-4 gap-4 mt-6">
+    <div>
+      <label for="startHour" class="block text-gray-700 font-semibold mb-2">Startstunde:</label>
+      <select id="startHour" class="w-full p-2 bg-white border rounded shadow"></select>
+    </div>
+    <div>
+      <label for="startMinute" class="block text-gray-700 font-semibold mb-2">Startminute:</label>
+      <select id="startMinute" class="w-full p-2 bg-white border rounded shadow"></select>
+    </div>
+    <div>
+      <label for="endHour" class="block text-gray-700 font-semibold mb-2">Endstunde:</label>
+      <select id="endHour" class="w-full p-2 bg-white border rounded shadow"></select>
+    </div>
+    <div>
+      <label for="endMinute" class="block text-gray-700 font-semibold mb-2">Endminute:</label>
+      <select id="endMinute" class="w-full p-2 bg-white border rounded shadow"></select>
+    </div>
+  </div>
+  <div class="mt-5">
+    <button id="calculateButton" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">Berechnen</button>
+  </div>
+  <div class="mt-5">
+    <label for="result" class="block text-gray-700 font-semibold mb-2">Ergebnis:</label>
+    <input type="text" id="result" class="w-full p-3 bg-white border rounded shadow" readonly>
+  </div>
+
+  <div class="prose">
+    <h2 class="text-xl font-bold mb-3 mt-6">Anwendungsszenarien</h2>
+    <p>
+      Das Zeitdifferenz-Rechner-Tool ist vielseitig einsetzbar und kann in verschiedenen Situationen verwendet werden. Zum Beispiel kann es bei der Planung von Arbeitszeiten, Pausen oder Meetings verwendet werden, um die Dauer zwischen zwei Zeitpunkten schnell und einfach zu ermitteln. Es kann auch nützlich sein, um die verbleibende Zeit bis zu einem Ereignis oder einer Deadline zu berechnen.
+    </p>
+  </div>
+</div>
+
+<script>
+  const startHour = document.getElementById('startHour');
+  const startMinute = document.getElementById('startMinute');
+  const endHour = document.getElementById('endHour');
+  const endMinute = document.getElementById('endMinute');
+  const calculateButton = document.getElementById('calculateButton');
+  const result = document.getElementById('result');
+
+  for (let i = 0; i < 24; i++) {
+    startHour.innerHTML += `<option value="${i}">${i}</option>`;
+    endHour.innerHTML += `<option value="${i}">${i}</option>`;
+  }
+
+  for (let i = 0; i < 60; i++) {
+    startMinute.innerHTML += `<option value="${i}">${i}</option>`;
+    endMinute.innerHTML += `<option value="${i}">${i}</option>`;
+  }
+
+  calculateButton.addEventListener('click', () => {
+    const startTime = parseInt(startHour.value) * 60 + parseInt(startMinute.value);
+    const endTime = parseInt(endHour.value) * 60 + parseInt(endMinute.value);
+    let diff = endTime - startTime;
+
+    let daysCrossed = 0;
+    if (diff < 0) {
+      diff += 24 * 60;
+      daysCrossed = 1;
+    }
+
+    const diffHours = Math.floor(diff / 60);
+    const diffMinutes = diff % 60;
+
+    result.value = `${diffHours} Stunde${diffHours === 1 ? '' : 'n'} und ${diffMinutes} Minute${diffMinutes === 1 ? '' : 'n'}${daysCrossed ? ', 1 Tag überschritten' : ''}`;
+  });
+</script>
+</body>
+</html>
