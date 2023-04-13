@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List-Formatter-Tool</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.17/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    textarea {
+      resize: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<div class="container mx-auto p-10">
+  <h1 class="text-3xl font-bold mb-5">List-Formatter-Tool</h1>
+  <p>
+    Das "Text Formatter Tool" ist ein einfaches, aber effektives Werkzeug, das darauf abzielt, Listen von Textzeilen in eine formatierte Liste von Textstrings umzuwandeln. Jeder Textstring wird dabei von einfachen Anführungszeichen umgeben, und zwischen den Textstrings werden Kommas gesetzt, mit Ausnahme des letzten Elements in der Liste. Dies ist besonders nützlich, wenn man eine Liste von Elementen in einen formatierten Array von Strings in einer Programmiersprache wie JavaScript umwandeln möchte.
+  </p>
+  <div class="mt-8">
+    <label for="input" class="block text-gray-700 font-semibold mb-2">Input:</label>
+    <textarea id="input" class="w-full h-64 p-3 bg-white border rounded shadow" placeholder="tupperware
+buerostuhl
+katzennassfutter
+gartenstuehle
+motorroller"></textarea>
+  </div>
+  <div class="mt-5">
+    <button id="formatButton" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">Formatieren</button>
+  </div>
+  <div class="mt-5">
+    <label for="output" class="block text-gray-700 font-semibold mb-2">Output:</label>
+    <textarea id="output" class="w-full h-64 p-3 bg-white border rounded shadow" readonly></textarea>
+  </div>
+  <div class="mt-5">
+    <button id="copyButton" class="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700">Kopieren</button>
+  </div>
+  <div class="prose mt-8">
+    <h2 class="text-xl font-bold mb-3">Funktionsweise</h2>
+    <p>
+      Das Tool besteht aus einer einfachen Benutzeroberfläche mit zwei Textfeldern und zwei Schaltflächen. Im ersten Textfeld, das als Eingabefeld dient, kann der Benutzer eine Liste von Textzeilen eingeben. Nachdem die Liste eingegeben wurde, kann der Benutzer auf die Schaltfläche "Formatieren" klicken, um die Liste in das gewünschte Format umzuwandeln.
+    </p>
+    <p>
+      Die Umwandlung erfolgt durch JavaScript. Das Skript liest den eingegebenen Text, teilt ihn in Zeilen auf und formatiert jede Zeile entsprechend. Anschließend werden die formatierten Textstrings in das zweite Textfeld, das als Ausgabefeld dient, eingefügt.
+    </p>
+    <p>
+      Sobald der formatierte Text im Ausgabefeld angezeigt wird, kann der Benutzer den Inhalt mit der Schaltfläche "Kopieren" in die Zwischenablage kopieren. Damit ist der formatierte Text bereit, in ein anderes Dokument oder Programm eingefügt zu werden.
+    </p>
+
+    <h2 class="text-xl font-bold mb-3">Anwendungsbereiche</h2>
+    <p>
+      Das Text Formatter Tool kann in verschiedenen Situationen und für unterschiedliche Zwecke verwendet werden. Einige mögliche Anwendungsbereiche sind:
+    </p>
+    <ul class="list-disc ml-6">
+      <li>Umwandlung einer Liste von Elementen in einen formatierten Array von Strings für die Verwendung in Programmiersprachen wie JavaScript, Python oder PHP.</li>
+      <li>Vereinfachung des Prozesses der Dateneingabe, indem man eine Liste von Textstrings in einer bestimmten Formatierung erstellt, die für verschiedene Programmiersprachen oder Datenbanken erforderlich ist.</li>
+      <li>Erstellung einer formatierten Liste von Textstrings für die Verwendung in Dokumenten, Tabellenkalkulationen oder Präsentationen.</li>
+    </ul>
+    <p>
+      Insgesamt ist das Text Formatter Tool ein nützliches Hilfsmittel, das den Prozess der Formatierung von Textlisten vereinfacht und beschleunigt, und es kann in verschiedenen Anwendungsbereichen eingesetzt werden, um Zeit und Mühe zu sparen.
+    </p>
+  </div>
+</div>
+
+<script>
+  const formatButton = document.getElementById('formatButton');
+  const copyButton = document.getElementById('copyButton');
+  const input = document.getElementById('input');
+  const output = document.getElementById('output');
+
+  formatButton.addEventListener('click', () => {
+    const inputText = input.value;
+    const lines = inputText.split('\n');
+    const formattedLines = lines.map((line, index) => {
+      const formattedLine = `  '${line.trim()}'`;
+      return index === lines.length - 1 ? formattedLine : formattedLine + ',';
+    }).join('\n');
+    output.value = formattedLines;
+  });
+
+  copyButton.addEventListener('click', () => {
+    output.select();
+    document.execCommand('copy');
+    alert('Der formatierte Text wurde kopiert!');
+  });
+</script>
+</body>
+</html>
