@@ -1,93 +1,500 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zeitdifferenz-Rechner</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.17/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeitdifferenz-Rechner | Alexander Schneider</title>
+    <meta name="description" content="Berechnen Sie die Zeitdifferenz zwischen zwei Uhrzeiten mit Tagesüberschreitung.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #000;
+            --secondary: #666;
+            --background: #fff;
+            --hover: #f5f5f5;
+            --accent: #0066cc;
+            --border: #e0e0e0;
+            --input-bg: #fafafa;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--primary);
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+        
+        nav a::before {
+            content: "←";
+            transition: transform 0.2s ease;
+        }
+        
+        nav a:hover::before {
+            transform: translateX(-0.25rem);
+        }
+        
+        main {
+            flex: 1;
+            padding: 3rem 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .tool-description {
+            color: var(--secondary);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+        }
+        
+        .calculator {
+            background: var(--input-bg);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+        
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .time-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .time-group-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .time-selectors {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .time-selector {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        select {
+            width: 100%;
+            padding: 0.5rem 2rem 0.5rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--background);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            transition: border-color 0.2s ease;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .time-separator {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            align-self: flex-end;
+            padding-bottom: 0.5rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        button {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background: var(--primary);
+            color: var(--background);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background: var(--background);
+            color: var(--primary);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .result-section {
+            background: var(--background);
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+        }
+        
+        .result-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        #result {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            min-height: 2rem;
+        }
+        
+        .day-crossed {
+            display: inline-block;
+            margin-left: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .info-section {
+            margin-top: 4rem;
+            padding-top: 4rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .info-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .info-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .info-section p {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-section li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+        
+        .info-section li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            main {
+                padding: 2rem 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .tool-description {
+                font-size: 1rem;
+            }
+            
+            .calculator {
+                padding: 1.5rem;
+            }
+            
+            .time-inputs {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .time-selectors {
+                gap: 0.5rem;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #fff;
+                --secondary: #999;
+                --background: #000;
+                --hover: #111;
+                --accent: #4d94ff;
+                --border: #333;
+                --input-bg: #0a0a0a;
+            }
+            
+            select {
+                background: #111;
+                color: var(--primary);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            }
+            
+            button {
+                background: var(--primary);
+                color: var(--background);
+            }
+            
+            button:hover {
+                background: var(--background);
+                color: var(--primary);
+                border-color: var(--primary);
+            }
+            
+            .result-section {
+                background: #111;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
+    <header>
+        <nav>
+            <a href="/">Zurück zur Startseite</a>
+        </nav>
+    </header>
 
-<header class="bg-blue-500 py-4 mb-4">
-  <div class="container mx-auto flex justify-between items-center">
-    <a href="https://alexander-schneider.org/" class="text-white font-bold text-xl">Zurück zur Startseite</a>
-  </div>
-</header>
+    <main>
+        <div class="container">
+            <h1>Zeitdifferenz-Rechner</h1>
+            <p class="tool-description">Berechnen Sie die Zeitdifferenz zwischen zwei Uhrzeiten - auch über Mitternacht hinweg.</p>
+            
+            <div class="calculator">
+                <div class="time-inputs">
+                    <div class="time-group">
+                        <h2 class="time-group-title">Startzeit</h2>
+                        <div class="time-selectors">
+                            <div class="time-selector">
+                                <label for="startHour">Stunde</label>
+                                <select id="startHour"></select>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-selector">
+                                <label for="startMinute">Minute</label>
+                                <select id="startMinute"></select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="time-group">
+                        <h2 class="time-group-title">Endzeit</h2>
+                        <div class="time-selectors">
+                            <div class="time-selector">
+                                <label for="endHour">Stunde</label>
+                                <select id="endHour"></select>
+                            </div>
+                            <span class="time-separator">:</span>
+                            <div class="time-selector">
+                                <label for="endMinute">Minute</label>
+                                <select id="endMinute"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button id="calculateButton">Differenz berechnen</button>
+                </div>
+                
+                <div class="result-section">
+                    <div class="result-label">Ergebnis</div>
+                    <div id="result">Wählen Sie Start- und Endzeit aus</div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h2>Über den Zeitdifferenz-Rechner</h2>
+                <p>Dieses Tool berechnet die Zeitdifferenz zwischen zwei Uhrzeiten präzise und berücksichtigt dabei automatisch Tagesüberschreitungen. Ideal für die Arbeitszeiterfassung, Projektplanung oder persönliche Zeitverwaltung.</p>
+                
+                <h3>Funktionen</h3>
+                <ul>
+                    <li>Berechnung der Zeitdifferenz in Stunden und Minuten</li>
+                    <li>Automatische Erkennung von Tagesüberschreitungen</li>
+                    <li>24-Stunden-Format für eindeutige Zeitangaben</li>
+                    <li>Intuitive Bedienung mit Dropdown-Menüs</li>
+                </ul>
+                
+                <h3>Anwendungsbereiche</h3>
+                <ul>
+                    <li>Arbeitszeiterfassung und Pausenberechnung</li>
+                    <li>Schichtplanung über Mitternacht</li>
+                    <li>Berechnung von Projektdauern</li>
+                    <li>Reisezeitplanung</li>
+                    <li>Sportzeitmessung und Training</li>
+                </ul>
+                
+                <h3>Besonderheiten</h3>
+                <ul>
+                    <li>Wenn die Endzeit vor der Startzeit liegt, wird automatisch angenommen, dass die Endzeit am nächsten Tag liegt</li>
+                    <li>Die Berechnung erfolgt minutengenau</li>
+                    <li>Keine Einschränkung auf bestimmte Zeitintervalle</li>
+                </ul>
+            </div>
+        </div>
+    </main>
 
-<div class="container mx-auto p-10">
-  <h1 class="text-3xl font-bold mb-5">Zeitdifferenz-Rechner</h1>
-  <p>
-    Das Zeitdifferenz-Rechner-Tool ist ein nützliches und effizientes Werkzeug, das die Differenz zwischen zwei Zeitpunkten am Tag berechnet. Es verwendet HTML, Tailwind CSS und JavaScript, um eine benutzerfreundliche Oberfläche zu schaffen, die sowohl optisch ansprechend als auch funktional ist.
-  </p>
+    <script>
+        const startHour = document.getElementById('startHour');
+        const startMinute = document.getElementById('startMinute');
+        const endHour = document.getElementById('endHour');
+        const endMinute = document.getElementById('endMinute');
+        const calculateButton = document.getElementById('calculateButton');
+        const result = document.getElementById('result');
 
-  <div class="grid grid-cols-4 gap-4 mt-6">
-    <div>
-      <label for="startHour" class="block text-gray-700 font-semibold mb-2">Startstunde:</label>
-      <select id="startHour" class="w-full p-2 bg-white border rounded shadow"></select>
-    </div>
-    <div>
-      <label for="startMinute" class="block text-gray-700 font-semibold mb-2">Startminute:</label>
-      <select id="startMinute" class="w-full p-2 bg-white border rounded shadow"></select>
-    </div>
-    <div>
-      <label for="endHour" class="block text-gray-700 font-semibold mb-2">Endstunde:</label>
-      <select id="endHour" class="w-full p-2 bg-white border rounded shadow"></select>
-    </div>
-    <div>
-      <label for="endMinute" class="block text-gray-700 font-semibold mb-2">Endminute:</label>
-      <select id="endMinute" class="w-full p-2 bg-white border rounded shadow"></select>
-    </div>
-  </div>
-  <div class="mt-5">
-    <button id="calculateButton" class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">Berechnen</button>
-  </div>
-  <div class="mt-5">
-    <label for="result" class="block text-gray-700 font-semibold mb-2">Ergebnis:</label>
-    <input type="text" id="result" class="w-full p-3 bg-white border rounded shadow" readonly>
-  </div>
+        // Populate hour dropdowns (00-23)
+        for (let i = 0; i < 24; i++) {
+            const hourString = i.toString().padStart(2, '0');
+            startHour.innerHTML += `<option value="${i}">${hourString}</option>`;
+            endHour.innerHTML += `<option value="${i}">${hourString}</option>`;
+        }
 
-  <div class="prose">
-    <h2 class="text-xl font-bold mb-3 mt-6">Anwendungsszenarien</h2>
-    <p>
-      Das Zeitdifferenz-Rechner-Tool ist vielseitig einsetzbar und kann in verschiedenen Situationen verwendet werden. Zum Beispiel kann es bei der Planung von Arbeitszeiten, Pausen oder Meetings verwendet werden, um die Dauer zwischen zwei Zeitpunkten schnell und einfach zu ermitteln. Es kann auch nützlich sein, um die verbleibende Zeit bis zu einem Ereignis oder einer Deadline zu berechnen.
-    </p>
-  </div>
-</div>
+        // Populate minute dropdowns (00-59)
+        for (let i = 0; i < 60; i++) {
+            const minuteString = i.toString().padStart(2, '0');
+            startMinute.innerHTML += `<option value="${i}">${minuteString}</option>`;
+            endMinute.innerHTML += `<option value="${i}">${minuteString}</option>`;
+        }
 
-<script>
-  const startHour = document.getElementById('startHour');
-  const startMinute = document.getElementById('startMinute');
-  const endHour = document.getElementById('endHour');
-  const endMinute = document.getElementById('endMinute');
-  const calculateButton = document.getElementById('calculateButton');
-  const result = document.getElementById('result');
+        // Set default values
+        startHour.value = '8';
+        startMinute.value = '0';
+        endHour.value = '17';
+        endMinute.value = '0';
 
-  for (let i = 0; i < 24; i++) {
-    startHour.innerHTML += `<option value="${i}">${i}</option>`;
-    endHour.innerHTML += `<option value="${i}">${i}</option>`;
-  }
+        calculateButton.addEventListener('click', calculateDifference);
 
-  for (let i = 0; i < 60; i++) {
-    startMinute.innerHTML += `<option value="${i}">${i}</option>`;
-    endMinute.innerHTML += `<option value="${i}">${i}</option>`;
-  }
+        function calculateDifference() {
+            const startTimeMinutes = parseInt(startHour.value) * 60 + parseInt(startMinute.value);
+            const endTimeMinutes = parseInt(endHour.value) * 60 + parseInt(endMinute.value);
+            
+            let diffMinutes = endTimeMinutes - startTimeMinutes;
+            let daysCrossed = 0;
+            
+            // If end time is before start time, assume it's next day
+            if (diffMinutes < 0) {
+                diffMinutes += 24 * 60; // Add 24 hours
+                daysCrossed = 1;
+            }
+            
+            const hours = Math.floor(diffMinutes / 60);
+            const minutes = diffMinutes % 60;
+            
+            // Build result string
+            let resultText = '';
+            
+            if (hours > 0) {
+                resultText += `${hours} Stunde${hours === 1 ? '' : 'n'}`;
+            }
+            
+            if (hours > 0 && minutes > 0) {
+                resultText += ' und ';
+            }
+            
+            if (minutes > 0 || hours === 0) {
+                resultText += `${minutes} Minute${minutes === 1 ? '' : 'n'}`;
+            }
+            
+            result.innerHTML = resultText;
+            
+            if (daysCrossed) {
+                result.innerHTML += '<span class="day-crossed">+1 Tag</span>';
+            }
+        }
 
-  calculateButton.addEventListener('click', () => {
-    const startTime = parseInt(startHour.value) * 60 + parseInt(startMinute.value);
-    const endTime = parseInt(endHour.value) * 60 + parseInt(endMinute.value);
-    let diff = endTime - startTime;
-
-    let daysCrossed = 0;
-    if (diff < 0) {
-      diff += 24 * 60;
-      daysCrossed = 1;
-    }
-
-    const diffHours = Math.floor(diff / 60);
-    const diffMinutes = diff % 60;
-
-    result.value = `${diffHours} Stunde${diffHours === 1 ? '' : 'n'} und ${diffMinutes} Minute${diffMinutes === 1 ? '' : 'n'}${daysCrossed ? ', 1 Tag überschritten' : ''}`;
-  });
-</script>
+        // Calculate on page load with default values
+        calculateDifference();
+    </script>
 </body>
 </html>

@@ -1,99 +1,502 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>MoneyMoney to DivvyDiary CSV Generator</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyMoney zu DivvyDiary CSV Generator | Alexander Schneider</title>
+    <meta name="description" content="Konvertieren Sie Ihre MoneyMoney Wertpapierdaten in das DivvyDiary CSV-Format für einen einfachen Import.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #000;
+            --secondary: #666;
+            --background: #fff;
+            --hover: #f5f5f5;
+            --accent: #0066cc;
+            --border: #e0e0e0;
+            --input-bg: #fafafa;
+            --success: #10b981;
+            --success-hover: #059669;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--primary);
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+        
+        nav a::before {
+            content: "←";
+            transition: transform 0.2s ease;
+        }
+        
+        nav a:hover::before {
+            transform: translateX(-0.25rem);
+        }
+        
+        main {
+            flex: 1;
+            padding: 3rem 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .tool-description {
+            color: var(--secondary);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+        }
+        
+        .tool-content {
+            background: var(--input-bg);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            resize: vertical;
+            background: var(--background);
+            transition: border-color 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        #input-data {
+            min-height: 150px;
+        }
+        
+        #output-data {
+            min-height: 400px;
+            background: var(--hover);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        button {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background: var(--primary);
+            color: var(--background);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background: var(--background);
+            color: var(--primary);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .success-button {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        
+        .success-button:hover {
+            background: var(--background);
+            color: var(--success);
+            border-color: var(--success);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .counter {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+        
+        .instructions {
+            background: var(--background);
+            padding: 1.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        
+        .instructions h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .instructions ol {
+            list-style: none;
+            padding-left: 0;
+            counter-reset: step-counter;
+        }
+        
+        .instructions li {
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+            counter-increment: step-counter;
+        }
+        
+        .instructions li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .info-section {
+            margin-top: 4rem;
+            padding-top: 4rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .info-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .info-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .info-section p {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-section li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+        
+        .info-section li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+            
+            main {
+                padding: 2rem 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .tool-description {
+                font-size: 1rem;
+            }
+            
+            .tool-content {
+                padding: 1.5rem;
+            }
+            
+            .button-group {
+                flex-wrap: wrap;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            #input-data {
+                min-height: 120px;
+            }
+            
+            #output-data {
+                min-height: 300px;
+            }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #fff;
+                --secondary: #999;
+                --background: #000;
+                --hover: #111;
+                --accent: #4d94ff;
+                --border: #333;
+                --input-bg: #0a0a0a;
+                --success: #10b981;
+                --success-hover: #34d399;
+            }
+            
+            textarea {
+                background: #111;
+                color: var(--primary);
+            }
+            
+            #output-data {
+                background: #0a0a0a;
+            }
+            
+            button {
+                background: var(--primary);
+                color: var(--background);
+            }
+            
+            button:hover {
+                background: var(--background);
+                color: var(--primary);
+                border-color: var(--primary);
+            }
+            
+            .success-button {
+                background: var(--success);
+                color: var(--background);
+                border-color: var(--success);
+            }
+            
+            .success-button:hover {
+                background: var(--background);
+                color: var(--success);
+            }
+            
+            .instructions {
+                background: #0a0a0a;
+            }
+        }
+    </style>
 </head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Zurück zur Startseite</a>
+        </nav>
+    </header>
 
-<body class="bg-gray-100">
-<header class="bg-blue-500 py-4 mb-4">
-  <div class="container mx-auto flex justify-between items-center">
-    <a href="https://alexander-schneider.org/" class="text-white font-bold text-xl">Zurück zur Startseite</a>
-  </div>
-</header>
+    <main>
+        <div class="container">
+            <h1>MoneyMoney zu DivvyDiary CSV Generator</h1>
+            <p class="tool-description">Konvertieren Sie Ihre MoneyMoney Wertpapierdaten schnell und einfach in das DivvyDiary CSV-Format.</p>
+            
+            <div class="tool-content">
+                <div class="instructions">
+                    <h3>So funktioniert's:</h3>
+                    <ol>
+                        <li>Öffnen Sie MoneyMoney und navigieren Sie zu dem Wertpapier</li>
+                        <li>Kopieren Sie die Daten aus MoneyMoney</li>
+                        <li>Fügen Sie die Daten in das Eingabefeld unten ein</li>
+                        <li>Klicken Sie auf "Konvertieren"</li>
+                        <li>Exportieren Sie die CSV-Datei für DivvyDiary</li>
+                    </ol>
+                </div>
+                
+                <h2 class="section-title">Eingabedaten</h2>
+                <textarea id="input-data" placeholder="22.03.2023	ISHSIII-CORE MSCI WLD DLA	1.390,09 shares, Purchase price: 40,76 €, Last quote: 71,05 €, Profit: +27.841,55 € / +25,71 %	IE00B4L5Y983 / A0RPWH	Xetra	311.907,17"></textarea>
+                
+                <div class="button-group">
+                    <button id="convert-button">Konvertieren</button>
+                    <button id="csv-button" class="success-button hidden">CSV exportieren</button>
+                </div>
+                
+                <h2 class="section-title">Ausgabedaten <span class="counter">(Anzahl Einträge: <span id="counter">0</span>)</span></h2>
+                <textarea id="output-data" readonly placeholder="Die konvertierten Daten erscheinen hier..."></textarea>
+            </div>
+            
+            <div class="info-section">
+                <h2>Über das MoneyMoney zu DivvyDiary Tool</h2>
+                <p>Dieses Tool bietet eine einfache Möglichkeit, Ihre Wertpapiere aus dem macOS-Programm "MoneyMoney" nach DivvyDiary zu übertragen. Es wandelt Ihre kopierten Daten automatisch in ein CSV-Format um, das für den Import in DivvyDiary optimiert ist.</p>
+                
+                <h3>Unterstützte Formate</h3>
+                <p>Das Tool verwendet intelligente Mustererkennung, um verschiedene Datenformate zu verarbeiten:</p>
+                <ul>
+                    <li>Aktien und ETFs mit vollständigen Kursinformationen</li>
+                    <li>Fonds mit Anteilen und Kaufpreisen</li>
+                    <li>Verschiedene Währungsformate (EUR)</li>
+                    <li>Automatische Steuerberechnung (26,38%)</li>
+                </ul>
+                
+                <h3>Technische Details</h3>
+                <ul>
+                    <li>Erkennung von ISIN und WKN</li>
+                    <li>Umwandlung von Punkt- zu Komma-Notation</li>
+                    <li>Automatische CSV-Formatierung</li>
+                    <li>UTF-8 Kodierung für Sonderzeichen</li>
+                </ul>
+                
+                <h3>Tipps zur Verwendung</h3>
+                <ul>
+                    <li>Kopieren Sie die komplette Zeile aus MoneyMoney</li>
+                    <li>Mehrere Wertpapiere können gleichzeitig konvertiert werden</li>
+                    <li>Die CSV-Datei wird automatisch mit dem Namen "divvydiary.csv" gespeichert</li>
+                    <li>Überprüfen Sie die Anzahl der konvertierten Einträge</li>
+                </ul>
+            </div>
+        </div>
+    </main>
 
-<div class="container mx-auto max-w-xxl">
-  <div class="bg-white rounded-lg p-6 shadow-lg mb-8">
-    <h1 class="text-2xl font-bold mb-4">MoneyMoney zu DivvyDiary CSV Generator</h1>
-    <p class="mb-4">Unser MoneyMoney zu DivvyDiary Tool ist eine einfache Möglichkeit, deine Wertpapiere aus dem OSX Programm "MoneyMoney" nach DivvyDiary zu übertragen. Mit diesem Tool kannst du schnell und einfach deine Wertpapiere kopieren und in eine CSV-Datei umwandeln, die du dann in DivvyDiary importieren kannst.</p>
-    <p class="mb-4">Das Tool verwendet reguläre Ausdrücke, um die Informationen aus dem MoneyMoney-Text zu extrahieren. Es unterstützt auch mehrere Formate, einschließlich Aktien, ETFs und Fonds. Sobald du deine Daten in das Tool kopiert hast, wandelt es sie automatisch in ein CSV-Format um, das für den Import in DivvyDiary geeignet ist.</p>
-    <ul class="list-disc pl-4 mb-4">
-      <li>Öffne MoneyMoney und navigiere zu dem Wertpapier, das du kopieren möchtest.</li>
-      <li>Kopiere die Daten aus MoneyMoney.</li>
-      <li>Füge die Daten in das MoneyMoney zu DivvyDiary Tool ein.</li>
-      <li>Klicke auf den "Konvertieren" Button, um die Daten in eine CSV-Datei umzuwandeln.</li>
-      <li>Importiere die CSV-Datei in DivvyDiary.</li>
-    </ul>
-    <p class="mb-4">Das Tool ist einfach zu bedienen und bietet eine schnelle und effektive Möglichkeit, deine Wertpapiere von MoneyMoney zu DivvyDiary zu übertragen. Wir hoffen, dass es dir hilft, deine Finanzen besser zu verwalten und dir dabei hilft, deine Ziele schneller zu erreichen.</p>
-  </div>
-  <form class="flex flex-col gap-4">
-    <div class="flex flex-col">
-      <label for="input-data" class="font-bold mb-2">Input Data</label>
-      <textarea placeholder="22.03.2023	ISHSIII-CORE MSCI WLD DLA	1.390,09 shares, Purchase price: 40,76 €, Last quote: 71,05 €, Profit: +27.841,55 € / +25,71 %	IE00B4L5Y983 / A0RPWH	Xetra	311.907,17" id="input-data" name="input-data" class="p-2 bg-gray-200 rounded" rows="4"></textarea>
-    </div>
-    <div class="flex justify-center">
-      <button id="convert-button"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="button">Convert</button>
-      <button id="csv-button"
-              class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 ml-6 px-4 rounded hidden"
-              type="button">Export CSV</button>
-    </div>
-    <div class="flex flex-col">
-      <label for="output-data" class="font-bold mb-2">Output Data (Number of entries: <span id="counter">0</span>)</label>
-      <textarea id="output-data" name="output-data" class="p-2 bg-gray-200 rounded" rows="20" readonly></textarea>
-    </div>
-  </form>
-</div>
+    <script>
+        const regex = /^.*?\t.*?\t(.*?) shares?, Purchase price: (.*?) €.*?, (.*?) €.*?: (.*?) %.*?\t(.*?)\t.*$/gm;
+        const regex2 = /^.*?([A-Z\d]+);.*?;(.*?);.*$/gm;
 
-<script>
-  const regex = /^.*?\t.*?\t(.*?) shares?, Purchase price: (.*?) €.*?, (.*?) €.*?: (.*?) %.*?\t(.*?)\t.*$/gm;
-  const regex2 = /^.*?([A-Z\d]+);.*?;(.*?);.*$/gm;
+        const convertButton = document.getElementById('convert-button');
+        const outputData = document.getElementById('output-data');
+        const csvButton = document.getElementById('csv-button');
+        const counter = document.getElementById('counter');
+        const inputData = document.getElementById('input-data');
 
-  const convertButton = document.getElementById('convert-button');
-  const outputData = document.getElementById('output-data');
-  const csvButton = document.getElementById('csv-button');
-  const counter = document.getElementById('counter');
+        convertButton.addEventListener('click', () => {
+            const input = inputData.value;
+            
+            if (!input.trim()) {
+                outputData.value = '';
+                counter.textContent = '0';
+                csvButton.classList.add('hidden');
+                return;
+            }
 
-  convertButton.addEventListener('click', () => {
-    const inputData = document.getElementById('input-data').value;
+            const matches = [];
+            let match;
+            
+            // Reset regex lastIndex
+            regex.lastIndex = 0;
+            while ((match = regex.exec(input)) !== null) {
+                const share = match[1];
+                const taxes = '26,38';
+                const purchasePrice = match[2].replace('.', ',');
+                const stockCode = match[5].split(' / ')[1] || match[5];
+                matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
+            }
+            
+            regex2.lastIndex = 0;
+            while ((match = regex2.exec(input)) !== null) {
+                const share = match[2];
+                const taxes = '26,38';
+                const purchasePrice = match[1].replace('.', ',');
+                const stockCode = match[1].split(' / ')[1] || match[1];
+                matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
+            }
 
-    const matches = [];
-    let match;
-    while ((match = regex.exec(inputData)) !== null) {
-      const share = match[1];
-      const taxes = '26,38';
-      const purchasePrice = match[2].replace('.', ',');
-      const stockCode = match[5].split(' / ')[1] || match[5];
-      matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
-    }
-    regex2.lastIndex = 0;
-    while ((match = regex2.exec(inputData)) !== null) {
-      const share = match[2];
-      const taxes = '26,38';
-      const purchasePrice = match[1].replace('.', ',');
-      const stockCode = match[1].split(' / ')[1] || match[1];
-      matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
-    }
+            outputData.value = matches.join('\n');
+            counter.textContent = matches.length;
+            
+            if (matches.length > 0) {
+                csvButton.classList.remove('hidden');
+            } else {
+                csvButton.classList.add('hidden');
+            }
+        });
 
-    outputData.value = matches.join('\n');
-    csvButton.classList.remove('hidden');
-    counter.innerHTML = ` ${matches.length}`;
-  });
-
-  csvButton.addEventListener('click', () => {
-    const csvContent = "data:text/csv;charset=utf-8," + outputData.value.replace(/\n/g, "\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "divvydiary.csv");
-    document.body.appendChild(link);
-    link.click();
-  });
-</script>
-
+        csvButton.addEventListener('click', () => {
+            const csvContent = outputData.value;
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (navigator.msSaveBlob) {
+                // IE 10+
+                navigator.msSaveBlob(blob, 'divvydiary.csv');
+            } else {
+                link.href = URL.createObjectURL(blob);
+                link.download = 'divvydiary.csv';
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+    </script>
 </body>
 </html>
