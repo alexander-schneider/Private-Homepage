@@ -1,0 +1,26 @@
+{
+  "name": "Alexander Schneider - Tech Investor, CTO & Founder",
+  "short_name": "Alexander Schneider",
+  "description": "Personal website of Alexander Schneider - Tech Investor, CTO & Founder based in Berlin",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0066cc",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/img/alex-schneider.jpg",
+      "sizes": "360x360",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/img/alex-schneider.webp",
+      "sizes": "360x360",
+      "type": "image/webp"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    }
+  ]
+}

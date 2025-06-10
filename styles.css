@@ -10,6 +10,7 @@
     --background: #fff;
     --hover: #f5f5f5;
     --accent: #0066cc;
+    --border: #e0e0e0;
 }
 
 body {
@@ -444,6 +445,7 @@ h2 {
         --background: #000;
         --hover: #111;
         --accent: #4d94ff;
+        --border: #333;
     }
     
     body {
