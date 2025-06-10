@@ -538,42 +538,23 @@
                         </div>
                     </div>
                     <div class="button-group">
-                        <button type="submit" id="createAlert">API-Daten generieren</button>
-                        <button type="button" class="secondary-button" id="copyData">Daten kopieren</button>
+                        <button type="submit" id="createAlert">Alert erstellen</button>
+                        <button type="button" class="secondary-button" id="resetForm">Formular zurücksetzen</button>
                     </div>
                 </form>
             </div>
             
-            <div id="api-output" class="info-box" style="display: none; margin-bottom: 2rem;">
-                <h2 class="section-title">Generierte API-Daten</h2>
-                <pre id="api-data" style="background: var(--hover); padding: 1rem; border-radius: 0.375rem; overflow-x: auto; font-family: monospace; font-size: 0.875rem;"></pre>
-                <p class="info-note" style="margin-top: 1rem;">Kopieren Sie diese Daten und verwenden Sie sie mit curl, Postman oder Ihrem eigenen Backend-Server.</p>
-            </div>
-            
-            <div class="info-box">
-                <h2 class="section-title">API-Integration Hinweis</h2>
-                <div class="error-message" style="display: block; margin-bottom: 1rem;">
-                    <strong>CORS-Einschränkung:</strong> Die StockAlert.pro API kann nicht direkt aus dem Browser aufgerufen werden.
+            <div class="alerts-section">
+                <div class="section-header">
+                    <h2 class="section-title">Aktive Alerts</h2>
+                    <span class="alert-count" id="alert-count">0 Alerts</span>
                 </div>
-                <p>Um die API zu nutzen, haben Sie folgende Optionen:</p>
-                <ol class="steps-list">
-                    <li>Verwenden Sie die offizielle StockAlert.pro Website: <a href="https://stockalert.pro" target="_blank" style="color: var(--accent);">stockalert.pro</a></li>
-                    <li>Nutzen Sie die API über einen Backend-Server oder Proxy</li>
-                    <li>Verwenden Sie Tools wie Postman oder curl für direkte API-Aufrufe</li>
-                </ol>
-                
-                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Beispiel API-Aufruf (curl):</h3>
-                <pre style="background: var(--hover); padding: 1rem; border-radius: 0.375rem; overflow-x: auto; font-family: monospace; font-size: 0.875rem;">curl -X POST https://stockalert.pro/api/alerts/create \
-  -H "Content-Type: application/json" \
-  -d '{
-    "symbol": "AAPL",
-    "condition": "above",
-    "threshold": 180.50,
-    "email": "ihre@email.de"
-  }'</pre>
-                
-                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Formular-Vorschau</h3>
-                <p class="info-note">Das untenstehende Formular zeigt, welche Daten an die API gesendet würden. Kopieren Sie die generierten Daten für Ihre eigene Implementation.</p>
+                <div id="alerts-container">
+                    <div class="empty-state">
+                        <p>Noch keine Alerts erstellt.</p>
+                        <p>Erstellen Sie Ihren ersten Alert mit dem Formular oben.</p>
+                    </div>
+                </div>
             </div>
             
             <div class="info-section">
@@ -659,10 +640,17 @@
             }
         });
         
+        // Store alerts in localStorage
+        let alerts = JSON.parse(localStorage.getItem('stockAlerts') || '[]');
+        
         // Form submission
         alertForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideMessages();
+            
+            const submitButton = document.getElementById('createAlert');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Wird erstellt...';
             
             const formData = new FormData(alertForm);
             const alertData = {
@@ -679,21 +667,42 @@
                 alertData.days = parseInt(formData.get('threshold'));
             }
             
-            // Display API data instead of making request
-            const apiOutput = document.getElementById('api-output');
-            const apiDataElement = document.getElementById('api-data');
-            
-            const curlCommand = `curl -X POST ${API_URL}/alerts/create \\
-  -H "Content-Type: application/json" \\
-  -d '${JSON.stringify(alertData, null, 2)}'`;
-            
-            apiDataElement.textContent = curlCommand;
-            apiOutput.style.display = 'block';
-            
-            showSuccess('API-Daten wurden generiert! Kopieren Sie den Befehl oben.');
-            
-            // Scroll to output
-            apiOutput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            try {
+                const response = await fetch(`${API_URL}/alerts/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(alertData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store alert locally
+                    const newAlert = {
+                        id: Date.now().toString(),
+                        ...alertData,
+                        createdAt: new Date().toISOString(),
+                        status: 'active'
+                    };
+                    alerts.push(newAlert);
+                    localStorage.setItem('stockAlerts', JSON.stringify(alerts));
+                    
+                    showSuccess('Alert wurde erfolgreich erstellt!');
+                    alertForm.reset();
+                    updateAlertsDisplay();
+                } else {
+                    const errorMsg = getErrorMessage(data.error) || data.message || 'Fehler beim Erstellen des Alerts';
+                    showError(errorMsg);
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                showError('Netzwerkfehler: Bitte versuchen Sie es später erneut.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Alert erstellen';
+            }
         });
         
         // Error message mapping
@@ -729,33 +738,91 @@
             successMessage.style.display = 'none';
         }
         
-        // Copy button functionality
-        document.getElementById('copyData').addEventListener('click', async () => {
-            const apiDataElement = document.getElementById('api-data');
-            const textToCopy = apiDataElement.textContent;
-            
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(textToCopy);
-                } else {
-                    // Fallback
-                    const textArea = document.createElement('textarea');
-                    textArea.value = textToCopy;
-                    textArea.style.position = 'fixed';
-                    textArea.style.left = '-999999px';
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                }
-                showSuccess('Daten wurden in die Zwischenablage kopiert!');
-            } catch (err) {
-                showError('Fehler beim Kopieren der Daten');
-            }
+        // Reset button functionality
+        document.getElementById('resetForm').addEventListener('click', () => {
+            alertForm.reset();
+            hideMessages();
+            conditionSelect.dispatchEvent(new Event('change'));
         });
+        
+        // Update alerts display
+        function updateAlertsDisplay() {
+            const container = document.getElementById('alerts-container');
+            const countElement = document.getElementById('alert-count');
+            
+            if (alerts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>Noch keine Alerts erstellt.</p>
+                        <p>Erstellen Sie Ihren ersten Alert mit dem Formular oben.</p>
+                    </div>
+                `;
+                countElement.textContent = '0 Alerts';
+            } else {
+                const alertsHTML = alerts.map(alert => {
+                    const conditionText = getConditionText(alert);
+                    return `
+                        <div class="alert-card">
+                            <div class="alert-info">
+                                <div class="alert-symbol">${alert.symbol}</div>
+                                <div class="alert-details">
+                                    ${conditionText}
+                                    <br>
+                                    <small>E-Mail: ${alert.email}</small>
+                                </div>
+                            </div>
+                            <div class="alert-status">
+                                <span class="status-badge status-${alert.status}">${alert.status === 'active' ? 'Aktiv' : 'Getriggert'}</span>
+                                <button class="delete-button" onclick="deleteAlert('${alert.id}')">Löschen</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = `<div class="alerts-grid">${alertsHTML}</div>`;
+                countElement.textContent = `${alerts.length} Alert${alerts.length !== 1 ? 's' : ''}`;
+            }
+        }
+        
+        // Get condition text
+        function getConditionText(alert) {
+            switch (alert.condition) {
+                case 'above':
+                    return `Preis steigt über <span class="alert-price">$${alert.threshold.toFixed(2)}</span>`;
+                case 'below':
+                    return `Preis fällt unter <span class="alert-price">$${alert.threshold.toFixed(2)}</span>`;
+                case 'up':
+                    return `Preis steigt um <span class="alert-price">${alert.threshold}%</span>`;
+                case 'down':
+                    return `Preis fällt um <span class="alert-price">${alert.threshold}%</span>`;
+                case 'volume_change':
+                    return `Volumen-Änderung <span class="alert-price">${alert.threshold}%</span>`;
+                case 'new_high':
+                    return '52-Wochen-Hoch';
+                case 'new_low':
+                    return '52-Wochen-Tief';
+                case 'reminder':
+                    return `Erinnerung nach <span class="alert-price">${alert.days} Tagen</span>`;
+                default:
+                    return alert.condition;
+            }
+        }
+        
+        // Delete alert
+        window.deleteAlert = function(alertId) {
+            if (confirm('Möchten Sie diesen Alert wirklich löschen?')) {
+                alerts = alerts.filter(a => a.id !== alertId);
+                localStorage.setItem('stockAlerts', JSON.stringify(alerts));
+                updateAlertsDisplay();
+                showSuccess('Alert wurde gelöscht.');
+            }
+        };
         
         // Initialize condition change
         conditionSelect.dispatchEvent(new Event('change'));
+        
+        // Load and display existing alerts on page load
+        updateAlertsDisplay();
     </script>
 </body>
 </html>
