@@ -357,14 +357,7 @@ h2 {
     
     section {
         margin-bottom: 2.5rem;
-        padding-bottom: 2.5rem;
-        border-bottom: 1px solid #e0e0e0;
         text-align: center;
-    }
-    
-    section:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
     }
     
     h2 {
@@ -389,6 +382,11 @@ h2 {
     
     .contact-links a {
         font-size: 0.9375rem;
+    }
+    
+    .pitch-drop-zone {
+        max-width: 280px;
+        margin: 0 auto;
     }
     
     .social-links {
@@ -477,21 +475,22 @@ h2 {
     
     .pitch-drop-zone {
         border-color: #333;
-        background: #000;
+        background: rgba(255, 255, 255, 0.02);
     }
     
     .pitch-drop-zone:hover,
     .pitch-drop-zone.drag-over {
-        background: #111;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: #555;
     }
     
     .pitch-drop-zone.success {
-        background: #064e3b;
+        background: rgba(16, 185, 129, 0.1);
         border-color: #10b981;
     }
     
     .pitch-drop-zone.complete:hover {
-        background: #064e3b;
+        background: rgba(16, 185, 129, 0.1);
         border-color: #10b981;
     }
     
@@ -504,10 +503,6 @@ h2 {
     }
     
     @media (max-width: 640px) {
-        section {
-            border-bottom-color: #333;
-        }
-        
         .social-links a,
         .tools-list a {
             background: #111;
