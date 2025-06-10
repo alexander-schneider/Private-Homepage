@@ -229,6 +229,16 @@ h2 {
     background: #f0fdf4;
 }
 
+.pitch-drop-zone.complete {
+    cursor: default !important;
+}
+
+.pitch-drop-zone.complete:hover {
+    border-color: #10b981;
+    background: #f0fdf4;
+    transform: none;
+}
+
 .drop-icon {
     width: 32px;
     height: 32px;
@@ -476,6 +486,11 @@ h2 {
     }
     
     .pitch-drop-zone.success {
+        background: #064e3b;
+        border-color: #10b981;
+    }
+    
+    .pitch-drop-zone.complete:hover {
         background: #064e3b;
         border-color: #10b981;
     }

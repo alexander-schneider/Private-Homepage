@@ -4,10 +4,21 @@ const fileInput = document.getElementById('file-input');
 const uploadStatus = document.getElementById('upload-status');
 const statusText = document.getElementById('status-text');
 const progressBar = document.getElementById('progress-bar');
+let uploadComplete = false;
 
 // Click to upload
 dropZone.addEventListener('click', () => {
-    fileInput.click();
+    if (!uploadComplete) {
+        fileInput.click();
+    }
+});
+
+// Keyboard support
+dropZone.addEventListener('keydown', (e) => {
+    if (!uploadComplete && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        fileInput.click();
+    }
 });
 
 // File input change
@@ -21,7 +32,9 @@ fileInput.addEventListener('change', (e) => {
 // Drag and drop events
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
-    dropZone.classList.add('drag-over');
+    if (!uploadComplete) {
+        dropZone.classList.add('drag-over');
+    }
 });
 
 dropZone.addEventListener('dragleave', () => {
@@ -32,13 +45,20 @@ dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
     
-    const file = e.dataTransfer.files[0];
-    if (file) {
-        handleFile(file);
+    if (!uploadComplete) {
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            handleFile(file);
+        }
     }
 });
 
 async function handleFile(file) {
+    // Don't process if already uploaded
+    if (uploadComplete) {
+        return;
+    }
+    
     // Validate file type
     const validTypes = ['application/pdf', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'];
     if (!validTypes.includes(file.type)) {
@@ -103,13 +123,27 @@ Download link: ${fileUrl}
             // Success
             progressBar.style.width = '100%';
             dropZone.classList.remove('uploading');
-            dropZone.classList.add('success');
-            statusText.textContent = 'Pitch deck uploaded successfully!';
+            dropZone.classList.add('success', 'complete');
+            uploadComplete = true;
             
-            // Reset after some time
+            // Update the UI to show thank you message
+            const dropContent = dropZone.querySelector('div');
+            dropContent.innerHTML = `
+                <svg class="drop-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h3 class="drop-title">Vielen Dank!</h3>
+                <p class="drop-subtitle">Ihr Pitch Deck wurde erfolgreich übermittelt.</p>
+                <p class="drop-info">Wir melden uns in Kürze bei Ihnen.</p>
+            `;
+            
+            // Remove interactive cursor
+            dropZone.style.cursor = 'default';
+            
+            // Hide upload status after a moment
             setTimeout(() => {
-                resetUpload();
-            }, 5000);
+                uploadStatus.style.display = 'none';
+            }, 2000);
         } else {
             throw new Error('Upload failed');
         }
@@ -127,8 +161,10 @@ Download link: ${fileUrl}
 }
 
 function resetUpload() {
-    dropZone.classList.remove('uploading', 'success');
-    uploadStatus.style.display = 'none';
-    progressBar.style.width = '0%';
-    fileInput.value = '';
+    if (!uploadComplete) {
+        dropZone.classList.remove('uploading', 'success');
+        uploadStatus.style.display = 'none';
+        progressBar.style.width = '0%';
+        fileInput.value = '';
+    }
 }
