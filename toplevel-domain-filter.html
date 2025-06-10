@@ -150,11 +150,40 @@
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
             transition: border-color 0.2s ease;
+            max-width: 300px;
         }
         
         select:focus {
             outline: none;
             border-color: var(--accent);
+        }
+        
+        .custom-tld-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .custom-tld-input {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--background);
+            transition: border-color 0.2s ease;
+            width: 200px;
+        }
+        
+        .custom-tld-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .or-text {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            margin: 0 0.5rem;
         }
         
         button {
@@ -285,6 +314,16 @@
             button {
                 width: 100%;
             }
+            
+            .custom-tld-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .custom-tld-input {
+                width: 100%;
+            }
         }
         
         @media (prefers-color-scheme: dark) {
@@ -298,7 +337,7 @@
                 --input-bg: #0a0a0a;
             }
             
-            textarea, select {
+            textarea, select, .custom-tld-input {
                 background: #111;
                 color: var(--primary);
             }
@@ -363,18 +402,233 @@
                     <textarea id="domains" placeholder="Geben Sie Ihre Domains ein, eine pro Zeile...&#10;&#10;Beispiel:&#10;example.com&#10;test.de&#10;website.org&#10;demo.net"></textarea>
                     <div class="controls">
                         <select id="filter">
-                            <option value=".com">.com</option>
-                            <option value=".de">.de</option>
-                            <option value=".org">.org</option>
-                            <option value=".net">.net</option>
-                            <option value=".info">.info</option>
-                            <option value=".biz">.biz</option>
-                            <option value=".eu">.eu</option>
-                            <option value=".io">.io</option>
-                            <option value=".co">.co</option>
-                            <option value=".uk">.uk</option>
+                            <optgroup label="Generische TLDs">
+                                <option value=".com">.com - Commercial</option>
+                                <option value=".org">.org - Organization</option>
+                                <option value=".net">.net - Network</option>
+                                <option value=".info">.info - Information</option>
+                                <option value=".biz">.biz - Business</option>
+                                <option value=".edu">.edu - Education</option>
+                                <option value=".gov">.gov - Government</option>
+                                <option value=".mil">.mil - Military</option>
+                                <option value=".int">.int - International</option>
+                                <option value=".pro">.pro - Professional</option>
+                                <option value=".tel">.tel - Telephone</option>
+                                <option value=".aero">.aero - Aviation</option>
+                                <option value=".asia">.asia - Asia-Pacific</option>
+                                <option value=".cat">.cat - Catalan</option>
+                                <option value=".coop">.coop - Cooperative</option>
+                                <option value=".jobs">.jobs - Employment</option>
+                                <option value=".mobi">.mobi - Mobile</option>
+                                <option value=".museum">.museum - Museums</option>
+                                <option value=".name">.name - Personal</option>
+                                <option value=".post">.post - Postal</option>
+                                <option value=".travel">.travel - Travel</option>
+                                <option value=".xxx">.xxx - Adult</option>
+                            </optgroup>
+                            <optgroup label="Neue gTLDs">
+                                <option value=".app">.app - Applications</option>
+                                <option value=".blog">.blog - Blogs</option>
+                                <option value=".cloud">.cloud - Cloud Services</option>
+                                <option value=".club">.club - Clubs</option>
+                                <option value=".dev">.dev - Developers</option>
+                                <option value=".email">.email - Email</option>
+                                <option value=".games">.games - Gaming</option>
+                                <option value=".host">.host - Hosting</option>
+                                <option value=".io">.io - Tech Startups</option>
+                                <option value=".life">.life - Lifestyle</option>
+                                <option value=".live">.live - Live Content</option>
+                                <option value=".media">.media - Media</option>
+                                <option value=".news">.news - News</option>
+                                <option value=".online">.online - Online</option>
+                                <option value=".shop">.shop - E-Commerce</option>
+                                <option value=".site">.site - Websites</option>
+                                <option value=".social">.social - Social</option>
+                                <option value=".store">.store - Stores</option>
+                                <option value=".tech">.tech - Technology</option>
+                                <option value=".top">.top - Top Level</option>
+                                <option value=".tv">.tv - Television</option>
+                                <option value=".website">.website - Websites</option>
+                                <option value=".wiki">.wiki - Wikis</option>
+                                <option value=".world">.world - Global</option>
+                                <option value=".xyz">.xyz - Generation XYZ</option>
+                            </optgroup>
+                            <optgroup label="Business & Finance">
+                                <option value=".agency">.agency - Agencies</option>
+                                <option value=".business">.business - Business</option>
+                                <option value=".company">.company - Companies</option>
+                                <option value=".consulting">.consulting - Consulting</option>
+                                <option value=".finance">.finance - Finance</option>
+                                <option value=".financial">.financial - Financial</option>
+                                <option value=".fund">.fund - Funds</option>
+                                <option value=".gmbh">.gmbh - GmbH Companies</option>
+                                <option value=".group">.group - Groups</option>
+                                <option value=".holdings">.holdings - Holdings</option>
+                                <option value=".inc">.inc - Incorporated</option>
+                                <option value=".industries">.industries - Industries</option>
+                                <option value=".insurance">.insurance - Insurance</option>
+                                <option value=".limited">.limited - Limited</option>
+                                <option value=".llc">.llc - LLC</option>
+                                <option value=".ltd">.ltd - Limited</option>
+                                <option value=".management">.management - Management</option>
+                                <option value=".marketing">.marketing - Marketing</option>
+                                <option value=".money">.money - Money</option>
+                                <option value=".partners">.partners - Partners</option>
+                                <option value=".solutions">.solutions - Solutions</option>
+                                <option value=".ventures">.ventures - Ventures</option>
+                                <option value=".work">.work - Work</option>
+                                <option value=".works">.works - Works</option>
+                            </optgroup>
+                            <optgroup label="Tech & IT">
+                                <option value=".ai">.ai - Artificial Intelligence</option>
+                                <option value=".codes">.codes - Programming</option>
+                                <option value=".computer">.computer - Computers</option>
+                                <option value=".data">.data - Data</option>
+                                <option value=".digital">.digital - Digital</option>
+                                <option value=".download">.download - Downloads</option>
+                                <option value=".engineering">.engineering - Engineering</option>
+                                <option value=".network">.network - Networks</option>
+                                <option value=".software">.software - Software</option>
+                                <option value=".systems">.systems - Systems</option>
+                                <option value=".technology">.technology - Technology</option>
+                                <option value=".tools">.tools - Tools</option>
+                            </optgroup>
+                            <optgroup label="Ländercodes (Europa)">
+                                <option value=".at">.at - Österreich</option>
+                                <option value=".be">.be - Belgien</option>
+                                <option value=".ch">.ch - Schweiz</option>
+                                <option value=".cz">.cz - Tschechien</option>
+                                <option value=".de">.de - Deutschland</option>
+                                <option value=".dk">.dk - Dänemark</option>
+                                <option value=".es">.es - Spanien</option>
+                                <option value=".eu">.eu - Europa</option>
+                                <option value=".fi">.fi - Finnland</option>
+                                <option value=".fr">.fr - Frankreich</option>
+                                <option value=".gr">.gr - Griechenland</option>
+                                <option value=".hu">.hu - Ungarn</option>
+                                <option value=".ie">.ie - Irland</option>
+                                <option value=".it">.it - Italien</option>
+                                <option value=".lu">.lu - Luxemburg</option>
+                                <option value=".nl">.nl - Niederlande</option>
+                                <option value=".no">.no - Norwegen</option>
+                                <option value=".pl">.pl - Polen</option>
+                                <option value=".pt">.pt - Portugal</option>
+                                <option value=".ro">.ro - Rumänien</option>
+                                <option value=".ru">.ru - Russland</option>
+                                <option value=".se">.se - Schweden</option>
+                                <option value=".uk">.uk - Vereinigtes Königreich</option>
+                            </optgroup>
+                            <optgroup label="Ländercodes (Amerika)">
+                                <option value=".ar">.ar - Argentinien</option>
+                                <option value=".br">.br - Brasilien</option>
+                                <option value=".ca">.ca - Kanada</option>
+                                <option value=".cl">.cl - Chile</option>
+                                <option value=".co">.co - Kolumbien</option>
+                                <option value=".mx">.mx - Mexiko</option>
+                                <option value=".pe">.pe - Peru</option>
+                                <option value=".us">.us - USA</option>
+                                <option value=".uy">.uy - Uruguay</option>
+                                <option value=".ve">.ve - Venezuela</option>
+                            </optgroup>
+                            <optgroup label="Ländercodes (Asien-Pazifik)">
+                                <option value=".au">.au - Australien</option>
+                                <option value=".cn">.cn - China</option>
+                                <option value=".hk">.hk - Hong Kong</option>
+                                <option value=".id">.id - Indonesien</option>
+                                <option value=".in">.in - Indien</option>
+                                <option value=".jp">.jp - Japan</option>
+                                <option value=".kr">.kr - Südkorea</option>
+                                <option value=".my">.my - Malaysia</option>
+                                <option value=".nz">.nz - Neuseeland</option>
+                                <option value=".ph">.ph - Philippinen</option>
+                                <option value=".sg">.sg - Singapur</option>
+                                <option value=".th">.th - Thailand</option>
+                                <option value=".tw">.tw - Taiwan</option>
+                                <option value=".vn">.vn - Vietnam</option>
+                            </optgroup>
+                            <optgroup label="Ländercodes (Afrika & Naher Osten)">
+                                <option value=".ae">.ae - Vereinigte Arabische Emirate</option>
+                                <option value=".eg">.eg - Ägypten</option>
+                                <option value=".il">.il - Israel</option>
+                                <option value=".ma">.ma - Marokko</option>
+                                <option value=".ng">.ng - Nigeria</option>
+                                <option value=".sa">.sa - Saudi-Arabien</option>
+                                <option value=".tr">.tr - Türkei</option>
+                                <option value=".za">.za - Südafrika</option>
+                            </optgroup>
+                            <optgroup label="Spezielle Endungen">
+                                <option value=".academy">.academy - Akademie</option>
+                                <option value=".art">.art - Kunst</option>
+                                <option value=".bar">.bar - Bars</option>
+                                <option value=".bike">.bike - Fahrräder</option>
+                                <option value=".cafe">.cafe - Cafés</option>
+                                <option value=".camera">.camera - Kameras</option>
+                                <option value=".care">.care - Pflege</option>
+                                <option value=".church">.church - Kirchen</option>
+                                <option value=".city">.city - Städte</option>
+                                <option value=".clothing">.clothing - Kleidung</option>
+                                <option value=".coffee">.coffee - Kaffee</option>
+                                <option value=".community">.community - Gemeinschaft</option>
+                                <option value=".dance">.dance - Tanz</option>
+                                <option value=".design">.design - Design</option>
+                                <option value=".directory">.directory - Verzeichnis</option>
+                                <option value=".education">.education - Bildung</option>
+                                <option value=".events">.events - Veranstaltungen</option>
+                                <option value=".expert">.expert - Experten</option>
+                                <option value=".family">.family - Familie</option>
+                                <option value=".fashion">.fashion - Mode</option>
+                                <option value=".fitness">.fitness - Fitness</option>
+                                <option value=".food">.food - Essen</option>
+                                <option value=".fun">.fun - Spaß</option>
+                                <option value=".gallery">.gallery - Galerie</option>
+                                <option value=".garden">.garden - Garten</option>
+                                <option value=".guide">.guide - Ratgeber</option>
+                                <option value=".health">.health - Gesundheit</option>
+                                <option value=".help">.help - Hilfe</option>
+                                <option value=".house">.house - Haus</option>
+                                <option value=".kitchen">.kitchen - Küche</option>
+                                <option value=".land">.land - Land</option>
+                                <option value=".love">.love - Liebe</option>
+                                <option value=".market">.market - Markt</option>
+                                <option value=".music">.music - Musik</option>
+                                <option value=".photo">.photo - Fotos</option>
+                                <option value=".photography">.photography - Fotografie</option>
+                                <option value=".pizza">.pizza - Pizza</option>
+                                <option value=".plus">.plus - Plus</option>
+                                <option value=".recipes">.recipes - Rezepte</option>
+                                <option value=".restaurant">.restaurant - Restaurant</option>
+                                <option value=".reviews">.reviews - Bewertungen</option>
+                                <option value=".run">.run - Laufen</option>
+                                <option value=".sale">.sale - Verkauf</option>
+                                <option value=".school">.school - Schule</option>
+                                <option value=".services">.services - Dienstleistungen</option>
+                                <option value=".shoes">.shoes - Schuhe</option>
+                                <option value=".show">.show - Show</option>
+                                <option value=".space">.space - Raum</option>
+                                <option value=".sport">.sport - Sport</option>
+                                <option value=".studio">.studio - Studio</option>
+                                <option value=".style">.style - Stil</option>
+                                <option value=".support">.support - Support</option>
+                                <option value=".team">.team - Team</option>
+                                <option value=".tips">.tips - Tipps</option>
+                                <option value=".today">.today - Heute</option>
+                                <option value=".tours">.tours - Touren</option>
+                                <option value=".town">.town - Stadt</option>
+                                <option value=".toys">.toys - Spielzeug</option>
+                                <option value=".training">.training - Training</option>
+                                <option value=".university">.university - Universität</option>
+                                <option value=".video">.video - Video</option>
+                                <option value=".vision">.vision - Vision</option>
+                                <option value=".watch">.watch - Uhren</option>
+                                <option value=".wine">.wine - Wein</option>
+                                <option value=".zone">.zone - Zone</option>
+                            </optgroup>
                         </select>
                         <button id="filter-btn">Domains filtern</button>
+                    </div>
+                    <div class="custom-tld-group">
+                        <span class="or-text">oder eigene TLD eingeben:</span>
+                        <input type="text" id="custom-tld" class="custom-tld-input" placeholder="z.B. .berlin">
                     </div>
                 </div>
                 
@@ -398,7 +652,8 @@
                 <h3>Funktionen</h3>
                 <ul>
                     <li>Eingabe mehrerer Domains (eine pro Zeile)</li>
-                    <li>Auswahl aus gängigen Top-Level-Domains</li>
+                    <li>Über 200 vordefinierte Top-Level-Domains in Kategorien organisiert</li>
+                    <li>Möglichkeit zur Eingabe eigener TLDs</li>
                     <li>Sofortige Filterung mit einem Klick</li>
                     <li>Anzeige der Anzahl gefilterter Domains</li>
                     <li>Ein-Klick-Kopieren der Ergebnisse</li>
@@ -425,9 +680,22 @@
         const copyBtn = document.getElementById('copy-btn');
         const resultCount = document.getElementById('result-count');
         const copySuccess = document.getElementById('copy-success');
+        const customTldInput = document.getElementById('custom-tld');
 
         filterBtn.addEventListener('click', filterDomains);
         copyBtn.addEventListener('click', copyResult);
+        
+        // Clear custom TLD when selecting from dropdown
+        filterSelect.addEventListener('change', () => {
+            customTldInput.value = '';
+        });
+        
+        // Clear dropdown when typing custom TLD
+        customTldInput.addEventListener('input', () => {
+            if (customTldInput.value) {
+                filterSelect.selectedIndex = 0;
+            }
+        });
 
         function filterDomains() {
             const domainsArray = domainsInput.value
@@ -435,14 +703,24 @@
                 .map(domain => domain.trim())
                 .filter(domain => domain.length > 0);
 
-            const selectedFilter = filterSelect.value;
-            const filteredDomains = domainsArray.filter(domain => !domain.endsWith(selectedFilter));
+            // Use custom TLD if provided, otherwise use selected filter
+            let filterTld = customTldInput.value.trim();
+            if (!filterTld) {
+                filterTld = filterSelect.value;
+            } else {
+                // Ensure custom TLD starts with a dot
+                if (!filterTld.startsWith('.')) {
+                    filterTld = '.' + filterTld;
+                }
+            }
+            
+            const filteredDomains = domainsArray.filter(domain => !domain.endsWith(filterTld));
 
             filteredInput.value = filteredDomains.join('\n');
             
             // Update result count
             if (filteredDomains.length > 0) {
-                resultCount.textContent = `${filteredDomains.length} Domain${filteredDomains.length !== 1 ? 's' : ''} gefiltert`;
+                resultCount.textContent = `${filteredDomains.length} Domain${filteredDomains.length !== 1 ? 's' : ''} gefiltert (ohne ${filterTld})`;
             } else {
                 resultCount.textContent = 'Keine Domains gefunden';
             }
