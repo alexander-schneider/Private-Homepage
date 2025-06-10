@@ -385,7 +385,7 @@
                 </div>
                 
                 <h2 class="section-title">Eingabedaten</h2>
-                <textarea id="input-data" placeholder="22.03.2023	ISHSIII-CORE MSCI WLD DLA	1.390,09 shares, Purchase price: 40,76 €, Last quote: 71,05 €, Profit: +27.841,55 € / +25,71 %	IE00B4L5Y983 / A0RPWH	Xetra	311.907,17"></textarea>
+                <textarea id="input-data" placeholder="Beispiel:&#10;10.06.2025	Adobe Inc.	78 shares, Purchase price: 434,74 €, Last quote: 365,05 €, Loss: -5.436,05 € / -16,03 %	US00724F1012	28.473,90&#10;10.06.2025	ALIBABA GR.HLDG SP.ADR 8	646 shares, Purchase price: 156,15 €, Last quote: 105,60 €, Loss: -32.653,27 € / -32,37 %	US01609W1027 / A117ME	68.217,60"></textarea>
                 
                 <div class="button-group">
                     <button id="convert-button">Konvertieren</button>
@@ -404,7 +404,9 @@
                 <p>Das Tool verwendet intelligente Mustererkennung, um verschiedene Datenformate zu verarbeiten:</p>
                 <ul>
                     <li>Aktien und ETFs mit vollständigen Kursinformationen</li>
-                    <li>Fonds mit Anteilen und Kaufpreisen</li>
+                    <li>Automatische Konsolidierung von Duplikaten (gleiche ISIN/WKN)</li>
+                    <li>Berechnung des gewichteten Durchschnittskaufpreises</li>
+                    <li>Unterstützung für Positionen ohne Kaufpreis</li>
                     <li>Verschiedene Währungsformate (EUR)</li>
                     <li>Automatische Steuerberechnung (26,38%)</li>
                 </ul>
@@ -429,14 +431,135 @@
     </main>
 
     <script>
-        const regex = /^.*?\t.*?\t(.*?) shares?, Purchase price: (.*?) €.*?, (.*?) €.*?: (.*?) %.*?\t(.*?)\t.*$/gm;
-        const regex2 = /^.*?([A-Z\d]+);.*?;(.*?);.*$/gm;
-
         const convertButton = document.getElementById('convert-button');
         const outputData = document.getElementById('output-data');
         const csvButton = document.getElementById('csv-button');
         const counter = document.getElementById('counter');
         const inputData = document.getElementById('input-data');
+
+        function parseMoneyMoneyData(input) {
+            const lines = input.split('\n').filter(line => line.trim());
+            const positions = new Map(); // Map to store consolidated positions by ISIN
+            
+            lines.forEach(line => {
+                // Skip empty lines
+                if (!line.trim()) return;
+                
+                // Split by tabs
+                const parts = line.split('\t');
+                if (parts.length < 5) return;
+                
+                // Extract data from each line
+                const date = parts[0];
+                const name = parts[1];
+                const detailsText = parts[2];
+                const isinWkn = parts[3];
+                const totalValue = parts[4];
+                
+                // Parse shares and purchase price from details text
+                const sharesMatch = detailsText.match(/([\d.,]+)\s*shares?/);
+                const purchasePriceMatch = detailsText.match(/Purchase price:\s*([\d.,]+)\s*€/);
+                const lastQuoteMatch = detailsText.match(/Last quote:\s*([\d.,]+)\s*€/);
+                
+                // Skip if no shares found
+                if (!sharesMatch) return;
+                
+                // Handle special cases where there's no purchase price (e.g., Booking Holdings)
+                if (!purchasePriceMatch) {
+                    // If no purchase price but has last quote, use last quote as purchase price
+                    if (lastQuoteMatch) {
+                        const shares = parseFloat(sharesMatch[1].replace('.', '').replace(',', '.'));
+                        const lastQuote = parseFloat(lastQuoteMatch[1].replace('.', '').replace(',', '.'));
+                        
+                        // Extract ISIN and WKN
+                        const isinMatch = isinWkn.match(/([A-Z]{2}[A-Z0-9]{10})/);
+                        const isin = isinMatch ? isinMatch[1] : isinWkn.split(' / ')[0];
+                        const wknMatch = isinWkn.match(/\/\s*([A-Z0-9]+)/);
+                        const wkn = wknMatch ? wknMatch[1] : '';
+                        const key = isin || wkn || name;
+                        
+                        if (!positions.has(key)) {
+                            positions.set(key, {
+                                isin: isin,
+                                wkn: wkn,
+                                name: name,
+                                totalShares: 0,
+                                totalCost: 0,
+                                entries: []
+                            });
+                        }
+                        
+                        const position = positions.get(key);
+                        position.totalShares += shares;
+                        position.totalCost += shares * lastQuote; // Use last quote as purchase price
+                        position.entries.push({
+                            shares: shares,
+                            purchasePrice: lastQuote,
+                            date: date
+                        });
+                    }
+                    return;
+                }
+                
+                const shares = parseFloat(sharesMatch[1].replace('.', '').replace(',', '.'));
+                const purchasePrice = parseFloat(purchasePriceMatch[1].replace('.', '').replace(',', '.'));
+                
+                // Extract ISIN (first part before /)
+                const isinMatch = isinWkn.match(/([A-Z]{2}[A-Z0-9]{10})/);
+                const isin = isinMatch ? isinMatch[1] : isinWkn.split(' / ')[0];
+                
+                // Extract WKN (after /)
+                const wknMatch = isinWkn.match(/\/\s*([A-Z0-9]+)/);
+                const wkn = wknMatch ? wknMatch[1] : '';
+                
+                // Create position key (ISIN or WKN if ISIN not available)
+                const key = isin || wkn || name;
+                
+                if (!positions.has(key)) {
+                    positions.set(key, {
+                        isin: isin,
+                        wkn: wkn,
+                        name: name,
+                        totalShares: 0,
+                        totalCost: 0,
+                        entries: []
+                    });
+                }
+                
+                const position = positions.get(key);
+                position.totalShares += shares;
+                position.totalCost += shares * purchasePrice;
+                position.entries.push({
+                    shares: shares,
+                    purchasePrice: purchasePrice,
+                    date: date
+                });
+            });
+            
+            // Convert consolidated positions to CSV format
+            const csvLines = [];
+            positions.forEach((position, key) => {
+                if (position.totalShares > 0) {
+                    const avgPrice = position.totalCost / position.totalShares;
+                    const taxes = '26,38';
+                    
+                    // Format shares and price with comma as decimal separator
+                    const sharesFormatted = position.totalShares.toString().replace('.', ',');
+                    const priceFormatted = avgPrice.toFixed(2).replace('.', ',');
+                    
+                    // Use WKN if available, otherwise use ISIN
+                    const stockCode = position.wkn || position.isin || key;
+                    
+                    csvLines.push(`${stockCode};${sharesFormatted};${priceFormatted};${taxes}`);
+                }
+            });
+            
+            return {
+                lines: csvLines,
+                count: csvLines.length,
+                positions: positions
+            };
+        }
 
         convertButton.addEventListener('click', () => {
             const input = inputData.value;
@@ -448,32 +571,15 @@
                 return;
             }
 
-            const matches = [];
-            let match;
+            const result = parseMoneyMoneyData(input);
             
-            // Reset regex lastIndex
-            regex.lastIndex = 0;
-            while ((match = regex.exec(input)) !== null) {
-                const share = match[1];
-                const taxes = '26,38';
-                const purchasePrice = match[2].replace('.', ',');
-                const stockCode = match[5].split(' / ')[1] || match[5];
-                matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
-            }
+            outputData.value = result.lines.join('\n');
+            counter.textContent = result.count;
             
-            regex2.lastIndex = 0;
-            while ((match = regex2.exec(input)) !== null) {
-                const share = match[2];
-                const taxes = '26,38';
-                const purchasePrice = match[1].replace('.', ',');
-                const stockCode = match[1].split(' / ')[1] || match[1];
-                matches.push(`${stockCode};${share};${purchasePrice};${taxes}`);
-            }
-
-            outputData.value = matches.join('\n');
-            counter.textContent = matches.length;
+            // Log consolidated positions for debugging
+            console.log('Consolidated positions:', result.positions);
             
-            if (matches.length > 0) {
+            if (result.count > 0) {
                 csvButton.classList.remove('hidden');
             } else {
                 csvButton.classList.add('hidden');
