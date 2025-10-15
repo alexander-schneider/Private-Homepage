@@ -518,10 +518,10 @@
                             <label for="condition">Alert-Typ</label>
                             <select id="condition" name="condition" required>
                                 <option value="">Wählen Sie einen Alert-Typ</option>
-                                <option value="above">Preis steigt über</option>
-                                <option value="below">Preis fällt unter</option>
-                                <option value="up">Preis steigt um %</option>
-                                <option value="down">Preis fällt um %</option>
+                                <option value="price_above">Preis steigt über</option>
+                                <option value="price_below">Preis fällt unter</option>
+                                <option value="price_up">Preis steigt um %</option>
+                                <option value="price_down">Preis fällt um %</option>
                                 <option value="new_high">52-Wochen-Hoch</option>
                                 <option value="new_low">52-Wochen-Tief</option>
                                 <option value="volume_change">Volumen-Änderung %</option>
@@ -589,7 +589,7 @@
     </main>
 
     <script>
-        const API_URL = 'https://stockalert.pro/api';
+        const API_URL = 'https://stockalert.pro/api/v1';
         const alertForm = document.getElementById('alert-form');
         const errorMessage = document.getElementById('error-message');
         const successMessage = document.getElementById('success-message');
@@ -607,30 +607,30 @@
             thresholdInput.removeAttribute('required');
             
             switch (condition) {
-                case 'above':
-                case 'below':
+                case 'price_above':
+                case 'price_below':
                     thresholdLabel.textContent = 'Zielpreis ($)';
                     thresholdInput.placeholder = 'z.B. 150.00';
                     thresholdInput.step = '0.01';
                     thresholdInput.setAttribute('required', '');
                     break;
-                    
-                case 'up':
-                case 'down':
+
+                case 'price_up':
+                case 'price_down':
                 case 'volume_change':
                     thresholdLabel.textContent = 'Prozentsatz (%)';
                     thresholdInput.placeholder = 'z.B. 5';
                     thresholdInput.step = '0.1';
                     thresholdInput.setAttribute('required', '');
                     break;
-                    
+
                 case 'reminder':
                     thresholdLabel.textContent = 'Tage (1-365)';
                     thresholdInput.placeholder = 'z.B. 30';
                     thresholdInput.step = '1';
                     thresholdInput.setAttribute('required', '');
                     break;
-                    
+
                 case 'new_high':
                 case 'new_low':
                     thresholdLabel.textContent = 'Zielwert (optional)';
@@ -661,17 +661,17 @@
             
             // Add condition-specific fields
             const condition = formData.get('condition');
-            if (['above', 'below', 'up', 'down', 'volume_change'].includes(condition)) {
+            if (['price_above', 'price_below', 'price_up', 'price_down', 'volume_change'].includes(condition)) {
                 alertData.threshold = parseFloat(formData.get('threshold'));
             } else if (condition === 'reminder') {
                 alertData.days = parseInt(formData.get('threshold'));
             }
             
             try {
-                const response = await fetch(`${API_URL}/alerts/create`, {
+                const response = await fetch(`${API_URL}/alerts`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(alertData)
                 });
@@ -787,12 +787,16 @@
         // Get condition text
         function getConditionText(alert) {
             switch (alert.condition) {
+                case 'price_above':
                 case 'above':
                     return `Preis steigt über <span class="alert-price">$${alert.threshold.toFixed(2)}</span>`;
+                case 'price_below':
                 case 'below':
                     return `Preis fällt unter <span class="alert-price">$${alert.threshold.toFixed(2)}</span>`;
+                case 'price_up':
                 case 'up':
                     return `Preis steigt um <span class="alert-price">${alert.threshold}%</span>`;
+                case 'price_down':
                 case 'down':
                     return `Preis fällt um <span class="alert-price">${alert.threshold}%</span>`;
                 case 'volume_change':
