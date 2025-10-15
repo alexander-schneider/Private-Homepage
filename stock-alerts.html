@@ -264,7 +264,12 @@
             background: var(--success);
             color: white;
         }
-        
+
+        .status-inactive {
+            background: var(--secondary);
+            color: white;
+        }
+
         .status-triggered {
             background: var(--warning);
             color: white;
@@ -518,14 +523,33 @@
                             <label for="condition">Alert-Typ</label>
                             <select id="condition" name="condition" required>
                                 <option value="">Wählen Sie einen Alert-Typ</option>
-                                <option value="price_above">Preis steigt über</option>
-                                <option value="price_below">Preis fällt unter</option>
-                                <option value="price_up">Preis steigt um %</option>
-                                <option value="price_down">Preis fällt um %</option>
-                                <option value="new_high">52-Wochen-Hoch</option>
-                                <option value="new_low">52-Wochen-Tief</option>
-                                <option value="volume_change">Volumen-Änderung %</option>
-                                <option value="reminder">Erinnerung nach X Tagen</option>
+                                <optgroup label="Preis-Alerts">
+                                    <option value="price_above">Preis steigt über</option>
+                                    <option value="price_below">Preis fällt unter</option>
+                                    <option value="price_change_up">Preis steigt um %</option>
+                                    <option value="price_change_down">Preis fällt um %</option>
+                                    <option value="new_high">52-Wochen-Hoch</option>
+                                    <option value="new_low">52-Wochen-Tief</option>
+                                </optgroup>
+                                <optgroup label="Technische Indikatoren">
+                                    <option value="rsi_limit">RSI Limit</option>
+                                    <option value="ma_crossover_golden">Golden Cross (MA)</option>
+                                    <option value="ma_crossover_death">Death Cross (MA)</option>
+                                </optgroup>
+                                <optgroup label="Fundamental-Daten">
+                                    <option value="pe_ratio_below">KGV unter</option>
+                                    <option value="pe_ratio_above">KGV über</option>
+                                    <option value="forward_pe_below">Forward KGV unter</option>
+                                    <option value="forward_pe_above">Forward KGV über</option>
+                                </optgroup>
+                                <optgroup label="Unternehmens-Events">
+                                    <option value="earnings_announcement">Earnings Announcement</option>
+                                    <option value="dividend_payment">Dividenden-Zahlung</option>
+                                    <option value="dividend_ex_date">Dividenden Ex-Date</option>
+                                </optgroup>
+                                <optgroup label="Sonstiges">
+                                    <option value="daily_reminder">Tägliche Erinnerung</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div class="form-group" id="threshold-group">
@@ -598,14 +622,28 @@
         const thresholdInput = document.getElementById('threshold');
         const thresholdLabel = document.getElementById('threshold-label');
         
+        // Conditions that don't require threshold
+        const NO_THRESHOLD_CONDITIONS = [
+            'new_high', 'new_low', 'ma_crossover_golden', 'ma_crossover_death',
+            'daily_reminder', 'dividend_payment'
+        ];
+
         // Update form fields based on condition
         conditionSelect.addEventListener('change', () => {
             const condition = conditionSelect.value;
             hideMessages();
-            
+
             // Reset required attributes
             thresholdInput.removeAttribute('required');
-            
+            thresholdInput.value = '';
+
+            // Hide/show threshold field based on condition
+            if (NO_THRESHOLD_CONDITIONS.includes(condition)) {
+                thresholdGroup.style.display = 'none';
+            } else {
+                thresholdGroup.style.display = 'flex';
+            }
+
             switch (condition) {
                 case 'price_above':
                 case 'price_below':
@@ -615,27 +653,46 @@
                     thresholdInput.setAttribute('required', '');
                     break;
 
-                case 'price_up':
-                case 'price_down':
-                case 'volume_change':
+                case 'price_change_up':
+                case 'price_change_down':
                     thresholdLabel.textContent = 'Prozentsatz (%)';
                     thresholdInput.placeholder = 'z.B. 5';
                     thresholdInput.step = '0.1';
                     thresholdInput.setAttribute('required', '');
                     break;
 
-                case 'reminder':
-                    thresholdLabel.textContent = 'Tage (1-365)';
-                    thresholdInput.placeholder = 'z.B. 30';
+                case 'rsi_limit':
+                    thresholdLabel.textContent = 'RSI Wert (0-100)';
+                    thresholdInput.placeholder = 'z.B. 70';
+                    thresholdInput.step = '1';
+                    thresholdInput.setAttribute('required', '');
+                    break;
+
+                case 'pe_ratio_below':
+                case 'pe_ratio_above':
+                case 'forward_pe_below':
+                case 'forward_pe_above':
+                    thresholdLabel.textContent = 'KGV Wert';
+                    thresholdInput.placeholder = 'z.B. 15';
+                    thresholdInput.step = '0.1';
+                    thresholdInput.setAttribute('required', '');
+                    break;
+
+                case 'earnings_announcement':
+                case 'dividend_ex_date':
+                    thresholdLabel.textContent = 'Tage vorher';
+                    thresholdInput.placeholder = 'z.B. 7';
                     thresholdInput.step = '1';
                     thresholdInput.setAttribute('required', '');
                     break;
 
                 case 'new_high':
                 case 'new_low':
-                    thresholdLabel.textContent = 'Zielwert (optional)';
-                    thresholdInput.placeholder = 'Nicht erforderlich';
-                    // No additional inputs needed
+                case 'ma_crossover_golden':
+                case 'ma_crossover_death':
+                case 'daily_reminder':
+                case 'dividend_payment':
+                    // No threshold needed
                     break;
             }
         });
@@ -647,26 +704,35 @@
         alertForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideMessages();
-            
+
             const submitButton = document.getElementById('createAlert');
             submitButton.disabled = true;
             submitButton.textContent = 'Wird erstellt...';
-            
+
             const formData = new FormData(alertForm);
+            const condition = formData.get('condition');
+
             const alertData = {
                 symbol: formData.get('symbol').toUpperCase(),
-                condition: formData.get('condition'),
+                condition: condition,
                 email: formData.get('email')
             };
-            
-            // Add condition-specific fields
-            const condition = formData.get('condition');
-            if (['price_above', 'price_below', 'price_up', 'price_down', 'volume_change'].includes(condition)) {
-                alertData.threshold = parseFloat(formData.get('threshold'));
-            } else if (condition === 'reminder') {
-                alertData.days = parseInt(formData.get('threshold'));
+
+            // Add threshold if condition requires it
+            if (!NO_THRESHOLD_CONDITIONS.includes(condition)) {
+                const thresholdValue = formData.get('threshold');
+                if (thresholdValue) {
+                    alertData.threshold = parseFloat(thresholdValue);
+                }
             }
-            
+
+            // Add parameters for specific conditions
+            if (condition === 'rsi_limit') {
+                alertData.parameters = {
+                    direction: alertData.threshold >= 70 ? 'above' : 'below'
+                };
+            }
+
             try {
                 const response = await fetch(`${API_URL}/alerts`, {
                     method: 'POST',
@@ -675,22 +741,23 @@
                     },
                     body: JSON.stringify(alertData)
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     // Store alert locally
                     const newAlert = {
-                        id: Date.now().toString(),
+                        id: data.id || Date.now().toString(),
                         ...alertData,
                         createdAt: new Date().toISOString(),
-                        status: 'active'
+                        status: 'inactive' // Guest alerts start as inactive until verified
                     };
                     alerts.push(newAlert);
                     localStorage.setItem('stockAlerts', JSON.stringify(alerts));
-                    
-                    showSuccess('Alert wurde erfolgreich erstellt!');
+
+                    showSuccess('Alert wurde erfolgreich erstellt! Bitte überprüfen Sie Ihre E-Mail, um den Alert zu bestätigen.');
                     alertForm.reset();
+                    conditionSelect.dispatchEvent(new Event('change'));
                     updateAlertsDisplay();
                 } else {
                     const errorMsg = getErrorMessage(data.error) || data.message || 'Fehler beim Erstellen des Alerts';
@@ -772,7 +839,7 @@
                                 </div>
                             </div>
                             <div class="alert-status">
-                                <span class="status-badge status-${alert.status}">${alert.status === 'active' ? 'Aktiv' : 'Getriggert'}</span>
+                                <span class="status-badge status-${alert.status}">${getStatusText(alert.status)}</span>
                                 <button class="delete-button" onclick="deleteAlert('${alert.id}')">Löschen</button>
                             </div>
                         </div>
@@ -784,29 +851,59 @@
             }
         }
         
+        // Get status text
+        function getStatusText(status) {
+            switch (status) {
+                case 'active':
+                    return 'Aktiv';
+                case 'inactive':
+                    return 'Nicht bestätigt';
+                case 'triggered':
+                    return 'Getriggert';
+                default:
+                    return status;
+            }
+        }
+
         // Get condition text
         function getConditionText(alert) {
+            const threshold = alert.threshold;
             switch (alert.condition) {
                 case 'price_above':
-                case 'above':
-                    return `Preis steigt über <span class="alert-price">$${alert.threshold.toFixed(2)}</span>`;
+                    return `Preis steigt über <span class="alert-price">$${threshold?.toFixed(2)}</span>`;
                 case 'price_below':
-                case 'below':
-                    return `Preis fällt unter <span class="alert-price">$${alert.threshold.toFixed(2)}</span>`;
-                case 'price_up':
-                case 'up':
-                    return `Preis steigt um <span class="alert-price">${alert.threshold}%</span>`;
-                case 'price_down':
-                case 'down':
-                    return `Preis fällt um <span class="alert-price">${alert.threshold}%</span>`;
-                case 'volume_change':
-                    return `Volumen-Änderung <span class="alert-price">${alert.threshold}%</span>`;
+                    return `Preis fällt unter <span class="alert-price">$${threshold?.toFixed(2)}</span>`;
+                case 'price_change_up':
+                    return `Preis steigt um <span class="alert-price">${threshold}%</span>`;
+                case 'price_change_down':
+                    return `Preis fällt um <span class="alert-price">${threshold}%</span>`;
                 case 'new_high':
                     return '52-Wochen-Hoch';
                 case 'new_low':
                     return '52-Wochen-Tief';
-                case 'reminder':
-                    return `Erinnerung nach <span class="alert-price">${alert.days} Tagen</span>`;
+                case 'rsi_limit':
+                    const direction = alert.parameters?.direction || (threshold >= 70 ? 'above' : 'below');
+                    return `RSI ${direction === 'above' ? 'über' : 'unter'} <span class="alert-price">${threshold}</span>`;
+                case 'ma_crossover_golden':
+                    return 'Golden Cross (MA)';
+                case 'ma_crossover_death':
+                    return 'Death Cross (MA)';
+                case 'pe_ratio_below':
+                    return `KGV unter <span class="alert-price">${threshold}</span>`;
+                case 'pe_ratio_above':
+                    return `KGV über <span class="alert-price">${threshold}</span>`;
+                case 'forward_pe_below':
+                    return `Forward KGV unter <span class="alert-price">${threshold}</span>`;
+                case 'forward_pe_above':
+                    return `Forward KGV über <span class="alert-price">${threshold}</span>`;
+                case 'earnings_announcement':
+                    return `Earnings ${threshold} Tage vorher`;
+                case 'dividend_payment':
+                    return 'Dividenden-Zahlung';
+                case 'dividend_ex_date':
+                    return `Dividenden Ex-Date ${threshold} Tage vorher`;
+                case 'daily_reminder':
+                    return 'Tägliche Erinnerung';
                 default:
                     return alert.condition;
             }
