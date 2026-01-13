@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Content Copy Tool | Alexander Schneider</title>
+    <meta name="description" content="Laden Sie den Inhalt einer URL und kopieren Sie ihn in die Zwischenablage. Ideal für APIs, YAML-Dateien und mehr.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000;
+            --secondary: #666;
+            --background: #fff;
+            --hover: #f5f5f5;
+            --accent: #0066cc;
+            --border: #e0e0e0;
+            --input-bg: #fafafa;
+            --success: #10b981;
+            --success-hover: #059669;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--primary);
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        nav a::before {
+            content: "←";
+            transition: transform 0.2s ease;
+        }
+
+        nav a:hover::before {
+            transform: translateX(-0.25rem);
+        }
+
+        main {
+            flex: 1;
+            padding: 3rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .tool-description {
+            color: var(--secondary);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+        }
+
+        .tool-content {
+            background: var(--input-bg);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .url-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--background);
+            transition: border-color 0.2s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 1rem;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            resize: vertical;
+            background: var(--background);
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        #content {
+            background: var(--hover);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            align-items: center;
+        }
+
+        button {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid var(--primary);
+            border-radius: 0.375rem;
+            background: var(--primary);
+            color: var(--background);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--background);
+            color: var(--primary);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .success-button {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .success-button:hover:not(:disabled) {
+            background: var(--background);
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        .content-info {
+            font-size: 0.875rem;
+            color: var(--secondary);
+            margin-left: auto;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            color: var(--error);
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 0.375rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .info-section {
+            margin-top: 4rem;
+            padding-top: 4rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .info-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .info-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-section p {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-section li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .info-section li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .code-example {
+            background: var(--hover);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            main {
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .tool-description {
+                font-size: 1rem;
+            }
+
+            .tool-content {
+                padding: 1.5rem;
+            }
+
+            .url-input-group {
+                flex-direction: column;
+            }
+
+            textarea {
+                min-height: 250px;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .content-info {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #fff;
+                --secondary: #999;
+                --background: #000;
+                --hover: #111;
+                --accent: #4d94ff;
+                --border: #333;
+                --input-bg: #0a0a0a;
+                --success: #10b981;
+                --success-hover: #34d399;
+                --error: #f87171;
+            }
+
+            textarea, .url-input {
+                background: #111;
+                color: var(--primary);
+            }
+
+            #content {
+                background: #0a0a0a;
+            }
+
+            button {
+                background: var(--primary);
+                color: var(--background);
+            }
+
+            button:hover:not(:disabled) {
+                background: var(--background);
+                color: var(--primary);
+                border-color: var(--primary);
+            }
+
+            .success-button {
+                background: var(--success);
+                color: var(--background);
+                border-color: var(--success);
+            }
+
+            .success-button:hover:not(:disabled) {
+                background: var(--background);
+                color: var(--success);
+            }
+
+            .code-example {
+                background: #0a0a0a;
+                border: 1px solid var(--border);
+            }
+
+            .error-message {
+                background: rgba(248, 113, 113, 0.1);
+            }
+        }
+
+        .copy-success {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: var(--background);
+            padding: 1rem 1.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            opacity: 0;
+            transform: translateY(1rem);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .copy-success.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Zurück zur Startseite</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>URL Content Copy Tool</h1>
+            <p class="tool-description">Laden Sie den Inhalt einer URL und kopieren Sie ihn direkt in die Zwischenablage. Perfekt für API-Dokumentationen, YAML-Dateien und mehr.</p>
+
+            <div class="tool-content">
+                <h2 class="section-title">URL eingeben</h2>
+                <div class="url-input-group">
+                    <input type="url" id="url-input" class="url-input" placeholder="https://api.example.com/openapi.yaml" />
+                    <button id="fetch-button">Inhalt laden</button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <span>Inhalt wird geladen...</span>
+                </div>
+
+                <div class="error-message" id="error-message"></div>
+
+                <h2 class="section-title">Inhalt</h2>
+                <textarea id="content" readonly placeholder="Der Inhalt der URL erscheint hier..."></textarea>
+
+                <div class="button-container">
+                    <button id="copy-button" class="success-button" disabled>Copy URL Content</button>
+                    <button id="clear-button" disabled>Leeren</button>
+                    <span class="content-info" id="content-info"></span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>Über das URL Content Copy Tool</h2>
+                <p>Das URL Content Copy Tool ermöglicht es Ihnen, den Textinhalt einer beliebigen URL schnell abzurufen und in die Zwischenablage zu kopieren. Dies ist besonders nützlich für Entwickler, die mit APIs, Konfigurationsdateien oder anderen webbasierten Ressourcen arbeiten.</p>
+
+                <h3>Funktionsweise</h3>
+                <p>Geben Sie einfach die URL ein und klicken Sie auf "Inhalt laden". Das Tool ruft den Inhalt ab und zeigt ihn an. Mit einem Klick auf "Copy URL Content" wird der gesamte Inhalt in Ihre Zwischenablage kopiert.</p>
+                <div class="code-example">
+                    <strong>Beispiel-URLs:</strong><br>
+                    https://api.example.com/openapi.yaml<br>
+                    https://raw.githubusercontent.com/user/repo/main/config.json<br>
+                    https://example.com/api/v1/schema.json
+                </div>
+
+                <h3>Anwendungsbereiche</h3>
+                <ul>
+                    <li>Abrufen von OpenAPI/Swagger-Spezifikationen</li>
+                    <li>Kopieren von Konfigurationsdateien (YAML, JSON, etc.)</li>
+                    <li>Laden von Schema-Definitionen</li>
+                    <li>Schneller Zugriff auf Raw-Dateien von GitHub</li>
+                    <li>Abrufen von API-Dokumentationen</li>
+                </ul>
+
+                <h3>Vorteile</h3>
+                <ul>
+                    <li>Kein manuelles Kopieren von Webseiteninhalten nötig</li>
+                    <li>Direkte Zwischenablage-Integration</li>
+                    <li>Unterstützt alle Textformate (YAML, JSON, XML, etc.)</li>
+                    <li>Zeigt Dateigröße und Zeilenanzahl an</li>
+                    <li>Funktioniert ohne Installation im Browser</li>
+                </ul>
+
+                <h3>Hinweise</h3>
+                <ul>
+                    <li>Die URL muss öffentlich zugänglich sein</li>
+                    <li>Der Server muss CORS-Anfragen erlauben</li>
+                    <li>Bei CORS-Fehlern können Sie die URL alternativ direkt im Browser öffnen</li>
+                    <li>GitHub Raw-URLs funktionieren in der Regel problemlos</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <div class="copy-success" id="copy-success">Inhalt wurde kopiert</div>
+
+    <script>
+        const urlInput = document.getElementById('url-input');
+        const fetchButton = document.getElementById('fetch-button');
+        const copyButton = document.getElementById('copy-button');
+        const clearButton = document.getElementById('clear-button');
+        const content = document.getElementById('content');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const contentInfo = document.getElementById('content-info');
+        const copySuccess = document.getElementById('copy-success');
+
+        // Allow Enter key to trigger fetch
+        urlInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                fetchContent();
+            }
+        });
+
+        fetchButton.addEventListener('click', fetchContent);
+        copyButton.addEventListener('click', copyContent);
+        clearButton.addEventListener('click', clearContent);
+
+        async function fetchContent() {
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showError('Bitte geben Sie eine URL ein.');
+                return;
+            }
+
+            // Basic URL validation
+            try {
+                new URL(url);
+            } catch {
+                showError('Bitte geben Sie eine gültige URL ein.');
+                return;
+            }
+
+            // Reset state
+            hideError();
+            content.value = '';
+            contentInfo.textContent = '';
+            copyButton.disabled = true;
+            clearButton.disabled = true;
+            fetchButton.disabled = true;
+            loading.classList.add('show');
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'text/plain, application/json, application/yaml, */*'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const text = await response.text();
+
+                content.value = text;
+                copyButton.disabled = false;
+                clearButton.disabled = false;
+
+                // Calculate stats
+                const bytes = new Blob([text]).size;
+                const lines = text.split('\n').length;
+                const sizeStr = bytes > 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} Bytes`;
+                contentInfo.textContent = `${lines} Zeilen, ${sizeStr}`;
+
+            } catch (err) {
+                console.error('Fetch error:', err);
+
+                if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.name === 'TypeError') {
+                    showError('Die URL konnte nicht geladen werden. Mögliche Ursachen: CORS-Blockierung, Netzwerkfehler oder ungültige URL. Versuchen Sie, die URL direkt im Browser zu öffnen.');
+                } else {
+                    showError(`Fehler beim Laden: ${err.message}`);
+                }
+            } finally {
+                loading.classList.remove('show');
+                fetchButton.disabled = false;
+            }
+        }
+
+        async function copyContent() {
+            if (!content.value) return;
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(content.value);
+                } else {
+                    // Fallback for older browsers
+                    content.select();
+                    content.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+                    window.getSelection().removeAllRanges();
+                }
+
+                copySuccess.classList.add('show');
+                setTimeout(() => {
+                    copySuccess.classList.remove('show');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                showError('Der Inhalt konnte nicht kopiert werden.');
+            }
+        }
+
+        function clearContent() {
+            content.value = '';
+            contentInfo.textContent = '';
+            copyButton.disabled = true;
+            clearButton.disabled = true;
+            urlInput.value = '';
+            hideError();
+            urlInput.focus();
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+    </script>
+</body>
+</html>
