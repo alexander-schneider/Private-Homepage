@@ -497,14 +497,17 @@ button:disabled {
     input[type="text"],
     input[type="url"],
     .search-input,
-    .url-input,
-    select {
+    .url-input {
         background: #111;
         color: var(--primary);
     }
 
     select {
+        background-color: #111;
+        color: var(--primary);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
     }
 
     button {
