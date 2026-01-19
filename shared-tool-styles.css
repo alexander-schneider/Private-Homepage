@@ -422,13 +422,8 @@ button:disabled {
     display: block;
 }
 
-/* Counter */
-.counter {
-    font-size: 0.875rem;
-    color: var(--secondary);
-}
-
-/* Result Count */
+/* Counter & Result Count */
+.counter,
 .result-count {
     font-size: 0.875rem;
     color: var(--secondary);
