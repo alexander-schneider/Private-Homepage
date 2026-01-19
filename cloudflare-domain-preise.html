@@ -12,99 +12,9 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://alexander-schneider.org/cloudflare-domain-preise.html">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="shared-tool-styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #000;
-            --secondary: #666;
-            --background: #fff;
-            --hover: #f5f5f5;
-            --accent: #0066cc;
-            --border: #e0e0e0;
-            --input-bg: #fafafa;
-            --danger: #dc3545;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--primary);
-            background: var(--background);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        header {
-            border-bottom: 1px solid var(--border);
-            padding: 1.5rem 2rem;
-        }
-
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        nav a {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        nav a:hover {
-            color: var(--accent);
-        }
-
-        nav a::before {
-            content: "←";
-            transition: transform 0.2s ease;
-        }
-
-        nav a:hover::before {
-            transform: translateX(-0.25rem);
-        }
-
-        main {
-            flex: 1;
-            padding: 3rem 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .tool-description {
-            color: var(--secondary);
-            margin-bottom: 2rem;
-            font-size: 1.125rem;
-        }
-
-        .tool-section {
-            background: var(--input-bg);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
-
+        /* Page-specific styles for Cloudflare Domain Preise */
         .search-container {
             display: flex;
             gap: 1rem;
@@ -115,18 +25,6 @@
         .search-input {
             flex: 1;
             min-width: 200px;
-            padding: 0.75rem 1rem;
-            font-family: inherit;
-            font-size: 1rem;
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            background: var(--background);
-            transition: border-color 0.2s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent);
         }
 
         .stats-bar {
@@ -136,19 +34,19 @@
             flex-wrap: wrap;
         }
 
-        .stat-item {
+        .stats-bar .stat-item {
             display: flex;
             align-items: baseline;
             gap: 0.5rem;
         }
 
-        .stat-value {
+        .stats-bar .stat-value {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--primary);
         }
 
-        .stat-label {
+        .stats-bar .stat-label {
             font-size: 0.875rem;
             color: var(--secondary);
         }
@@ -180,34 +78,19 @@
             white-space: nowrap;
         }
 
-        th:hover {
-            background: #333;
-        }
-
-        th.sorted-asc::after {
-            content: " ↑";
-        }
-
-        th.sorted-desc::after {
-            content: " ↓";
-        }
+        th:hover { background: #333; }
+        th.sorted-asc::after { content: " ↑"; }
+        th.sorted-desc::after { content: " ↓"; }
 
         tbody tr {
             border-bottom: 1px solid var(--border);
             transition: background 0.15s ease;
         }
 
-        tbody tr:last-child {
-            border-bottom: none;
-        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--hover); }
 
-        tbody tr:hover {
-            background: var(--hover);
-        }
-
-        td {
-            padding: 0.875rem 1rem;
-        }
+        td { padding: 0.875rem 1rem; }
 
         .tld-cell {
             font-weight: 600;
@@ -234,67 +117,6 @@
             margin-left: 0.25rem;
         }
 
-        .info-section {
-            margin-top: 2rem;
-            padding-top: 2rem;
-        }
-
-        .info-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .info-section h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-top: 2rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .info-section p {
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-
-        .info-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .info-section li {
-            padding-left: 1.5rem;
-            position: relative;
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
-        }
-
-        .info-section li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-
-        .disclaimer {
-            margin-top: 2rem;
-            padding: 1rem 1.25rem;
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            color: var(--secondary);
-        }
-
-        .disclaimer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        .disclaimer a:hover {
-            text-decoration: underline;
-        }
-
         .highlight-note {
             background: #fff3cd;
             border: 1px solid #ffc107;
@@ -304,65 +126,35 @@
             font-size: 0.875rem;
         }
 
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: 0.375rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .download-btn:hover { background: #333; }
+        .download-btn:active { transform: scale(0.98); }
+        .download-btn svg { width: 1.25rem; height: 1.25rem; }
+
         @media (max-width: 768px) {
-            header {
-                padding: 1rem;
-            }
-
-            main {
-                padding: 2rem 1rem;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .tool-description {
-                font-size: 1rem;
-            }
-
-            .tool-section {
-                padding: 1.5rem;
-            }
-
-            .stats-bar {
-                gap: 1rem;
-            }
-
-            .stat-value {
-                font-size: 1.25rem;
-            }
-
-            th, td {
-                padding: 0.75rem 0.5rem;
-            }
+            .stats-bar { gap: 1rem; }
+            .stats-bar .stat-value { font-size: 1.25rem; }
+            th, td { padding: 0.75rem 0.5rem; }
         }
 
         @media (prefers-color-scheme: dark) {
-            :root {
-                --primary: #fff;
-                --secondary: #999;
-                --background: #000;
-                --hover: #111;
-                --accent: #4d94ff;
-                --border: #333;
-                --input-bg: #0a0a0a;
-                --danger: #ff6b6b;
-            }
-
-            .search-input {
-                background: #111;
-                color: var(--primary);
-            }
-
-            thead {
-                background: #222;
-            }
-
-            th:hover {
-                background: #333;
-            }
-
+            thead { background: #222; }
+            th:hover { background: #333; }
             .highlight-note {
                 background: #332d00;
                 border-color: #665a00;
@@ -390,6 +182,12 @@
 
                 <div class="search-container">
                     <input type="text" id="search-input" class="search-input" placeholder="TLD suchen (z.B. .com, .de, .io...)" aria-label="TLD suchen">
+                    <button type="button" class="download-btn" id="download-csv" aria-label="CSV herunterladen">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download Cloudflare Domain Preis Liste (.csv)
+                    </button>
                 </div>
 
                 <div class="stats-bar">
@@ -410,6 +208,7 @@
                                 <th data-sort="tld" scope="col" aria-sort="ascending" tabindex="0">TLD</th>
                                 <th data-sort="registration" scope="col" aria-sort="none" tabindex="0">Registrierung (USD)</th>
                                 <th data-sort="renewal" scope="col" aria-sort="none" tabindex="0">Verlängerung (USD)</th>
+                                <th data-sort="lastChanged" scope="col" aria-sort="none" tabindex="0">Letzte Änderung</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
@@ -608,7 +407,7 @@
             { tld: ".forex", registration: 30.18, renewal: 30.18 },
             { tld: ".forsale", registration: 25.18, renewal: 25.18 },
             { tld: ".foundation", registration: 21.68, renewal: 21.68 },
-            { tld: ".fun", registration: 25.18, renewal: 25.18 },
+            { tld: ".fun", registration: 30.20, renewal: 30.20, lastChanged: "2026-01-15" },
             { tld: ".fund", registration: 49.18, renewal: 49.18 },
             { tld: ".furniture", registration: 80.18, renewal: 80.18 },
             { tld: ".futbol", registration: 13.18, renewal: 13.18 },
@@ -637,7 +436,7 @@
             { tld: ".holiday", registration: 44.18, renewal: 44.18 },
             { tld: ".horse", registration: 22.18, renewal: 22.18 },
             { tld: ".hospital", registration: 44.18, renewal: 44.18 },
-            { tld: ".host", registration: 65.18, renewal: 65.18 },
+            { tld: ".host", registration: 79.20, renewal: 79.20, lastChanged: "2026-01-15" },
             { tld: ".house", registration: 31.18, renewal: 31.18 },
             { tld: ".how", registration: 20.18, renewal: 20.18 },
             { tld: ".immo", registration: 24.18, renewal: 24.18 },
@@ -696,7 +495,7 @@
             { tld: ".ninja", registration: 21.18, renewal: 21.18 },
             { tld: ".nom.co", registration: 10, renewal: 10 },
             { tld: ".observer", registration: 9.18, renewal: 9.18 },
-            { tld: ".online", registration: 25.18, renewal: 25.18 },
+            { tld: ".online", registration: 27.70, renewal: 27.70, lastChanged: "2026-01-15" },
             { tld: ".org.uk", registration: 4.94, renewal: 4.94 },
             { tld: ".page", registration: 10.18, renewal: 10.18 },
             { tld: ".partners", registration: 49.18, renewal: 49.18 },
@@ -712,7 +511,7 @@
             { tld: ".place", registration: 15.18, renewal: 15.18 },
             { tld: ".plumbing", registration: 50.18, renewal: 50.18 },
             { tld: ".plus", registration: 32.18, renewal: 32.18 },
-            { tld: ".press", registration: 49.18, renewal: 49.18 },
+            { tld: ".press", registration: 62.20, renewal: 62.20, lastChanged: "2026-01-15" },
             { tld: ".pro", registration: 19.18, renewal: 19.18 },
             { tld: ".productions", registration: 28.18, renewal: 28.18 },
             { tld: ".prof", registration: 20.18, renewal: 20.18 },
@@ -754,16 +553,16 @@
             { tld: ".shopping", registration: 23.18, renewal: 23.18 },
             { tld: ".show", registration: 30.18, renewal: 30.18 },
             { tld: ".singles", registration: 23.18, renewal: 23.18 },
-            { tld: ".site", registration: 25.18, renewal: 25.18 },
+            { tld: ".site", registration: 27.70, renewal: 27.70, lastChanged: "2026-01-15" },
             { tld: ".soccer", registration: 17.18, renewal: 17.18 },
             { tld: ".social", registration: 27.18, renewal: 27.18 },
             { tld: ".software", registration: 27.18, renewal: 27.18 },
             { tld: ".solar", registration: 44.18, renewal: 44.18 },
             { tld: ".solutions", registration: 22.18, renewal: 22.18 },
             { tld: ".soy", registration: 18.18, renewal: 18.18 },
-            { tld: ".space", registration: 20.18, renewal: 20.18 },
+            { tld: ".space", registration: 25.20, renewal: 25.20, lastChanged: "2026-01-15" },
             { tld: ".storage", registration: 500.18, renewal: 500.18 },
-            { tld: ".store", registration: 40.18, renewal: 40.18 },
+            { tld: ".store", registration: 42.20, renewal: 42.20, lastChanged: "2026-01-15" },
             { tld: ".stream", registration: 4.16, renewal: 5.16 },
             { tld: ".studio", registration: 31.18, renewal: 31.18 },
             { tld: ".style", registration: 27.18, renewal: 27.18 },
@@ -776,7 +575,7 @@
             { tld: ".tax", registration: 49.18, renewal: 49.18 },
             { tld: ".taxi", registration: 45.18, renewal: 45.18 },
             { tld: ".team", registration: 26.18, renewal: 26.18 },
-            { tld: ".tech", registration: 40.18, renewal: 40.18 },
+            { tld: ".tech", registration: 49.20, renewal: 49.20, lastChanged: "2026-01-15" },
             { tld: ".technology", registration: 20.18, renewal: 20.18 },
             { tld: ".tennis", registration: 46.18, renewal: 46.18 },
             { tld: ".theater", registration: 44.18, renewal: 44.18 },
@@ -795,6 +594,7 @@
             { tld: ".travel", registration: 100.18, renewal: 100.18 },
             { tld: ".tv", registration: 25, renewal: 25 },
             { tld: ".university", registration: 43.18, renewal: 43.18 },
+            { tld: ".uno", registration: 20.20, renewal: 20.20, lastChanged: "2026-01-15" },
             { tld: ".us", registration: 6.5, renewal: 6.5 },
             { tld: ".vacations", registration: 27.18, renewal: 27.18 },
             { tld: ".ventures", registration: 41.18, renewal: 41.18 },
@@ -873,9 +673,13 @@
                     renewCell.appendChild(indicator);
                 }
 
+                const lastChangedCell = document.createElement('td');
+                lastChangedCell.textContent = item.lastChanged || '–';
+
                 row.appendChild(tldCell);
                 row.appendChild(regCell);
                 row.appendChild(renewCell);
+                row.appendChild(lastChangedCell);
                 fragment.appendChild(row);
             });
 
@@ -886,6 +690,8 @@
         function getSortValue(item, column) {
             if (column === 'tld') return item.tld.toLowerCase();
             if (column === 'registration') return item.registration;
+            if (column === 'renewal') return item.renewal;
+            if (column === 'lastChanged') return item.lastChanged || '';
             return item.renewal;
         }
 
@@ -955,6 +761,33 @@
                 }
             });
         });
+
+        // CSV Download
+        function downloadCSV() {
+            const headers = ['TLD', 'Registrierung (USD)', 'Verlängerung (USD)', 'Letzte Änderung'];
+            const rows = domainData.map(function(item) {
+                return [
+                    item.tld,
+                    item.registration.toFixed(2),
+                    item.renewal.toFixed(2),
+                    item.lastChanged || ''
+                ].join(',');
+            });
+
+            const csvContent = [headers.join(',')].concat(rows).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'cloudflare-domain-preise.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('download-csv').addEventListener('click', downloadCSV);
 
         // Initialize
         totalCount.textContent = domainData.length;

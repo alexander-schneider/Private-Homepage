@@ -6,165 +6,27 @@
     <title>Domain Filter Tool | Alexander Schneider</title>
     <meta name="description" content="Filter domains by top-level domain (TLD). Remove specific domain extensions from your list.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="shared-tool-styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #000;
-            --secondary: #666;
-            --background: #fff;
-            --hover: #f5f5f5;
-            --accent: #0066cc;
-            --border: #e0e0e0;
-            --input-bg: #fafafa;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--primary);
-            background: var(--background);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        header {
-            border-bottom: 1px solid var(--border);
-            padding: 1.5rem 2rem;
-        }
-        
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        nav a {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        nav a:hover {
-            color: var(--accent);
-        }
-        
-        nav a::before {
-            content: "←";
-            transition: transform 0.2s ease;
-        }
-        
-        nav a:hover::before {
-            transform: translateX(-0.25rem);
-        }
-        
-        main {
-            flex: 1;
-            padding: 3rem 2rem;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .tool-description {
-            color: var(--secondary);
-            margin-bottom: 3rem;
-            font-size: 1.125rem;
-        }
-        
-        .tool-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        
-        .input-section, .output-section {
-            background: var(--input-bg);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border);
-        }
-        
-        .section-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-        
-        textarea {
-            width: 100%;
-            min-height: 300px;
-            padding: 1rem;
-            font-family: monospace;
-            font-size: 0.875rem;
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            resize: vertical;
-            background: var(--background);
-            transition: border-color 0.2s ease;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
+        /* Page-specific styles for Domain Filter */
+        textarea { min-height: 300px; }
+
         .controls {
             display: flex;
             gap: 1rem;
             align-items: center;
             margin-top: 1rem;
         }
-        
-        select {
-            padding: 0.5rem 2rem 0.5rem 1rem;
-            font-size: 0.875rem;
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            background: var(--background);
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            transition: border-color 0.2s ease;
-            max-width: 300px;
-        }
-        
-        select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
+
+        select { max-width: 300px; }
+
         .custom-tld-group {
             display: flex;
             gap: 0.5rem;
             align-items: center;
             margin-top: 1rem;
         }
-        
+
         .custom-tld-input {
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
@@ -174,213 +36,42 @@
             transition: border-color 0.2s ease;
             width: 200px;
         }
-        
+
         .custom-tld-input:focus {
             outline: none;
             border-color: var(--accent);
         }
-        
+
         .or-text {
             color: var(--secondary);
             font-size: 0.875rem;
             margin: 0 0.5rem;
         }
-        
-        button {
-            padding: 0.5rem 1.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border: 1px solid var(--primary);
-            border-radius: 0.375rem;
-            background: var(--primary);
-            color: var(--background);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        button:hover {
-            background: var(--background);
-            color: var(--primary);
-        }
-        
-        button:active {
-            transform: translateY(1px);
-        }
-        
-        .secondary-button {
-            background: var(--background);
-            color: var(--primary);
-            border-color: var(--border);
-        }
-        
-        .secondary-button:hover {
-            background: var(--hover);
-            border-color: var(--primary);
-        }
-        
+
         .output-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 1rem;
         }
-        
-        .result-count {
-            font-size: 0.875rem;
-            color: var(--secondary);
-        }
-        
-        .info-section {
-            margin-top: 4rem;
-            padding-top: 4rem;
-            border-top: 1px solid var(--border);
-        }
-        
-        .info-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .info-section h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-top: 2rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .info-section p {
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-        
-        .info-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .info-section li {
-            padding-left: 1.5rem;
-            position: relative;
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
-        }
-        
-        .info-section li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-        
+
         @media (max-width: 768px) {
-            header {
-                padding: 1rem;
-            }
-            
-            main {
-                padding: 2rem 1rem;
-            }
-            
-            .tool-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .tool-description {
-                font-size: 1rem;
-            }
-            
-            .input-section, .output-section {
-                padding: 1.5rem;
-            }
-            
-            textarea {
-                min-height: 200px;
-            }
-            
-            .controls {
-                flex-wrap: wrap;
-            }
-            
-            select {
-                width: 100%;
-            }
-            
-            button {
-                width: 100%;
-            }
-            
+            textarea { min-height: 200px; }
+            .controls { flex-wrap: wrap; }
+            select { width: 100%; max-width: none; }
             .custom-tld-group {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 1rem;
             }
-            
-            .custom-tld-input {
-                width: 100%;
-            }
+            .custom-tld-input { width: 100%; }
         }
-        
+
         @media (prefers-color-scheme: dark) {
-            :root {
-                --primary: #fff;
-                --secondary: #999;
-                --background: #000;
-                --hover: #111;
-                --accent: #4d94ff;
-                --border: #333;
-                --input-bg: #0a0a0a;
-            }
-            
-            textarea, select, .custom-tld-input {
+            .custom-tld-input {
                 background: #111;
                 color: var(--primary);
             }
-            
-            button {
-                background: var(--primary);
-                color: var(--background);
-            }
-            
-            button:hover {
-                background: var(--background);
-                color: var(--primary);
-                border-color: var(--primary);
-            }
-            
-            .secondary-button {
-                background: var(--background);
-                color: var(--primary);
-            }
-            
-            .secondary-button:hover {
-                background: var(--hover);
-            }
-        }
-
-        .copy-success {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--primary);
-            color: var(--background);
-            padding: 1rem 1.5rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            opacity: 0;
-            transform: translateY(1rem);
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-
-        .copy-success.show {
-            opacity: 1;
-            transform: translateY(0);
         }
     </style>
 </head>

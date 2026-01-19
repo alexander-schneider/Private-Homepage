@@ -6,111 +6,24 @@
     <title>Zeitdifferenz-Rechner | Alexander Schneider</title>
     <meta name="description" content="Berechnen Sie die Zeitdifferenz zwischen zwei Uhrzeiten mit Tagesüberschreitung.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="shared-tool-styles.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #000;
-            --secondary: #666;
-            --background: #fff;
-            --hover: #f5f5f5;
-            --accent: #0066cc;
-            --border: #e0e0e0;
-            --input-bg: #fafafa;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: var(--primary);
-            background: var(--background);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        header {
-            border-bottom: 1px solid var(--border);
-            padding: 1.5rem 2rem;
-        }
-        
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        nav a {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        nav a:hover {
-            color: var(--accent);
-        }
-        
-        nav a::before {
-            content: "←";
-            transition: transform 0.2s ease;
-        }
-        
-        nav a:hover::before {
-            transform: translateX(-0.25rem);
-        }
-        
-        main {
-            flex: 1;
-            padding: 3rem 2rem;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .tool-description {
-            color: var(--secondary);
-            margin-bottom: 3rem;
-            font-size: 1.125rem;
-        }
-        
-        .calculator {
-            background: var(--input-bg);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border);
-            margin-bottom: 3rem;
-        }
-        
+        /* Page-specific styles for Zeitdifferenz-Rechner */
+        .container { max-width: 800px; }
+
         .time-inputs {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             margin-bottom: 2rem;
         }
-        
+
         .time-group {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-        
+
         .time-group-title {
             font-size: 0.875rem;
             font-weight: 600;
@@ -119,99 +32,58 @@
             color: var(--secondary);
             margin-bottom: 0.5rem;
         }
-        
+
         .time-selectors {
             display: flex;
             gap: 1rem;
             align-items: center;
         }
-        
-        .time-selector {
-            flex: 1;
-        }
-        
+
+        .time-selector { flex: 1; }
+
         label {
             display: block;
             font-size: 0.875rem;
             color: var(--secondary);
             margin-bottom: 0.25rem;
         }
-        
-        select {
-            width: 100%;
-            padding: 0.5rem 2rem 0.5rem 1rem;
-            font-size: 0.875rem;
-            border: 1px solid var(--border);
-            border-radius: 0.375rem;
-            background: var(--background);
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            transition: border-color 0.2s ease;
-        }
-        
-        select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        
+
+        select { width: 100%; }
+
         .time-separator {
             font-size: 1.5rem;
             color: var(--secondary);
             align-self: flex-end;
             padding-bottom: 0.5rem;
         }
-        
+
         .actions {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        
-        button {
-            padding: 0.5rem 1.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border: 1px solid var(--primary);
-            border-radius: 0.375rem;
-            background: var(--primary);
-            color: var(--background);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        button:hover {
-            background: var(--background);
-            color: var(--primary);
-        }
-        
-        button:active {
-            transform: translateY(1px);
-        }
-        
+
         .result-section {
             background: var(--background);
             padding: 1.5rem;
             border-radius: 0.375rem;
             border: 1px solid var(--border);
         }
-        
+
         .result-label {
             font-size: 0.875rem;
             font-weight: 600;
             color: var(--secondary);
             margin-bottom: 0.5rem;
         }
-        
+
         #result {
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--primary);
             min-height: 2rem;
         }
-        
+
         .day-crossed {
             display: inline-block;
             margin-left: 0.5rem;
@@ -222,120 +94,15 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
-        
-        .info-section {
-            margin-top: 4rem;
-            padding-top: 4rem;
-            border-top: 1px solid var(--border);
-        }
-        
-        .info-section h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .info-section h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-top: 2rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .info-section p {
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-        
-        .info-section ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .info-section li {
-            padding-left: 1.5rem;
-            position: relative;
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
-        }
-        
-        .info-section li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-        
+
         @media (max-width: 768px) {
-            header {
-                padding: 1rem;
-            }
-            
-            main {
-                padding: 2rem 1rem;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .tool-description {
-                font-size: 1rem;
-            }
-            
-            .calculator {
-                padding: 1.5rem;
-            }
-            
-            .time-inputs {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .time-selectors {
-                gap: 0.5rem;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-            }
+            .time-inputs { grid-template-columns: 1fr; gap: 1.5rem; }
+            .time-selectors { gap: 0.5rem; }
+            .actions { flex-direction: column; }
         }
-        
+
         @media (prefers-color-scheme: dark) {
-            :root {
-                --primary: #fff;
-                --secondary: #999;
-                --background: #000;
-                --hover: #111;
-                --accent: #4d94ff;
-                --border: #333;
-                --input-bg: #0a0a0a;
-            }
-            
-            select {
-                background: #111;
-                color: var(--primary);
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-            }
-            
-            button {
-                background: var(--primary);
-                color: var(--background);
-            }
-            
-            button:hover {
-                background: var(--background);
-                color: var(--primary);
-                border-color: var(--primary);
-            }
-            
-            .result-section {
-                background: #111;
-            }
+            .result-section { background: #111; }
         }
     </style>
 </head>
