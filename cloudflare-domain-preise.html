@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Domain Preise 2026 - Alle TLD Kosten im Überblick</title>
+    <meta name="description" content="Cloudflare Domain Preise für über 350 TLDs. Vergleichen Sie Registrierungs- und Verlängerungskosten aller Cloudflare Domains – zum Selbstkostenpreis ohne Aufschlag.">
+    <meta name="keywords" content="Cloudflare Domain Preise, Cloudflare Domains, Cloudflare Registrar, Domain Kosten, TLD Preise, Cloudflare Domain Registrierung">
+    <link rel="canonical" href="https://alexander-schneider.org/cloudflare-domain-preise.html">
+    <meta property="og:title" content="Cloudflare Domain Preise 2026 - Komplette Preisliste">
+    <meta property="og:description" content="Alle Cloudflare Domain Preise auf einen Blick. Über 350 TLDs mit Registrierungs- und Verlängerungskosten.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alexander-schneider.org/cloudflare-domain-preise.html">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #000;
+            --secondary: #666;
+            --background: #fff;
+            --hover: #f5f5f5;
+            --accent: #0066cc;
+            --border: #e0e0e0;
+            --input-bg: #fafafa;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--primary);
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        nav a::before {
+            content: "←";
+            transition: transform 0.2s ease;
+        }
+
+        nav a:hover::before {
+            transform: translateX(-0.25rem);
+        }
+
+        main {
+            flex: 1;
+            padding: 3rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .tool-description {
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
+        }
+
+        .tool-section {
+            background: var(--input-bg);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--background);
+            transition: border-color 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--background);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9375rem;
+        }
+
+        thead {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover {
+            background: #333;
+        }
+
+        th.sorted-asc::after {
+            content: " ↑";
+        }
+
+        th.sorted-desc::after {
+            content: " ↓";
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: var(--hover);
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+        }
+
+        .tld-cell {
+            font-weight: 600;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+
+        .price-cell {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+
+        .price-different {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .no-results {
+            padding: 3rem;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        .price-indicator {
+            font-size: 0.75rem;
+            margin-left: 0.25rem;
+        }
+
+        .info-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+        }
+
+        .info-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .info-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-section p {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-section li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .info-section li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .disclaimer {
+            margin-top: 2rem;
+            padding: 1rem 1.25rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+
+        .disclaimer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .disclaimer a:hover {
+            text-decoration: underline;
+        }
+
+        .highlight-note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            main {
+                padding: 2rem 1rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .tool-description {
+                font-size: 1rem;
+            }
+
+            .tool-section {
+                padding: 1.5rem;
+            }
+
+            .stats-bar {
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #fff;
+                --secondary: #999;
+                --background: #000;
+                --hover: #111;
+                --accent: #4d94ff;
+                --border: #333;
+                --input-bg: #0a0a0a;
+                --danger: #ff6b6b;
+            }
+
+            .search-input {
+                background: #111;
+                color: var(--primary);
+            }
+
+            thead {
+                background: #222;
+            }
+
+            th:hover {
+                background: #333;
+            }
+
+            .highlight-note {
+                background: #332d00;
+                border-color: #665a00;
+                color: #ffc107;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Zurück zur Startseite</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>Cloudflare Domain Preise</h1>
+            <p class="tool-description">Vergleichen Sie alle Cloudflare Domain Preise für über 350 TLDs in einer übersichtlichen Tabelle. Cloudflare bietet als einer der wenigen Registrare Domains zum reinen Selbstkostenpreis an – ohne Aufschläge, ohne versteckte Gebühren und mit kostenlosem WHOIS-Schutz. Durchsuchen Sie die komplette Preisliste nach Ihrer Wunsch-Domain und vergleichen Sie Registrierungs- und Verlängerungskosten auf einen Blick.</p>
+
+            <div class="tool-section">
+                <div class="highlight-note">
+                    <strong>Hinweis:</strong> Cloudflare bietet Domains zum Selbstkostenpreis an – ohne Aufschlag. Die Preise können sich je nach Registry ändern. <span style="color: var(--danger);">Rot markierte</span> Verlängerungspreise unterscheiden sich vom Registrierungspreis.
+                </div>
+
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="TLD suchen (z.B. .com, .de, .io...)" aria-label="TLD suchen">
+                </div>
+
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-count">0</span>
+                        <span class="stat-label">TLDs gesamt</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="visible-count">0</span>
+                        <span class="stat-label">angezeigt</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="price-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="tld" scope="col" aria-sort="ascending" tabindex="0">TLD</th>
+                                <th data-sort="registration" scope="col" aria-sort="none" tabindex="0">Registrierung (USD)</th>
+                                <th data-sort="renewal" scope="col" aria-sort="none" tabindex="0">Verlängerung (USD)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                        </tbody>
+                    </table>
+                    <div class="no-results" id="no-results" style="display: none;">
+                        Keine TLDs gefunden für Ihre Suche.
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>Cloudflare Domain Preise verstehen</h2>
+                <p>Cloudflare Domain Preise sind einzigartig am Markt: Als einer der wenigen Registrare bietet Cloudflare Domains zum reinen Selbstkostenpreis an. Das bedeutet, Sie zahlen exakt den Betrag, den Cloudflare selbst an die jeweilige Registry (z.B. Verisign für .com oder PIR für .org) zahlt – ohne jeglichen Aufschlag oder versteckte Gebühren.</p>
+
+                <p>Diese Preisliste zeigt alle verfügbaren Cloudflare Domain Preise für über 350 Top-Level-Domains. Nutzen Sie die Suchfunktion, um schnell die Kosten für Ihre gewünschte Domain-Endung zu finden.</p>
+
+                <h3>Warum sind Cloudflare Domain Preise günstiger?</h3>
+                <p>Traditionelle Domain-Registrare wie GoDaddy, Namecheap oder IONOS verdienen Geld durch Aufschläge auf die Registry-Preise. Cloudflare verfolgt ein anderes Geschäftsmodell: Die Domain-Registrierung dient als Einstiegspunkt für die kostenpflichtigen Cloudflare-Services wie CDN, DDoS-Schutz und Web Application Firewall.</p>
+                <ul>
+                    <li><strong>Keine Gewinnmarge:</strong> Cloudflare Domain Preise enthalten keinen Aufschlag</li>
+                    <li><strong>Transparente Kosten:</strong> Registrierung und Verlängerung kosten meist gleich viel</li>
+                    <li><strong>Keine Lockangebote:</strong> Keine günstigen Erstjahrespreise mit teurer Verlängerung</li>
+                    <li><strong>Inklusive WHOIS-Schutz:</strong> Kostenloser Datenschutz für Ihre Kontaktdaten</li>
+                </ul>
+
+                <h3>Vorteile der Cloudflare Domain Registrierung</h3>
+                <ul>
+                    <li><strong>Selbstkostenpreise:</strong> Keine versteckten Gebühren oder Markup</li>
+                    <li><strong>WHOIS-Datenschutz:</strong> Kostenlos bei allen Domains inklusive</li>
+                    <li><strong>DNSSEC:</strong> Automatische Unterstützung für erhöhte Sicherheit</li>
+                    <li><strong>Cloudflare-Integration:</strong> Nahtlose Verbindung mit CDN, SSL und weiteren Services</li>
+                    <li><strong>Schnelle DNS-Propagation:</strong> Dank des globalen Cloudflare-Netzwerks</li>
+                    <li><strong>Einfache Verwaltung:</strong> Alle Domains zentral im Cloudflare Dashboard</li>
+                </ul>
+
+                <h3>Hinweise zu den Cloudflare Domain Preisen</h3>
+                <ul>
+                    <li>Alle Preise sind in <strong>US-Dollar (USD)</strong> angegeben</li>
+                    <li>Bei einigen TLDs unterscheiden sich Registrierungs- und Verlängerungspreise (rot markiert)</li>
+                    <li>Für die Nutzung wird ein kostenloses Cloudflare-Konto benötigt</li>
+                    <li>Bestehende Domains können zu Cloudflare transferiert werden</li>
+                    <li>Premium-Domains können abweichende Preise haben</li>
+                </ul>
+
+                <h3>Häufige Fragen zu Cloudflare Domain Preisen</h3>
+                <p><strong>Gibt es versteckte Kosten?</strong><br>Nein. Die angezeigten Cloudflare Domain Preise sind die tatsächlichen Kosten. Es gibt keine Einrichtungsgebühren, keine Zusatzkosten für WHOIS-Schutz und keine überhöhten Verlängerungspreise.</p>
+
+                <p><strong>Warum sind manche Verlängerungspreise höher?</strong><br>Bei einigen TLDs verlangen die Registries unterschiedliche Preise für Neuregistrierung und Verlängerung. Cloudflare gibt diese Differenz 1:1 weiter.</p>
+
+                <p><strong>Kann ich bestehende Domains zu Cloudflare übertragen?</strong><br>Ja, Domain-Transfers sind möglich. Sie zahlen dabei den Verlängerungspreis und erhalten ein zusätzliches Jahr Laufzeit.</p>
+
+                <div class="disclaimer">
+                    <strong>Hinweis:</strong> Diese Preisübersicht dient nur zur Information. Die angezeigten Cloudflare Domain Preise können veraltet sein und sich jederzeit ändern. Für verbindliche und aktuelle Preise besuchen Sie bitte die <a href="https://www.cloudflare.com/products/registrar/" target="_blank" rel="noopener">offizielle Cloudflare Registrar Seite</a>. Stand der Daten: Januar 2026.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const domainData = [
+            { tld: ".com", registration: 10.44, renewal: 10.44 },
+            { tld: ".org", registration: 7.5, renewal: 10.11 },
+            { tld: ".net", registration: 11.84, renewal: 11.84 },
+            { tld: ".uk", registration: 4.94, renewal: 4.94 },
+            { tld: ".io", registration: 45, renewal: 45 },
+            { tld: ".academy", registration: 33.18, renewal: 33.18 },
+            { tld: ".accountant", registration: 20.16, renewal: 20.16 },
+            { tld: ".accountants", registration: 81.18, renewal: 81.18 },
+            { tld: ".actor", registration: 31.18, renewal: 31.18 },
+            { tld: ".agency", registration: 21.18, renewal: 21.18 },
+            { tld: ".ai", registration: 70, renewal: 70 },
+            { tld: ".apartments", registration: 40.18, renewal: 40.18 },
+            { tld: ".app", registration: 14.18, renewal: 14.18 },
+            { tld: ".associates", registration: 28.18, renewal: 28.18 },
+            { tld: ".attorney", registration: 43.18, renewal: 43.18 },
+            { tld: ".auction", registration: 25.18, renewal: 25.18 },
+            { tld: ".band", registration: 22.18, renewal: 22.18 },
+            { tld: ".bar", registration: 50.18, renewal: 50.18 },
+            { tld: ".bargains", registration: 23.18, renewal: 23.18 },
+            { tld: ".beer", registration: 22.18, renewal: 22.18 },
+            { tld: ".bet", registration: 18.18, renewal: 18.18 },
+            { tld: ".bid", registration: 4.16, renewal: 5.16 },
+            { tld: ".bike", registration: 27.18, renewal: 27.18 },
+            { tld: ".bingo", registration: 41.18, renewal: 41.18 },
+            { tld: ".biz", registration: 15.18, renewal: 15.18 },
+            { tld: ".black", registration: 46.18, renewal: 46.18 },
+            { tld: ".blog", registration: 20.18, renewal: 20.18 },
+            { tld: ".blue", registration: 17.18, renewal: 17.18 },
+            { tld: ".boo", registration: 10.18, renewal: 10.18 },
+            { tld: ".boston", registration: 10.18, renewal: 10.18 },
+            { tld: ".boutique", registration: 25.18, renewal: 25.18 },
+            { tld: ".broker", registration: 24.18, renewal: 24.18 },
+            { tld: ".builders", registration: 27.18, renewal: 27.18 },
+            { tld: ".business", registration: 12.68, renewal: 12.68 },
+            { tld: ".cab", registration: 23.18, renewal: 23.18 },
+            { tld: ".cafe", registration: 32.18, renewal: 32.18 },
+            { tld: ".camera", registration: 40.18, renewal: 40.18 },
+            { tld: ".camp", registration: 41.18, renewal: 41.18 },
+            { tld: ".capital", registration: 49.18, renewal: 49.18 },
+            { tld: ".cards", registration: 27.18, renewal: 27.18 },
+            { tld: ".care", registration: 30.18, renewal: 30.18 },
+            { tld: ".careers", registration: 50.18, renewal: 50.18 },
+            { tld: ".casa", registration: 7.68, renewal: 7.68 },
+            { tld: ".cash", registration: 25.18, renewal: 25.18 },
+            { tld: ".casino", registration: 118.18, renewal: 118.18 },
+            { tld: ".catering", registration: 27.18, renewal: 27.18 },
+            { tld: ".cc", registration: 8, renewal: 8 },
+            { tld: ".center", registration: 22.18, renewal: 22.18 },
+            { tld: ".ceo", registration: 70.18, renewal: 70.18 },
+            { tld: ".chat", registration: 27.18, renewal: 27.18 },
+            { tld: ".cheap", registration: 25.18, renewal: 25.18 },
+            { tld: ".church", registration: 31.18, renewal: 31.18 },
+            { tld: ".city", registration: 18.18, renewal: 18.18 },
+            { tld: ".claims", registration: 46.18, renewal: 46.18 },
+            { tld: ".cleaning", registration: 52.68, renewal: 52.68 },
+            { tld: ".clinic", registration: 45.18, renewal: 45.18 },
+            { tld: ".clothing", registration: 25.18, renewal: 25.18 },
+            { tld: ".cloud", registration: 15.18, renewal: 15.18 },
+            { tld: ".club", registration: 12.18, renewal: 12.18 },
+            { tld: ".co", registration: 24, renewal: 24 },
+            { tld: ".co.uk", registration: 4.94, renewal: 4.94 },
+            { tld: ".coach", registration: 49.18, renewal: 49.18 },
+            { tld: ".codes", registration: 46.18, renewal: 46.18 },
+            { tld: ".coffee", registration: 27.18, renewal: 27.18 },
+            { tld: ".college", registration: 45.18, renewal: 45.18 },
+            { tld: ".com.co", registration: 10, renewal: 10 },
+            { tld: ".community", registration: 28.18, renewal: 28.18 },
+            { tld: ".company", registration: 12.68, renewal: 12.68 },
+            { tld: ".compare", registration: 22.18, renewal: 22.18 },
+            { tld: ".computer", registration: 27.18, renewal: 27.18 },
+            { tld: ".condos", registration: 40.18, renewal: 40.18 },
+            { tld: ".construction", registration: 27.18, renewal: 27.18 },
+            { tld: ".consulting", registration: 36.18, renewal: 36.18 },
+            { tld: ".contact", registration: 11.18, renewal: 11.18 },
+            { tld: ".contractors", registration: 23.18, renewal: 23.18 },
+            { tld: ".cooking", registration: 22.18, renewal: 22.18 },
+            { tld: ".cool", registration: 27.18, renewal: 27.18 },
+            { tld: ".coupons", registration: 38.18, renewal: 38.18 },
+            { tld: ".credit", registration: 75.18, renewal: 75.18 },
+            { tld: ".creditcard", registration: 125.18, renewal: 125.18 },
+            { tld: ".cricket", registration: 20.16, renewal: 20.16 },
+            { tld: ".cruises", registration: 43.18, renewal: 43.18 },
+            { tld: ".dad", registration: 10.18, renewal: 10.18 },
+            { tld: ".dance", registration: 19.18, renewal: 19.18 },
+            { tld: ".date", registration: 4.16, renewal: 5.16 },
+            { tld: ".dating", registration: 45.18, renewal: 45.18 },
+            { tld: ".day", registration: 10.18, renewal: 10.18 },
+            { tld: ".deals", registration: 27.18, renewal: 27.18 },
+            { tld: ".degree", registration: 34.18, renewal: 34.18 },
+            { tld: ".delivery", registration: 41.18, renewal: 41.18 },
+            { tld: ".democrat", registration: 23.18, renewal: 23.18 },
+            { tld: ".dental", registration: 50.18, renewal: 50.18 },
+            { tld: ".dentist", registration: 50.18, renewal: 50.18 },
+            { tld: ".design", registration: 40.18, renewal: 40.18 },
+            { tld: ".dev", registration: 12.18, renewal: 12.18 },
+            { tld: ".diamonds", registration: 38.18, renewal: 38.18 },
+            { tld: ".digital", registration: 29.18, renewal: 29.18 },
+            { tld: ".direct", registration: 27.18, renewal: 27.18 },
+            { tld: ".directory", registration: 18.18, renewal: 18.18 },
+            { tld: ".discount", registration: 23.18, renewal: 23.18 },
+            { tld: ".doctor", registration: 80.18, renewal: 80.18 },
+            { tld: ".dog", registration: 44.18, renewal: 44.18 },
+            { tld: ".domains", registration: 30.18, renewal: 30.18 },
+            { tld: ".download", registration: 4.16, renewal: 5.16 },
+            { tld: ".education", registration: 24.18, renewal: 24.18 },
+            { tld: ".email", registration: 21.18, renewal: 21.18 },
+            { tld: ".energy", registration: 81.18, renewal: 81.18 },
+            { tld: ".engineer", registration: 27.18, renewal: 27.18 },
+            { tld: ".engineering", registration: 46.18, renewal: 46.18 },
+            { tld: ".enterprises", registration: 27.18, renewal: 27.18 },
+            { tld: ".equipment", registration: 17.18, renewal: 17.18 },
+            { tld: ".esq", registration: 20.18, renewal: 20.18 },
+            { tld: ".estate", registration: 27.18, renewal: 27.18 },
+            { tld: ".events", registration: 30.18, renewal: 30.18 },
+            { tld: ".exchange", registration: 27.18, renewal: 27.18 },
+            { tld: ".expert", registration: 42.18, renewal: 42.18 },
+            { tld: ".express", registration: 27.18, renewal: 27.18 },
+            { tld: ".fail", registration: 25.18, renewal: 25.18 },
+            { tld: ".faith", registration: 10.16, renewal: 10.16 },
+            { tld: ".family", registration: 27.18, renewal: 27.18 },
+            { tld: ".fans", registration: 50.18, renewal: 50.18 },
+            { tld: ".farm", registration: 27.18, renewal: 27.18 },
+            { tld: ".fashion", registration: 22.18, renewal: 22.18 },
+            { tld: ".finance", registration: 45.18, renewal: 45.18 },
+            { tld: ".financial", registration: 40.18, renewal: 40.18 },
+            { tld: ".fish", registration: 30.18, renewal: 30.18 },
+            { tld: ".fishing", registration: 22.18, renewal: 22.18 },
+            { tld: ".fit", registration: 22.18, renewal: 22.18 },
+            { tld: ".fitness", registration: 28.18, renewal: 28.18 },
+            { tld: ".flights", registration: 40.18, renewal: 40.18 },
+            { tld: ".florist", registration: 25.18, renewal: 25.18 },
+            { tld: ".fm", registration: 85, renewal: 85 },
+            { tld: ".foo", registration: 10.18, renewal: 10.18 },
+            { tld: ".football", registration: 18.18, renewal: 18.18 },
+            { tld: ".forex", registration: 30.18, renewal: 30.18 },
+            { tld: ".forsale", registration: 25.18, renewal: 25.18 },
+            { tld: ".foundation", registration: 21.68, renewal: 21.68 },
+            { tld: ".fun", registration: 25.18, renewal: 25.18 },
+            { tld: ".fund", registration: 49.18, renewal: 49.18 },
+            { tld: ".furniture", registration: 80.18, renewal: 80.18 },
+            { tld: ".futbol", registration: 13.18, renewal: 13.18 },
+            { tld: ".fyi", registration: 5.18, renewal: 5.18 },
+            { tld: ".gallery", registration: 19.18, renewal: 19.18 },
+            { tld: ".games", registration: 23.18, renewal: 23.18 },
+            { tld: ".garden", registration: 22.18, renewal: 22.18 },
+            { tld: ".gifts", registration: 25.18, renewal: 25.18 },
+            { tld: ".gives", registration: 21.68, renewal: 21.68 },
+            { tld: ".glass", registration: 44.18, renewal: 44.18 },
+            { tld: ".gmbh", registration: 28.18, renewal: 28.18 },
+            { tld: ".gold", registration: 75.18, renewal: 75.18 },
+            { tld: ".golf", registration: 45.18, renewal: 45.18 },
+            { tld: ".graphics", registration: 18.18, renewal: 18.18 },
+            { tld: ".gratis", registration: 16.18, renewal: 16.18 },
+            { tld: ".green", registration: 57.18, renewal: 57.18 },
+            { tld: ".gripe", registration: 23.18, renewal: 23.18 },
+            { tld: ".group", registration: 18.18, renewal: 18.18 },
+            { tld: ".guide", registration: 29.18, renewal: 29.18 },
+            { tld: ".guru", registration: 29.18, renewal: 29.18 },
+            { tld: ".haus", registration: 23.18, renewal: 23.18 },
+            { tld: ".health", registration: 50.18, renewal: 50.18 },
+            { tld: ".healthcare", registration: 60.18, renewal: 60.18 },
+            { tld: ".hockey", registration: 41.18, renewal: 41.18 },
+            { tld: ".holdings", registration: 45.18, renewal: 45.18 },
+            { tld: ".holiday", registration: 44.18, renewal: 44.18 },
+            { tld: ".horse", registration: 22.18, renewal: 22.18 },
+            { tld: ".hospital", registration: 44.18, renewal: 44.18 },
+            { tld: ".host", registration: 65.18, renewal: 65.18 },
+            { tld: ".house", registration: 31.18, renewal: 31.18 },
+            { tld: ".how", registration: 20.18, renewal: 20.18 },
+            { tld: ".immo", registration: 24.18, renewal: 24.18 },
+            { tld: ".immobilien", registration: 26.18, renewal: 26.18 },
+            { tld: ".industries", registration: 32.18, renewal: 32.18 },
+            { tld: ".info", registration: 19.18, renewal: 19.18 },
+            { tld: ".ink", registration: 19.18, renewal: 19.18 },
+            { tld: ".institute", registration: 19.18, renewal: 19.18 },
+            { tld: ".insure", registration: 50.18, renewal: 50.18 },
+            { tld: ".international", registration: 22.18, renewal: 22.18 },
+            { tld: ".investments", registration: 90.18, renewal: 90.18 },
+            { tld: ".irish", registration: 15.18, renewal: 15.18 },
+            { tld: ".jetzt", registration: 16.18, renewal: 16.18 },
+            { tld: ".jewelry", registration: 45.18, renewal: 45.18 },
+            { tld: ".kaufen", registration: 23.18, renewal: 23.18 },
+            { tld: ".kim", registration: 15.18, renewal: 15.18 },
+            { tld: ".kitchen", registration: 45.18, renewal: 45.18 },
+            { tld: ".land", registration: 28.18, renewal: 28.18 },
+            { tld: ".lawyer", registration: 43.18, renewal: 43.18 },
+            { tld: ".lease", registration: 38.18, renewal: 38.18 },
+            { tld: ".legal", registration: 49.18, renewal: 49.18 },
+            { tld: ".lgbt", registration: 56.18, renewal: 56.18 },
+            { tld: ".life", registration: 26.18, renewal: 26.18 },
+            { tld: ".lighting", registration: 18.18, renewal: 18.18 },
+            { tld: ".limited", registration: 25.18, renewal: 25.18 },
+            { tld: ".limo", registration: 38.18, renewal: 38.18 },
+            { tld: ".live", registration: 23.18, renewal: 23.18 },
+            { tld: ".loan", registration: 4.16, renewal: 5.16 },
+            { tld: ".loans", registration: 80.18, renewal: 80.18 },
+            { tld: ".love", registration: 20.18, renewal: 20.18 },
+            { tld: ".ltd", registration: 21.18, renewal: 21.18 },
+            { tld: ".luxe", registration: 15.18, renewal: 15.18 },
+            { tld: ".maison", registration: 41.18, renewal: 41.18 },
+            { tld: ".management", registration: 18.18, renewal: 18.18 },
+            { tld: ".market", registration: 32.18, renewal: 32.18 },
+            { tld: ".marketing", registration: 28.18, renewal: 28.18 },
+            { tld: ".markets", registration: 12.18, renewal: 12.18 },
+            { tld: ".mba", registration: 27.18, renewal: 27.18 },
+            { tld: ".me", registration: 14.19, renewal: 14.19 },
+            { tld: ".me.uk", registration: 4.94, renewal: 4.94 },
+            { tld: ".media", registration: 32.18, renewal: 32.18 },
+            { tld: ".memorial", registration: 35.68, renewal: 35.68 },
+            { tld: ".men", registration: 4.16, renewal: 5.16 },
+            { tld: ".miami", registration: 12.18, renewal: 12.18 },
+            { tld: ".mobi", registration: 30.18, renewal: 30.18 },
+            { tld: ".moda", registration: 28.18, renewal: 28.18 },
+            { tld: ".money", registration: 27.18, renewal: 27.18 },
+            { tld: ".mortgage", registration: 43.18, renewal: 43.18 },
+            { tld: ".mov", registration: 10.18, renewal: 10.18 },
+            { tld: ".movie", registration: 230.18, renewal: 230.18 },
+            { tld: ".net.co", registration: 10, renewal: 10 },
+            { tld: ".network", registration: 24.18, renewal: 24.18 },
+            { tld: ".new", registration: 400.18, renewal: 400.18 },
+            { tld: ".news", registration: 23.18, renewal: 23.18 },
+            { tld: ".nexus", registration: 10.18, renewal: 10.18 },
+            { tld: ".ninja", registration: 21.18, renewal: 21.18 },
+            { tld: ".nom.co", registration: 10, renewal: 10 },
+            { tld: ".observer", registration: 9.18, renewal: 9.18 },
+            { tld: ".online", registration: 25.18, renewal: 25.18 },
+            { tld: ".org.uk", registration: 4.94, renewal: 4.94 },
+            { tld: ".page", registration: 10.18, renewal: 10.18 },
+            { tld: ".partners", registration: 49.18, renewal: 49.18 },
+            { tld: ".parts", registration: 28.18, renewal: 28.18 },
+            { tld: ".party", registration: 4.16, renewal: 5.16 },
+            { tld: ".pet", registration: 17.68, renewal: 17.68 },
+            { tld: ".phd", registration: 20.18, renewal: 20.18 },
+            { tld: ".photography", registration: 25.18, renewal: 25.18 },
+            { tld: ".photos", registration: 19.18, renewal: 19.18 },
+            { tld: ".pictures", registration: 10.18, renewal: 10.18 },
+            { tld: ".pink", registration: 17.68, renewal: 17.68 },
+            { tld: ".pizza", registration: 45.18, renewal: 45.18 },
+            { tld: ".place", registration: 15.18, renewal: 15.18 },
+            { tld: ".plumbing", registration: 50.18, renewal: 50.18 },
+            { tld: ".plus", registration: 32.18, renewal: 32.18 },
+            { tld: ".press", registration: 49.18, renewal: 49.18 },
+            { tld: ".pro", registration: 19.18, renewal: 19.18 },
+            { tld: ".productions", registration: 28.18, renewal: 28.18 },
+            { tld: ".prof", registration: 20.18, renewal: 20.18 },
+            { tld: ".promo", registration: 17.18, renewal: 17.18 },
+            { tld: ".properties", registration: 27.18, renewal: 27.18 },
+            { tld: ".pub", registration: 28.18, renewal: 28.18 },
+            { tld: ".racing", registration: 10.16, renewal: 10.16 },
+            { tld: ".realty", registration: 280.18, renewal: 280.18 },
+            { tld: ".recipes", registration: 55.18, renewal: 55.18 },
+            { tld: ".red", registration: 16.18, renewal: 16.18 },
+            { tld: ".rehab", registration: 25.18, renewal: 25.18 },
+            { tld: ".reise", registration: 66.18, renewal: 66.18 },
+            { tld: ".reisen", registration: 14.18, renewal: 14.18 },
+            { tld: ".rent", registration: 45.18, renewal: 45.18 },
+            { tld: ".rentals", registration: 31.18, renewal: 31.18 },
+            { tld: ".repair", registration: 25.18, renewal: 25.18 },
+            { tld: ".report", registration: 17.18, renewal: 17.18 },
+            { tld: ".republican", registration: 25.18, renewal: 25.18 },
+            { tld: ".rest", registration: 25.18, renewal: 25.18 },
+            { tld: ".restaurant", registration: 44.18, renewal: 44.18 },
+            { tld: ".review", registration: 10.16, renewal: 10.16 },
+            { tld: ".reviews", registration: 43.18, renewal: 43.18 },
+            { tld: ".rip", registration: 16.18, renewal: 16.18 },
+            { tld: ".rocks", registration: 15.18, renewal: 15.18 },
+            { tld: ".rodeo", registration: 7.18, renewal: 7.18 },
+            { tld: ".rsvp", registration: 10.18, renewal: 10.18 },
+            { tld: ".run", registration: 18.18, renewal: 18.18 },
+            { tld: ".sale", registration: 27.18, renewal: 27.18 },
+            { tld: ".salon", registration: 44.18, renewal: 44.18 },
+            { tld: ".sarl", registration: 23.18, renewal: 23.18 },
+            { tld: ".school", registration: 25.18, renewal: 25.18 },
+            { tld: ".schule", registration: 20.18, renewal: 20.18 },
+            { tld: ".science", registration: 10.16, renewal: 10.16 },
+            { tld: ".security", registration: 2000.18, renewal: 2000.18 },
+            { tld: ".select", registration: 22.18, renewal: 22.18 },
+            { tld: ".services", registration: 28.18, renewal: 28.18 },
+            { tld: ".shoes", registration: 44.18, renewal: 44.18 },
+            { tld: ".shop", registration: 24.18, renewal: 24.18 },
+            { tld: ".shopping", registration: 23.18, renewal: 23.18 },
+            { tld: ".show", registration: 30.18, renewal: 30.18 },
+            { tld: ".singles", registration: 23.18, renewal: 23.18 },
+            { tld: ".site", registration: 25.18, renewal: 25.18 },
+            { tld: ".soccer", registration: 17.18, renewal: 17.18 },
+            { tld: ".social", registration: 27.18, renewal: 27.18 },
+            { tld: ".software", registration: 27.18, renewal: 27.18 },
+            { tld: ".solar", registration: 44.18, renewal: 44.18 },
+            { tld: ".solutions", registration: 22.18, renewal: 22.18 },
+            { tld: ".soy", registration: 18.18, renewal: 18.18 },
+            { tld: ".space", registration: 20.18, renewal: 20.18 },
+            { tld: ".storage", registration: 500.18, renewal: 500.18 },
+            { tld: ".store", registration: 40.18, renewal: 40.18 },
+            { tld: ".stream", registration: 4.16, renewal: 5.16 },
+            { tld: ".studio", registration: 31.18, renewal: 31.18 },
+            { tld: ".style", registration: 27.18, renewal: 27.18 },
+            { tld: ".supplies", registration: 17.18, renewal: 17.18 },
+            { tld: ".supply", registration: 18.18, renewal: 18.18 },
+            { tld: ".support", registration: 19.18, renewal: 19.18 },
+            { tld: ".surf", registration: 22.18, renewal: 22.18 },
+            { tld: ".surgery", registration: 38.18, renewal: 38.18 },
+            { tld: ".systems", registration: 24.18, renewal: 24.18 },
+            { tld: ".tax", registration: 49.18, renewal: 49.18 },
+            { tld: ".taxi", registration: 45.18, renewal: 45.18 },
+            { tld: ".team", registration: 26.18, renewal: 26.18 },
+            { tld: ".tech", registration: 40.18, renewal: 40.18 },
+            { tld: ".technology", registration: 20.18, renewal: 20.18 },
+            { tld: ".tennis", registration: 46.18, renewal: 46.18 },
+            { tld: ".theater", registration: 44.18, renewal: 44.18 },
+            { tld: ".theatre", registration: 500.18, renewal: 500.18 },
+            { tld: ".tienda", registration: 41.18, renewal: 41.18 },
+            { tld: ".tips", registration: 21.18, renewal: 21.18 },
+            { tld: ".tires", registration: 70.18, renewal: 70.18 },
+            { tld: ".today", registration: 20.18, renewal: 20.18 },
+            { tld: ".tools", registration: 25.18, renewal: 25.18 },
+            { tld: ".tours", registration: 44.18, renewal: 44.18 },
+            { tld: ".town", registration: 26.18, renewal: 26.18 },
+            { tld: ".toys", registration: 45.18, renewal: 45.18 },
+            { tld: ".trade", registration: 4.16, renewal: 5.16 },
+            { tld: ".trading", registration: 14.18, renewal: 14.18 },
+            { tld: ".training", registration: 28.18, renewal: 28.18 },
+            { tld: ".travel", registration: 100.18, renewal: 100.18 },
+            { tld: ".tv", registration: 25, renewal: 25 },
+            { tld: ".university", registration: 43.18, renewal: 43.18 },
+            { tld: ".us", registration: 6.5, renewal: 6.5 },
+            { tld: ".vacations", registration: 27.18, renewal: 27.18 },
+            { tld: ".ventures", registration: 41.18, renewal: 41.18 },
+            { tld: ".vet", registration: 29.18, renewal: 29.18 },
+            { tld: ".viajes", registration: 35.18, renewal: 35.18 },
+            { tld: ".video", registration: 25.18, renewal: 25.18 },
+            { tld: ".villas", registration: 42.68, renewal: 42.68 },
+            { tld: ".vin", registration: 41.18, renewal: 41.18 },
+            { tld: ".vip", registration: 12.18, renewal: 12.18 },
+            { tld: ".vision", registration: 27.18, renewal: 27.18 },
+            { tld: ".vodka", registration: 22.18, renewal: 22.18 },
+            { tld: ".voyage", registration: 41.18, renewal: 41.18 },
+            { tld: ".watch", registration: 30.18, renewal: 30.18 },
+            { tld: ".webcam", registration: 10.16, renewal: 10.16 },
+            { tld: ".website", registration: 20.18, renewal: 20.18 },
+            { tld: ".wedding", registration: 22.18, renewal: 22.18 },
+            { tld: ".wiki", registration: 19.18, renewal: 19.18 },
+            { tld: ".win", registration: 4.16, renewal: 5.16 },
+            { tld: ".wine", registration: 41.18, renewal: 41.18 },
+            { tld: ".work", registration: 7.18, renewal: 7.18 },
+            { tld: ".works", registration: 27.18, renewal: 27.18 },
+            { tld: ".world", registration: 29.18, renewal: 29.18 },
+            { tld: ".wtf", registration: 25.18, renewal: 25.18 },
+            { tld: ".xyz", registration: 10.18, renewal: 10.18 },
+            { tld: ".yoga", registration: 22.18, renewal: 22.18 },
+            { tld: ".zone", registration: 27.18, renewal: 27.18 }
+        ];
+
+        let currentSort = { column: 'tld', direction: 'asc' };
+        let filteredData = [...domainData];
+
+        const searchInput = document.getElementById('search-input');
+        const tableBody = document.getElementById('table-body');
+        const totalCount = document.getElementById('total-count');
+        const visibleCount = document.getElementById('visible-count');
+        const noResults = document.getElementById('no-results');
+        const headers = document.querySelectorAll('th[data-sort]');
+
+        function formatPrice(price) {
+            return price.toFixed(2);
+        }
+
+        function renderTable() {
+            const fragment = document.createDocumentFragment();
+
+            if (filteredData.length === 0) {
+                noResults.style.display = 'block';
+                visibleCount.textContent = '0';
+                tableBody.innerHTML = '';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            visibleCount.textContent = filteredData.length;
+
+            filteredData.forEach(function(item) {
+                const row = document.createElement('tr');
+                const isDifferent = item.registration !== item.renewal;
+
+                const tldCell = document.createElement('td');
+                tldCell.className = 'tld-cell';
+                tldCell.textContent = item.tld;
+
+                const regCell = document.createElement('td');
+                regCell.className = 'price-cell';
+                regCell.textContent = '$' + formatPrice(item.registration);
+
+                const renewCell = document.createElement('td');
+                renewCell.className = 'price-cell' + (isDifferent ? ' price-different' : '');
+                renewCell.textContent = '$' + formatPrice(item.renewal);
+                if (isDifferent) {
+                    const indicator = document.createElement('span');
+                    indicator.className = 'price-indicator';
+                    indicator.textContent = '↑';
+                    indicator.setAttribute('aria-label', 'Preis unterscheidet sich');
+                    renewCell.appendChild(indicator);
+                }
+
+                row.appendChild(tldCell);
+                row.appendChild(regCell);
+                row.appendChild(renewCell);
+                fragment.appendChild(row);
+            });
+
+            tableBody.innerHTML = '';
+            tableBody.appendChild(fragment);
+        }
+
+        function getSortValue(item, column) {
+            if (column === 'tld') return item.tld.toLowerCase();
+            if (column === 'registration') return item.registration;
+            return item.renewal;
+        }
+
+        function applySorting() {
+            const multiplier = currentSort.direction === 'asc' ? 1 : -1;
+            const column = currentSort.column;
+            filteredData.sort(function(a, b) {
+                const valA = getSortValue(a, column);
+                const valB = getSortValue(b, column);
+                if (valA < valB) return -1 * multiplier;
+                if (valA > valB) return 1 * multiplier;
+                return 0;
+            });
+        }
+
+        function sortData(column) {
+            const isSameColumn = currentSort.column === column;
+            currentSort.column = column;
+            currentSort.direction = isSameColumn && currentSort.direction === 'asc' ? 'desc' : 'asc';
+
+            applySorting();
+            updateSortIndicators();
+            renderTable();
+        }
+
+        function updateSortIndicators() {
+            headers.forEach(function(header) {
+                header.classList.remove('sorted-asc', 'sorted-desc');
+                const isCurrentColumn = header.dataset.sort === currentSort.column;
+                if (isCurrentColumn) {
+                    const isAsc = currentSort.direction === 'asc';
+                    header.classList.add(isAsc ? 'sorted-asc' : 'sorted-desc');
+                    header.setAttribute('aria-sort', isAsc ? 'ascending' : 'descending');
+                } else {
+                    header.setAttribute('aria-sort', 'none');
+                }
+            });
+        }
+
+        function filterData() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            filteredData = searchTerm
+                ? domainData.filter(function(item) {
+                    return item.tld.toLowerCase().includes(searchTerm);
+                })
+                : [...domainData];
+
+            applySorting();
+            renderTable();
+        }
+
+        // Event Listeners with debouncing
+        let debounceTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterData, 150);
+        });
+
+        headers.forEach(function(header) {
+            header.addEventListener('click', function() {
+                sortData(header.dataset.sort);
+            });
+            header.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    sortData(header.dataset.sort);
+                }
+            });
+        });
+
+        // Initialize
+        totalCount.textContent = domainData.length;
+        sortData('tld');
+    </script>
+</body>
+</html>
