@@ -1,0 +1,29 @@
+name: Update SEC Tickers
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 06:00 UTC
+  workflow_dispatch:       # Manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download SEC company tickers
+        run: |
+          curl -sf -o data/sec-company-tickers.json \
+            -H "User-Agent: alexander-schneider.org contact@innos.capital" \
+            "https://www.sec.gov/files/company_tickers.json"
+
+      - name: Commit if changed
+        run: |
+          git diff --quiet data/sec-company-tickers.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/sec-company-tickers.json
+          git commit -m "chore: update SEC company tickers data"
+          git push
