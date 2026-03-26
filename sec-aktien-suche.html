@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEC Aktien Ticker Suche - Alle US-Aktien durchsuchen</title>
+    <meta name="description" content="Durchsuchen Sie alle bei der SEC registrierten US-Aktien. Über 10.000 Ticker mit Firmennamen und CIK-Nummern – schnell, durchsuchbar und immer aktuell.">
+    <meta name="keywords" content="SEC Aktien, Ticker Suche, US Aktien, CIK Nummer, SEC EDGAR, Aktien Ticker, Stock Ticker Search">
+    <link rel="canonical" href="https://alexander-schneider.org/sec-aktien-suche.html">
+    <meta property="og:title" content="SEC Aktien Ticker Suche - Alle US-Aktien">
+    <meta property="og:description" content="Alle bei der SEC registrierten Aktien durchsuchen. Über 10.000 Ticker mit Firmennamen und CIK-Nummern.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alexander-schneider.org/sec-aktien-suche.html">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="shared-tool-styles.css">
+    <style>
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stats-bar .stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        .stats-bar .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stats-bar .stat-label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            background: var(--background);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9375rem;
+        }
+
+        thead {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover { background: #333; }
+        th.sorted-asc::after { content: " \2191"; }
+        th.sorted-desc::after { content: " \2193"; }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--hover); }
+
+        td { padding: 0.875rem 1rem; }
+
+        .ticker-cell {
+            font-weight: 600;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+
+        .cik-cell {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            color: var(--secondary);
+        }
+
+        .cik-cell a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .cik-cell a:hover {
+            text-decoration: underline;
+        }
+
+        .no-results {
+            padding: 3rem;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        .more-results {
+            padding: 1rem;
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border);
+            background: var(--input-bg);
+        }
+
+        .more-results strong {
+            color: var(--primary);
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: 0.375rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .download-btn:hover { background: #333; }
+        .download-btn:active { transform: scale(0.98); }
+        .download-btn svg { width: 1.25rem; height: 1.25rem; }
+
+        .highlight-note {
+            background: #e8f4fd;
+            border: 1px solid #b3d9f2;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .cache-info {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-top: 0.5rem;
+        }
+
+        .loading-overlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            gap: 1rem;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-overlay .spinner {
+            width: 32px;
+            height: 32px;
+        }
+
+        .loading-overlay p {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        .error-box {
+            display: none;
+            padding: 1.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-box.show {
+            display: block;
+        }
+
+        .error-box p {
+            color: var(--error);
+            margin-bottom: 0.5rem;
+        }
+
+        .error-box button {
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-bar { gap: 1rem; }
+            .stats-bar .stat-value { font-size: 1.25rem; }
+            th, td { padding: 0.75rem 0.5rem; }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            thead { background: #222; }
+            th:hover { background: #333; }
+            .highlight-note {
+                background: #001a33;
+                border-color: #003366;
+                color: #b3d9f2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">Zur Startseite</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1>SEC Aktien Ticker Suche</h1>
+            <p class="tool-description">Durchsuchen Sie alle bei der U.S. Securities and Exchange Commission (SEC) registrierten Unternehmen. Die Daten werden direkt von der SEC geladen und lokal gecacht. Suchen Sie nach Ticker-Symbol oder Firmenname, um CIK-Nummern und EDGAR-Links zu finden.</p>
+
+            <div class="tool-section">
+                <div class="highlight-note">
+                    <strong>Hinweis:</strong> Die Daten werden direkt von der SEC (<code>company_tickers.json</code>) geladen und 24 Stunden lokal im Browser gecacht. Es werden maximal 100 Ergebnisse gleichzeitig angezeigt &ndash; nutzen Sie die Suche zum Filtern.
+                </div>
+
+                <div class="error-box" id="error-box">
+                    <p id="error-text">Fehler beim Laden der Daten.</p>
+                    <button type="button" id="retry-btn">Erneut versuchen</button>
+                </div>
+
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="Ticker oder Firma suchen (z.B. AAPL, Microsoft...)" aria-label="Aktien suchen" disabled>
+                    <button type="button" class="download-btn" id="download-csv" aria-label="CSV herunterladen" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        CSV Download
+                    </button>
+                </div>
+
+                <div class="stats-bar" id="stats-bar" style="display: none;">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-count">0</span>
+                        <span class="stat-label">Aktien gesamt</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="visible-count">0</span>
+                        <span class="stat-label">angezeigt</span>
+                    </div>
+                    <div class="stat-item" id="cache-stat" style="display: none;">
+                        <span class="stat-label" id="cache-label"></span>
+                    </div>
+                </div>
+
+                <div class="loading-overlay show" id="loading">
+                    <div class="spinner"></div>
+                    <p>Lade SEC-Daten...</p>
+                </div>
+
+                <div class="table-container" id="table-wrapper" style="display: none;">
+                    <table id="stock-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="ticker" scope="col" aria-sort="ascending" tabindex="0">Ticker</th>
+                                <th data-sort="title" scope="col" aria-sort="none" tabindex="0">Unternehmen</th>
+                                <th data-sort="cik" scope="col" aria-sort="none" tabindex="0">CIK</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                        </tbody>
+                    </table>
+                    <div class="no-results" id="no-results" style="display: none;">
+                        Keine Aktien gefunden f&uuml;r Ihre Suche.
+                    </div>
+                    <div class="more-results" id="more-results" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>SEC Aktien Ticker Datenbank</h2>
+                <p>Die SEC (Securities and Exchange Commission) ist die US-amerikanische B&ouml;rsenaufsichtsbeh&ouml;rde. Jedes Unternehmen, das an einer US-B&ouml;rse gehandelt wird oder &ouml;ffentliche Wertpapiere ausgibt, muss sich bei der SEC registrieren und erh&auml;lt eine eindeutige CIK-Nummer (Central Index Key).</p>
+
+                <p>Dieses Tool l&auml;dt die komplette Liste aller SEC-registrierten Unternehmen und macht sie schnell durchsuchbar. Die Daten stammen direkt aus der offiziellen SEC-Datenbank und werden im Browser gecacht, um schnelle Wiederholungssuchen zu erm&ouml;glichen.</p>
+
+                <h3>Was ist eine CIK-Nummer?</h3>
+                <p>Die CIK-Nummer (Central Index Key) ist eine eindeutige Identifikationsnummer, die die SEC jedem registrierten Unternehmen zuweist. Sie wird ben&ouml;tigt, um Unternehmensberichte (10-K, 10-Q, 8-K etc.) im EDGAR-System der SEC zu finden.</p>
+
+                <h3>Was ist SEC EDGAR?</h3>
+                <p>EDGAR (Electronic Data Gathering, Analysis, and Retrieval) ist das elektronische System der SEC, &uuml;ber das Unternehmen ihre Pflichtmeldungen einreichen. &Uuml;ber EDGAR k&ouml;nnen Sie kostenlos auf alle &ouml;ffentlichen Unternehmensberichte zugreifen &ndash; von Quartalsberichten bis zu Insiderhandel-Meldungen.</p>
+
+                <h3>Funktionen dieses Tools</h3>
+                <ul>
+                    <li><strong>Echtzeit-Suche:</strong> Durchsuchen Sie &uuml;ber 10.000 Ticker und Firmennamen in Echtzeit</li>
+                    <li><strong>Direkte EDGAR-Links:</strong> Klicken Sie auf eine CIK-Nummer, um direkt zu den SEC-Filings des Unternehmens zu gelangen</li>
+                    <li><strong>Sortierbare Spalten:</strong> Sortieren Sie nach Ticker, Firmenname oder CIK-Nummer</li>
+                    <li><strong>CSV-Export:</strong> Laden Sie die gefilterte Liste als CSV-Datei herunter</li>
+                    <li><strong>Lokales Caching:</strong> Die Daten werden 24 Stunden lokal gespeichert f&uuml;r schnelleren Zugriff</li>
+                </ul>
+
+                <h3>H&auml;ufige Fragen</h3>
+                <p><strong>Wie aktuell sind die Daten?</strong><br>Die Daten werden direkt von der SEC geladen und 24 Stunden im Browser gecacht. Nach Ablauf des Caches werden die Daten automatisch neu geladen.</p>
+
+                <p><strong>Warum finde ich manche Aktien nicht?</strong><br>Die Liste enth&auml;lt nur Unternehmen, die bei der SEC registriert sind. Einige ausl&auml;ndische Aktien, OTC-Werte oder sehr neue Listings k&ouml;nnen fehlen oder unter einem anderen Namen registriert sein.</p>
+
+                <p><strong>Was kann ich mit der CIK-Nummer machen?</strong><br>Mit der CIK-Nummer k&ouml;nnen Sie im EDGAR-System der SEC alle &ouml;ffentlichen Filings eines Unternehmens finden &ndash; Jahresberichte (10-K), Quartalsberichte (10-Q), aktuelle Meldungen (8-K), Insiderhandel (Form 4) und mehr.</p>
+
+                <div class="disclaimer">
+                    <strong>Hinweis:</strong> Dieses Tool dient nur zur Information. Die Daten stammen von der <a href="https://www.sec.gov/files/company_tickers.json" target="_blank" rel="noopener">offiziellen SEC-Datenbank</a>. F&uuml;r Anlageentscheidungen konsultieren Sie bitte einen qualifizierten Finanzberater. Keine Gew&auml;hr f&uuml;r Vollst&auml;ndigkeit oder Aktualit&auml;t.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const CACHE_KEY = 'sec_tickers_data';
+        const CACHE_TS_KEY = 'sec_tickers_ts';
+        const CACHE_TTL = 24 * 60 * 60 * 1000;
+        const MAX_VISIBLE = 100;
+        const SEC_URL = 'https://www.sec.gov/files/company_tickers.json';
+        const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(SEC_URL);
+
+        let allStocks = [];
+        let filteredStocks = [];
+        let currentSort = { column: 'ticker', direction: 'asc' };
+
+        const searchInput = document.getElementById('search-input');
+        const tableBody = document.getElementById('table-body');
+        const totalCount = document.getElementById('total-count');
+        const visibleCount = document.getElementById('visible-count');
+        const noResults = document.getElementById('no-results');
+        const moreResults = document.getElementById('more-results');
+        const loading = document.getElementById('loading');
+        const tableWrapper = document.getElementById('table-wrapper');
+        const statsBar = document.getElementById('stats-bar');
+        const errorBox = document.getElementById('error-box');
+        const errorText = document.getElementById('error-text');
+        const downloadBtn = document.getElementById('download-csv');
+        const retryBtn = document.getElementById('retry-btn');
+        const cacheLabel = document.getElementById('cache-label');
+        const cacheStat = document.getElementById('cache-stat');
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorBox.classList.add('show');
+            loading.classList.remove('show');
+        }
+
+        function hideError() {
+            errorBox.classList.remove('show');
+        }
+
+        function getCachedData() {
+            try {
+                const ts = localStorage.getItem(CACHE_TS_KEY);
+                if (!ts) return null;
+                const age = Date.now() - parseInt(ts, 10);
+                if (age > CACHE_TTL) return null;
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (!raw) return null;
+                return { data: JSON.parse(raw), age: age };
+            } catch {
+                return null;
+            }
+        }
+
+        function setCachedData(data) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+                localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
+            } catch {
+                // localStorage full or unavailable
+            }
+        }
+
+        function formatCacheAge(ms) {
+            const minutes = Math.floor(ms / 60000);
+            if (minutes < 1) return 'gerade geladen';
+            if (minutes < 60) return 'Cache: vor ' + minutes + ' Min.';
+            const hours = Math.floor(minutes / 60);
+            return 'Cache: vor ' + hours + ' Std.';
+        }
+
+        function parseSecData(json) {
+            const entries = Object.values(json);
+            return entries.map(function(e) {
+                return {
+                    ticker: (e.ticker || '').toUpperCase(),
+                    title: e.title || '',
+                    cik: e.cik_str || 0
+                };
+            });
+        }
+
+        async function loadData() {
+            hideError();
+            loading.classList.add('show');
+            tableWrapper.style.display = 'none';
+            statsBar.style.display = 'none';
+
+            const cached = getCachedData();
+            if (cached) {
+                allStocks = cached.data;
+                cacheLabel.textContent = formatCacheAge(cached.age);
+                cacheStat.style.display = '';
+                onDataReady();
+                return;
+            }
+
+            try {
+                var json;
+                try {
+                    var response = await fetch(SEC_URL, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    json = await response.json();
+                } catch {
+                    // CORS fallback via proxy
+                    var proxyResponse = await fetch(PROXY_URL);
+                    if (!proxyResponse.ok) throw new Error('HTTP ' + proxyResponse.status);
+                    json = await proxyResponse.json();
+                }
+                allStocks = parseSecData(json);
+                setCachedData(allStocks);
+                cacheLabel.textContent = 'gerade geladen';
+                cacheStat.style.display = '';
+                onDataReady();
+            } catch (err) {
+                showError('SEC-Daten konnten nicht geladen werden: ' + err.message);
+            }
+        }
+
+        function onDataReady() {
+            loading.classList.remove('show');
+            tableWrapper.style.display = '';
+            statsBar.style.display = '';
+            searchInput.disabled = false;
+            downloadBtn.disabled = false;
+            totalCount.textContent = allStocks.length.toLocaleString('de-DE');
+            searchInput.focus();
+            filterAndRender();
+        }
+
+        function filterAndRender() {
+            var query = searchInput.value.trim().toLowerCase();
+
+            if (query.length === 0) {
+                filteredStocks = allStocks.slice();
+            } else {
+                var terms = query.split(/\s+/);
+                filteredStocks = allStocks.filter(function(s) {
+                    var tickerLower = s.ticker.toLowerCase();
+                    var titleLower = s.title.toLowerCase();
+                    return terms.every(function(t) {
+                        return tickerLower.indexOf(t) !== -1 || titleLower.indexOf(t) !== -1;
+                    });
+                });
+            }
+
+            sortStocks();
+            renderTable();
+        }
+
+        function sortStocks() {
+            var col = currentSort.column;
+            var dir = currentSort.direction === 'asc' ? 1 : -1;
+
+            filteredStocks.sort(function(a, b) {
+                var va = a[col];
+                var vb = b[col];
+                if (typeof va === 'string') {
+                    return va.localeCompare(vb) * dir;
+                }
+                return (va - vb) * dir;
+            });
+        }
+
+        function renderTable() {
+            var total = filteredStocks.length;
+            var visible = Math.min(total, MAX_VISIBLE);
+
+            visibleCount.textContent = visible.toLocaleString('de-DE');
+
+            if (total === 0) {
+                tableBody.innerHTML = '';
+                noResults.style.display = '';
+                moreResults.style.display = 'none';
+                return;
+            }
+
+            noResults.style.display = 'none';
+
+            var html = '';
+            for (var i = 0; i < visible; i++) {
+                var s = filteredStocks[i];
+                var cikPadded = String(s.cik).padStart(10, '0');
+                html += '<tr>' +
+                    '<td class="ticker-cell">' + escapeHtml(s.ticker) + '</td>' +
+                    '<td>' + escapeHtml(s.title) + '</td>' +
+                    '<td class="cik-cell"><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=' + cikPadded + '&type=&dateb=&owner=include&count=40" target="_blank" rel="noopener">' + s.cik + '</a></td>' +
+                    '</tr>';
+            }
+            tableBody.innerHTML = html;
+
+            if (total > MAX_VISIBLE) {
+                moreResults.style.display = '';
+                moreResults.innerHTML = '<strong>' + (total - MAX_VISIBLE).toLocaleString('de-DE') + '</strong> weitere Ergebnisse &ndash; verfeinern Sie Ihre Suche';
+            } else {
+                moreResults.style.display = 'none';
+            }
+        }
+
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Search with debounce
+        var debounceTimer;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterAndRender, 150);
+        });
+
+        // Column sorting
+        document.querySelectorAll('th[data-sort]').forEach(function(th) {
+            th.addEventListener('click', function() {
+                var col = th.getAttribute('data-sort');
+                if (currentSort.column === col) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort.column = col;
+                    currentSort.direction = 'asc';
+                }
+
+                document.querySelectorAll('th[data-sort]').forEach(function(h) {
+                    h.classList.remove('sorted-asc', 'sorted-desc');
+                    h.setAttribute('aria-sort', 'none');
+                });
+                th.classList.add('sorted-' + currentSort.direction);
+                th.setAttribute('aria-sort', currentSort.direction === 'asc' ? 'ascending' : 'descending');
+
+                sortStocks();
+                renderTable();
+            });
+
+            th.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    th.click();
+                }
+            });
+        });
+
+        // Set initial sort indicator
+        document.querySelector('th[data-sort="ticker"]').classList.add('sorted-asc');
+
+        // CSV download
+        downloadBtn.addEventListener('click', function() {
+            var rows = [['Ticker', 'Unternehmen', 'CIK'].join(',')];
+            var data = filteredStocks.length > 0 ? filteredStocks : allStocks;
+            data.forEach(function(s) {
+                rows.push([
+                    '"' + s.ticker.replace(/"/g, '""') + '"',
+                    '"' + s.title.replace(/"/g, '""') + '"',
+                    s.cik
+                ].join(','));
+            });
+            var csv = rows.join('\n');
+            var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = 'sec-aktien-ticker.csv';
+            link.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Retry button
+        retryBtn.addEventListener('click', function() {
+            try {
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(CACHE_TS_KEY);
+            } catch {}
+            loadData();
+        });
+
+        // Init
+        loadData();
+    </script>
+</body>
+</html>
