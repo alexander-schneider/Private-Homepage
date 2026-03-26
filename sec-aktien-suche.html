@@ -240,7 +240,7 @@
 
             <div class="tool-section">
                 <div class="highlight-note">
-                    <strong>Hinweis:</strong> Die Daten werden direkt von der SEC (<code>company_tickers.json</code>) geladen und 24 Stunden lokal im Browser gecacht. Es werden maximal 100 Ergebnisse gleichzeitig angezeigt &ndash; nutzen Sie die Suche zum Filtern.
+                    <strong>Hinweis:</strong> Die Daten stammen aus der offiziellen SEC-Datenbank (<code>company_tickers.json</code>) und werden im Browser gecacht. Es werden maximal 100 Ergebnisse gleichzeitig angezeigt &ndash; nutzen Sie die Suche zum Filtern.
                 </div>
 
                 <div class="error-box" id="error-box">
@@ -337,8 +337,8 @@
         const CACHE_TS_KEY = 'sec_tickers_ts';
         const CACHE_TTL = 24 * 60 * 60 * 1000;
         const MAX_VISIBLE = 100;
+        const LOCAL_URL = 'data/sec-company-tickers.json';
         const SEC_URL = 'https://www.sec.gov/files/company_tickers.json';
-        const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(SEC_URL);
 
         let allStocks = [];
         let filteredStocks = [];
@@ -430,16 +430,17 @@
             try {
                 var json;
                 try {
+                    // Try direct SEC fetch first (works if CORS allowed)
                     var response = await fetch(SEC_URL, {
                         headers: { 'Accept': 'application/json' }
                     });
                     if (!response.ok) throw new Error('HTTP ' + response.status);
                     json = await response.json();
                 } catch {
-                    // CORS fallback via proxy
-                    var proxyResponse = await fetch(PROXY_URL);
-                    if (!proxyResponse.ok) throw new Error('HTTP ' + proxyResponse.status);
-                    json = await proxyResponse.json();
+                    // Fallback: local copy (same-origin, always works)
+                    var localResponse = await fetch(LOCAL_URL);
+                    if (!localResponse.ok) throw new Error('HTTP ' + localResponse.status);
+                    json = await localResponse.json();
                 }
                 allStocks = parseSecData(json);
                 setCachedData(allStocks);
