@@ -3,7 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>IBKR Steuerreport-Tool (GmbH)</title>
+
+<title>IBKR-Steuerreport für GmbHs – Flex-Query-XML auswerten (§ 8b KStG)</title>
+<meta name="description" content="Kostenloses Browser-Tool: Interactive-Brokers-/CapTrader-Flex-Query-XML hochladen und einen GmbH-gerechten Steuerreport erstellen – EUR-FIFO, § 8b KStG, Quellensteuer, offene Positionen, als PDF. Alle Daten bleiben lokal im Browser.">
+<meta name="keywords" content="IBKR Steuerreport GmbH, Interactive Brokers Steuer GmbH, CapTrader Steuererklärung, Flex Query auswerten, § 8b KStG Aktien, Kapitalgesellschaft Wertpapiere Steuer, EUR FIFO Aktien, Depot GmbH Steuer, IBKR XML Steuer">
+<meta name="author" content="Alexander Schneider">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alexander-schneider.org/ibkr-steuerreport-gmbh.html">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="IBKR-Steuerreport für GmbHs – Flex-Query-XML auswerten">
+<meta property="og:description" content="IBKR-/CapTrader-Flex-Query-XML rein, GmbH-gerechter Steuerreport (EUR-FIFO, § 8b KStG, offene Positionen) als PDF raus. Daten bleiben lokal im Browser.">
+<meta property="og:url" content="https://alexander-schneider.org/ibkr-steuerreport-gmbh.html">
+<meta property="og:image" content="https://alexander-schneider.org/img/alex-schneider.jpg">
+<meta property="og:locale" content="de_DE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IBKR-Steuerreport für GmbHs (§ 8b KStG)">
+<meta name="twitter:description" content="Flex-Query-XML auswerten und GmbH-gerechten Steuerreport als PDF erzeugen – lokal im Browser, ohne Upload.">
+<meta name="twitter:image" content="https://alexander-schneider.org/img/alex-schneider.jpg">
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="theme-color" content="#0f3d57">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "IBKR-Steuerreport-Tool für GmbHs",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Web (Browser)",
+  "inLanguage": "de",
+  "url": "https://alexander-schneider.org/ibkr-steuerreport-gmbh.html",
+  "description": "Browser-Tool zur Auswertung eines Interactive-Brokers-/CapTrader-Flex-Query-XML-Exports für eine GmbH: realisierte Aktiengewinne per EUR-FIFO, Dividenden, Zinsen, Quellensteuer, Devisenergebnis, offene Positionen und § 8b-KStG-Überleitung – als PDF. Die Daten werden ausschließlich lokal im Browser verarbeitet.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "author": { "@type": "Person", "name": "Alexander Schneider", "url": "https://alexander-schneider.org" },
+  "publisher": { "@type": "Organization", "name": "Innos Capital GmbH" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "IBKR-Datenexport (Flex Query) für die Steuer erstellen",
+  "inLanguage": "de",
+  "description": "Flex-Query-XML-Export aus Interactive Brokers erzeugen, der für die steuerliche Auswertung benötigt wird.",
+  "step": [
+    { "@type": "HowToStep", "name": "Anmelden", "text": "Im IBKR Client Portal mit den Zugangsdaten einloggen." },
+    { "@type": "HowToStep", "name": "Flex-Queries aufrufen", "text": "Über das Menü zu Performance & Berichte → Flex-Queries wechseln." },
+    { "@type": "HowToStep", "name": "Kontoumsatz-Flex-Query anlegen", "text": "Neue Kontoumsatz-Flex-Query erstellen und die acht benötigten Datenabschnitte mit allen Feldern aktivieren." },
+    { "@type": "HowToStep", "name": "Exportieren", "text": "Query starten, Zeitraum auf Benutzerdefiniert (ein Jahr) stellen und als XML herunterladen; bei Bedarf mehrere Jahre exportieren." }
+  ]
+}
+</script>
+
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   /* ---- Report-Styling (bildschirm + druck identisch) ---- */
