@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IBKR Steuerreport-Tool (GmbH)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* ---- Report-Styling (bildschirm + druck identisch) ---- */
+  .rep { font-family: -apple-system,"Helvetica Neue",Arial,sans-serif; color:#1a2230; font-size:13px; line-height:1.55; }
+  .rep h2 { font-size:17px; color:#0f3d57; border-bottom:2px solid #0f3d57; padding-bottom:4px; margin:28px 0 12px; }
+  .rep h3 { font-size:14px; color:#14506f; margin:18px 0 7px; }
+  .rep table { width:100%; border-collapse:collapse; margin:10px 0 14px; font-size:12px; }
+  .rep th { background:#eef3f6; color:#0f3d57; text-align:left; padding:7px 9px; border-bottom:1.5px solid #c7d6df; font-weight:600; }
+  .rep td { padding:6px 9px; border-bottom:1px solid #e4ebef; vertical-align:top; }
+  .rep .num { text-align:right; white-space:nowrap; }
+  .rep .tot td { font-weight:700; background:#f4f8fa; border-top:1.5px solid #c7d6df; }
+  .rep .pos { color:#137a3f; } .rep .neg { color:#b3261e; }
+  .rep .note { background:#fff7e6; border-left:4px solid #e0a106; padding:11px 15px; border-radius:4px; margin:13px 0; font-size:12px; }
+  .rep .band { background:#0f3d57; color:#fff; padding:24px 28px; border-radius:8px; margin-bottom:18px; }
+  .rep .band .kicker { font-size:10px; letter-spacing:3px; text-transform:uppercase; opacity:.8; }
+  .rep .band h1 { font-size:24px; margin:6px 0 2px; font-weight:700; }
+  .rep .meta td { border:none; padding:3px 10px 3px 0; } .rep .meta td:first-child { color:#5a6b78; width:150px; }
+  .rep .footer { margin-top:26px; padding-top:9px; border-top:1px solid #c7d6df; font-size:11px; color:#7a8893; }
+  .rep ul { margin:6px 0; padding-left:20px; } .rep li { margin:4px 0; }
+  @page { size:A4; margin:16mm 14mm 18mm 14mm; }
+  @media print {
+    .no-print { display:none !important; }
+    body { background:#fff !important; }
+    #reportWrap { box-shadow:none !important; margin:0 !important; padding:0 !important; max-width:none !important; }
+    .pagebreak { page-break-before:always; }
+    .rep .band { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .rep th, .rep .tot td, .rep .note, .rep .band { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- ============ APP-CHROME (nicht gedruckt) ============ -->
+<div class="no-print">
+  <header class="bg-[#0f3d57] text-white">
+    <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+      <div>
+        <div class="text-[10px] tracking-[3px] uppercase opacity-70">Steuerreport-Tool · Kapitalgesellschaft</div>
+        <h1 class="text-xl font-bold">IBKR / CapTrader → GmbH-Steuerreport</h1>
+      </div>
+      <div class="text-xs opacity-80 text-right">FlexQuery-XML rein →<br>GmbH-Report als PDF raus</div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-6">
+    <!-- HAFTUNGSAUSSCHLUSS -->
+    <div class="mb-6 rounded-xl border-2 border-red-300 bg-red-50 p-5">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl leading-none">⚠️</span>
+        <div>
+          <p class="font-extrabold text-red-800 text-base">Haftungsausschluss — Nutzung auf eigene Gefahr</p>
+          <p class="text-sm text-red-900 mt-1">Dieses Tool ist eine <b>private Rechenhilfe ohne Gewähr</b> und stellt <b>keine Steuerberatung und keine steuerberatende Leistung</b> dar. Die Berechnungen erfolgen automatisiert auf Basis der hochgeladenen Datei und können Fehler enthalten. Es wird <b>keinerlei Haftung</b> für Richtigkeit, Vollständigkeit oder steuerliche Verwertbarkeit übernommen. Alle Ergebnisse sind vor jeder Verwendung von einer <b>Steuerberaterin/einem Steuerberater zu prüfen</b>. Die Verantwortung für die Steuererklärung liegt allein beim Steuerpflichtigen.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dropzone -->
+    <div id="drop" class="border-2 border-dashed border-slate-300 rounded-xl bg-white p-10 text-center cursor-pointer hover:border-[#14506f] transition">
+      <svg class="mx-auto h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+      <p class="mt-3 text-slate-700 font-medium">IBKR Flex-Query-XML hierher ziehen oder klicken</p>
+      <p class="text-xs text-slate-500 mt-1">z. B. <code>U7996752_2025.xml</code> · die Datei verlässt deinen Rechner nicht</p>
+      <input id="file" type="file" accept=".xml,text/xml,application/xml" class="hidden">
+    </div>
+
+    <!-- Steuerung (erscheint nach Laden) -->
+    <div id="controls" class="hidden mt-5 bg-white rounded-xl p-5 shadow-sm">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <label class="block"><span class="text-xs font-semibold text-slate-600">Gesellschaft</span>
+          <input id="cName" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" value="Innos Capital GmbH"></label>
+        <label class="block"><span class="text-xs font-semibold text-slate-600">Anschrift / StNr</span>
+          <input id="cAddr" class="mt-1 w-full border rounded-lg px-3 py-2 text-sm" value="Kolonnenstraße 8, 10827 Berlin · StNr 37/212/50704"></label>
+      </div>
+      <div class="mt-4 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+        <input id="abs7" type="checkbox" class="mt-1">
+        <label for="abs7" class="text-sm text-slate-700"><b>§ 8b Abs. 7 KStG anwenden</b> (GmbH als Finanzunternehmen mit Handelsbestand).
+          <span class="text-slate-500">Aktiv: Aktiengewinne/-verluste voll steuerwirksam (keine 95 %-Freistellung). Inaktiv (Standard): § 8b Abs. 2/3 → 95 % steuerfrei / Verlust n. abzb. <b>Vom Steuerberater zu entscheiden.</b></span></label>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button id="btnPdf" class="bg-[#0f3d57] text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-[#14506f]">📄 Bericht als PDF speichern</button>
+        <button id="btnNew" class="bg-slate-200 text-slate-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-300">Andere Datei laden</button>
+        <span class="text-xs text-slate-500 self-center">PDF: im Druckdialog „Als PDF sichern“ wählen.</span>
+      </div>
+    </div>
+
+    <div id="err" class="hidden mt-5 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 text-sm"></div>
+
+    <!-- ============ ANLEITUNG: IBKR-DATENEXPORT ============ -->
+    <section class="mt-8 bg-white rounded-xl shadow-sm p-7 text-slate-700 text-sm leading-relaxed">
+      <h2 class="text-lg font-bold text-[#0f3d57]">IBKR-Datenexport (Flex Query)</h2>
+      <p class="mt-2">Grundlage der Berechnung ist eine XML-Datei aus deinem Interactive-Brokers-Konto — im IBKR-Portal „Flex Query“ genannt. Das Einrichten kostet einmalig ein paar Minuten; danach ist der Export pro Jahr in Sekunden erledigt. Halte dich genau an die folgenden Werte, dann passt die Datei.</p>
+
+      <h3 class="font-semibold text-[#14506f] mt-5">1. Anmelden</h3>
+      <p>Im IBKR Client Portal mit deinen Zugangsdaten einloggen.</p>
+
+      <h3 class="font-semibold text-[#14506f] mt-4">2. Flex-Queries aufrufen</h3>
+      <p>Über das Menü zu <b>Performance &amp; Berichte → Flex-Queries</b> wechseln.</p>
+
+      <h3 class="font-semibold text-[#14506f] mt-4">3. Neue Kontoumsatz-Flex-Query anlegen</h3>
+      <p>Neben <i>„Kontoumsatz-Flex-Query“</i> auf das Plus (+) tippen und der neuen Abfrage einen Namen geben (etwa „Steuer-Export“).</p>
+
+      <p class="mt-3 font-semibold">a) Datenabschnitte auswählen</p>
+      <p>Nimm exakt die unten genannten acht Abschnitte auf — weiteres braucht das Tool nicht. Je nach Sprachversion heißen die Punkte minimal anders. Jeder Abschnitt hat zwei Teile: oben <b>Optionen</b> (dort den angegebenen Wert setzen), unten <b>Felder</b> (dort restlos jedes Feld anhaken).</p>
+      <table class="w-full mt-3 text-sm border-collapse">
+        <thead><tr class="bg-slate-100 text-left"><th class="p-2 border-b">Abschnitt</th><th class="p-2 border-b">Optionen</th><th class="p-2 border-b">Felder</th></tr></thead>
+        <tbody>
+          <tr><td class="p-2 border-b">Cash-Bericht</td><td class="p-2 border-b">„Währungsaufschlüsselung“</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Gewährung von Bezugsrechten</td><td class="p-2 border-b">–</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Kapitalflussrechnung (Statement of Funds)</td><td class="p-2 border-b">„Währungsaufschlüsselung“</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Kapitalmaßnahmen</td><td class="p-2 border-b">„Detail“</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Offene Positionen</td><td class="p-2 border-b">„Gesamtübersicht“</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Trades</td><td class="p-2 border-b">„Ausführung“</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Transfers</td><td class="p-2 border-b">„Transfer“</td><td class="p-2 border-b">Alle Felder</td></tr>
+          <tr><td class="p-2 border-b">Informationen zum Finanzinstrument</td><td class="p-2 border-b">–</td><td class="p-2 border-b">Alle Felder</td></tr>
+        </tbody>
+      </table>
+      <div class="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3 text-[13px]">
+        <b>Zwei Stolperfallen:</b> Die Felder sind anfangs leer — du musst sie in allen acht Abschnitten selbst setzen. Und: jeden Abschnitt einzeln unten rechts mit <b>„Speichern“</b> bestätigen, sonst wird die Auswahl verworfen.
+      </div>
+
+      <p class="mt-4 font-semibold">b) Zustellung festlegen</p>
+      <table class="w-full mt-2 text-sm border-collapse">
+        <thead><tr class="bg-slate-100 text-left"><th class="p-2 border-b">Einstellung</th><th class="p-2 border-b">Wert</th></tr></thead>
+        <tbody>
+          <tr><td class="p-2 border-b">Konten</td><td class="p-2 border-b">Dein IBKR-Konto auswählen</td></tr>
+          <tr><td class="p-2 border-b">Modelle</td><td class="p-2 border-b">Optional</td></tr>
+          <tr><td class="p-2 border-b">Format</td><td class="p-2 border-b">XML</td></tr>
+          <tr><td class="p-2 border-b">Zeitraum</td><td class="p-2 border-b">Letzte 30 Kalendertage (wird beim Export auf „Benutzerdefiniert“ geändert)</td></tr>
+        </tbody>
+      </table>
+
+      <p class="mt-4 font-semibold">c) Allgemeine Einstellungen</p>
+      <table class="w-full mt-2 text-sm border-collapse">
+        <thead><tr class="bg-slate-100 text-left"><th class="p-2 border-b">Einstellung</th><th class="p-2 border-b">Wert</th></tr></thead>
+        <tbody>
+          <tr><td class="p-2 border-b">Datumsformat</td><td class="p-2 border-b">yyyyMMdd</td></tr>
+          <tr><td class="p-2 border-b">Zeitformat</td><td class="p-2 border-b">HHmmss</td></tr>
+          <tr><td class="p-2 border-b">Trennzeichen</td><td class="p-2 border-b">; (Semikolon)</td></tr>
+          <tr><td class="p-2 border-b">Gewinn und Verlust</td><td class="p-2 border-b">Standard</td></tr>
+          <tr><td class="p-2 border-b">Gelöschte Transaktionen miteinbeziehen?</td><td class="p-2 border-b">Nein</td></tr>
+          <tr><td class="p-2 border-b">Wechselkurse miteinbeziehen?</td><td class="p-2 border-b">Nein</td></tr>
+          <tr><td class="p-2 border-b">Prüfpfadfelder einbeziehen?</td><td class="p-2 border-b">Nein</td></tr>
+          <tr><td class="p-2 border-b">Konto-Alias anzeigen statt ID?</td><td class="p-2 border-b">Nein</td></tr>
+          <tr><td class="p-2 border-b">Aufschlüsselung nach Tagen?</td><td class="p-2 border-b">Nein</td></tr>
+        </tbody>
+      </table>
+      <p class="mt-2">Mit <b>„Weiter“</b> bestätigen und anschließend <b>„Speichern“</b>.</p>
+
+      <h3 class="font-semibold text-[#14506f] mt-5">4. Exportieren und XML laden</h3>
+      <p>Die Query in der Liste markieren, auf <b>„Starten (→)“</b> gehen, den Zeitraum auf <b>„Benutzerdefiniert“</b> umstellen und ein Jahr eintragen.</p>
+      <ul class="list-disc pl-5 mt-2 space-y-1">
+        <li>Pro Abruf sind höchstens <b>365 Tage</b> möglich — also Jahr für Jahr getrennt ziehen (z. B. 01.01.2025 – 31.12.2025), Format <b>XML</b>.</li>
+        <li>Meist reicht die Historie bei IBKR <b>bis zu sieben Jahre</b> zurück. Hol dir möglichst alle Jahre, damit sämtliche Anschaffungskosten vorhanden sind.</li>
+        <li>Lässt sich ein Datum nicht setzen, nimm am Jahresanfang das früheste und am Jahresende das späteste wählbare Datum — dann fehlt nichts Steuerrelevantes.</li>
+        <li>Die Datei wird einige Minuten erzeugt; sobald sie fertig ist, erscheint der Download rechts.</li>
+      </ul>
+
+      <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-[13px]">
+        <b>Typische Fehlerquelle: fehlende Vorjahre.</b> Selbst für ein einzelnes Steuerjahr werden frühere Jahre fast immer gebraucht — die Anschaffungskosten liegen oft in der Vergangenheit, offene Positionen ziehen sich über Jahresgrenzen, Fremdwährungsbestände laufen weiter und FIFO setzt die lückenlose Kauf-/Verkaufshistorie voraus. Daher: am besten alle verfügbaren Jahre exportieren.
+      </div>
+      <p class="mt-3 text-xs text-slate-500">Dieses Tool verarbeitet derzeit eine XML (ein Jahr) pro Durchlauf. Wurde ein verkaufter Posten in einem Vorjahr gekauft, lade bei Bedarf zusätzlich die XML des betreffenden Jahres.</p>
+    </section>
+  </main>
+</div>
+
+<!-- ============ REPORT ============ -->
+<div id="reportWrap" class="hidden max-w-5xl mx-auto bg-white shadow-lg my-6 px-10 py-8 rep"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const drop=$('#drop'), fileInput=$('#file');
+let lastXmlText=null;
+
+// ---------- Datei laden ----------
+drop.addEventListener('click', ()=>fileInput.click());
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('border-[#14506f]','bg-slate-50');}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('border-[#14506f]','bg-slate-50');}));
+drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0]; if(f) readFile(f);});
+fileInput.addEventListener('change',ev=>{const f=ev.target.files[0]; if(f) readFile(f);});
+$('#btnNew').addEventListener('click',()=>{ $('#reportWrap').classList.add('hidden'); $('#controls').classList.add('hidden'); $('#drop').classList.remove('hidden'); $('#err').classList.add('hidden'); window.scrollTo(0,0); });
+$('#btnPdf').addEventListener('click',()=>window.print());
+$('#abs7').addEventListener('change',()=>{ if(lastXmlText) run(lastXmlText); });
+['#cName','#cAddr'].forEach(s=>$(s).addEventListener('input',()=>{ if(lastXmlText) run(lastXmlText); }));
+
+function readFile(f){
+  const r=new FileReader();
+  r.onload=()=>{ lastXmlText=r.result; try{ run(lastXmlText);}catch(e){ showErr('Verarbeitung fehlgeschlagen: '+e.message); console.error(e);} };
+  r.readAsText(f,'UTF-8');
+}
+function showErr(m){ const el=$('#err'); el.textContent=m; el.classList.remove('hidden'); }
+
+// ---------- Helfer ----------
+const N = x => parseFloat(x||0);
+const fmt = n => (n===null||n===undefined||isNaN(n)) ? '–' : n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const cls = n => n<0?'neg':'pos';
+const sign = n => (n>=0?'+':'') + fmt(n);
+
+// ---------- Kernberechnung (validiert gegen German Tax Report) ----------
+function compute(xmlText){
+  const doc = new DOMParser().parseFromString(xmlText,'application/xml');
+  if (doc.querySelector('parsererror')) throw new Error('XML konnte nicht gelesen werden.');
+  const A=(el,n)=>el.getAttribute(n);
+  const stmt = doc.querySelector('FlexStatement');
+  if(!stmt) throw new Error('Kein <FlexStatement> gefunden — ist das ein IBKR Flex-Query-Export?');
+  const meta={ account:A(stmt,'accountId'), from:A(stmt,'fromDate'), to:A(stmt,'toDate') };
+  meta.year = (meta.to||'').slice(0,4);
+
+  const trades=[...doc.querySelectorAll('Trade')];
+  const warn=[];
+  const others=new Set(trades.map(t=>A(t,'assetCategory')).filter(c=>c!=='STK'&&c!=='CASH'));
+  if(others.size) warn.push('Nicht abgedeckte Instrumente erkannt ('+[...others].join(', ')+') — Optionen/Futures/Anleihen/Fonds werden NICHT berechnet, bitte manuell ergänzen.');
+
+  // EUR-FIFO über Aktien (jede Seite zum eigenen Transaktionskurs)
+  const stk=trades.filter(t=>A(t,'assetCategory')==='STK')
+    .sort((a,b)=> (A(a,'tradeDate')+(A(a,'buySell')==='BUY'?'0':'1')).localeCompare(A(b,'tradeDate')+(A(b,'buySell')==='BUY'?'0':'1')) );
+  const lots={}; let gains=0, losses=0; const realized=[];
+  for(const t of stk){
+    const isin=A(t,'isin'), q=N(A(t,'quantity')), fx=N(A(t,'fxRateToBase'));
+    lots[isin]=lots[isin]||[];
+    if(A(t,'buySell')==='BUY'){
+      const eurCost=N(A(t,'cost'))*fx;            // cost in Handelswährung inkl. Provision → EUR
+      lots[isin].push({qty:q, eur:eurCost/q});
+    } else {
+      let sq=-q; const eurProc=(N(A(t,'proceeds'))+N(A(t,'ibCommission')))*fx; let mc=0,mq=0;
+      while(sq>1e-9 && lots[isin] && lots[isin].length){ const l=lots[isin][0]; const take=Math.min(sq,l.qty); mc+=take*l.eur; mq+=take; l.qty-=take; sq-=take; if(l.qty<1e-9) lots[isin].shift(); }
+      if(sq>1e-9) warn.push('Verkauf ohne (vollständige) Vorjahres-Anschaffung bei '+A(t,'symbol')+' — Anschaffungskosten ggf. unvollständig.');
+      const pnl=eurProc-mc; if(pnl>=0) gains+=pnl; else losses+=pnl;
+      realized.push({sym:A(t,'symbol'), isin, date:A(t,'tradeDate'), qty:mq, erloes:eurProc, ak:mc, pnl});
+    }
+  }
+
+  // Erträge aus StatementOfFundsLine (Basiswährung EUR = levelOfDetail "BaseCurrency")
+  const base=[...doc.querySelectorAll('StatementOfFundsLine')].filter(l=>A(l,'levelOfDetail')==='BaseCurrency');
+  const sum=(arr)=>arr.reduce((s,l)=>s+N(A(l,'amount')),0);
+  const divLines=base.filter(l=>A(l,'activityCode')==='DIV');
+  const dividends=sum(divLines);
+  const interest=sum(base.filter(l=>A(l,'activityCode')==='CINT'));
+  const frtax=base.filter(l=>A(l,'activityCode')==='FRTAX');
+  const intWht=sum(frtax.filter(l=>/Credit Interest/i.test(A(l,'activityDescription')||'')));
+  const divWht=sum(frtax.filter(l=>!/Credit Interest/i.test(A(l,'activityDescription')||'')));
+  const fxResult=sum(base.filter(l=>A(l,'activityCode')==='ADJ'));   // Cash-FX-Translation
+  const deposits=sum(base.filter(l=>A(l,'activityCode')==='DEP'));
+
+  // Dividenden je Wert
+  const divBySym={};
+  for(const l of divLines){ const s=A(l,'symbol')||'?'; (divBySym[s]=divBySym[s]||{isin:A(l,'isin'),div:0,wht:0}).div+=N(A(l,'amount')); }
+  for(const l of frtax.filter(l=>!/Credit Interest/i.test(A(l,'activityDescription')||''))){ const s=A(l,'symbol')||'?'; (divBySym[s]=divBySym[s]||{isin:A(l,'isin'),div:0,wht:0}).wht+=N(A(l,'amount')); }
+
+  // Offene Positionen
+  const pos=[...doc.querySelectorAll('OpenPosition')].map(p=>({
+    sym:A(p,'symbol'), isin:A(p,'isin'), qty:N(A(p,'position')),
+    ccy:A(p,'currency'), fx:N(A(p,'fxRateToBase')),
+    costUsd:N(A(p,'costBasisMoney')), valUsd:N(A(p,'positionValue')), unrUsd:N(A(p,'fifoPnlUnrealized')),
+  }));
+  pos.forEach(p=>{ p.costEur=p.costUsd*p.fx; p.valEur=p.valUsd*p.fx; p.unrEur=p.unrUsd*p.fx; });
+  const posTot={cost:pos.reduce((s,p)=>s+p.costEur,0), val:pos.reduce((s,p)=>s+p.valEur,0), unr:pos.reduce((s,p)=>s+p.unrEur,0)};
+  pos.sort((a,b)=>b.unrEur-a.unrEur);
+  if(pos.some(p=>!p.costUsd)) warn.push('Mindestens eine offene Position ohne Anschaffungskosten — Vorjahresdaten prüfen.');
+
+  // Cash zum Jahresende (EUR-Äquivalent) für grobe Vermögensübersicht
+  const cashRows=[...doc.querySelectorAll('CashReportCurrency')];
+  let cashEur=0; cashRows.forEach(c=>{ const cur=A(c,'currency'); const end=N(A(c,'endingCash')); cashEur += cur==='EUR'? end : end*posFx(pos); });
+  function posFx(){ const p=pos.find(x=>x.ccy==='USD'); return p?p.fx:1; }
+
+  return { meta, warn, realized, gains, losses, net:gains+losses, dividends, divWht, interest, intWht, fxResult, deposits, divBySym, pos, posTot, cashEur,
+           counts:{trades:trades.length, stk:stk.length, pos:pos.length, divs:divLines.length} };
+}
+
+// ---------- Rendering ----------
+function run(xmlText){
+  const m=compute(xmlText);
+  const abs7=$('#abs7').checked;
+  const cName=$('#cName').value, cAddr=$('#cAddr').value;
+  $('#err').classList.add('hidden');
+
+  // §8b-Korrekturen
+  const G=m.gains, L=Math.abs(m.losses);
+  let gk=[]; let steuerErgebnisAktien;
+  if(!abs7){
+    gk.push(['§ 8b Abs. 2 — steuerfreier Veräußerungsgewinn (Kürzung)', -G]);
+    gk.push(['§ 8b Abs. 3 S. 1 — 5 % nichtabziehbare BA (Hinzurechnung)', +0.05*G]);
+    if(L>0) gk.push(['§ 8b Abs. 3 S. 3 — nicht abziehbarer Veräußerungsverlust (Hinzurechnung)', +L]);
+    steuerErgebnisAktien = 0.05*G;   // nur 5 % der Gewinne verbleiben steuerpflichtig
+  } else {
+    steuerErgebnisAktien = G - L;    // voll steuerwirksam
+  }
+  // steuerpflichtiges Depot-Ergebnis (vereinfachte Näherung)
+  const stpfl = m.interest + m.dividends + steuerErgebnisAktien + m.fxResult;
+
+  const r=$('#reportWrap');
+  const today=new Date().toLocaleDateString('de-DE');
+  const yr=m.meta.year||'';
+  const modeTxt = abs7 ? '§ 8b Abs. 7 KStG angewandt (Finanzunternehmen/Handelsbestand) — Aktienergebnisse voll steuerwirksam'
+                       : '§ 8b Abs. 2/3 KStG (Standard) — Veräußerungsgewinne 95 % steuerfrei, Verluste nicht abziehbar';
+
+  const warnHtml = m.warn.length ? `<div class="note"><b>Hinweise zur Datenqualität:</b><ul>${m.warn.map(w=>`<li>${w}</li>`).join('')}</ul></div>` : '';
+
+  const realizedRows = m.realized.map(x=>`<tr><td>${x.sym}</td><td>${x.isin}</td><td>${fmtDate(x.date)}</td><td class="num">${x.qty}</td><td class="num">${fmt(x.erloes)}</td><td class="num">${fmt(x.ak)}</td><td class="num ${cls(x.pnl)}">${sign(x.pnl)}</td></tr>`).join('');
+
+  const divRows = Object.entries(m.divBySym).filter(([,v])=>v.div).sort((a,b)=>b[1].div-a[1].div)
+    .map(([s,v])=>`<tr><td>${s}</td><td>${v.isin||''}</td><td class="num">${fmt(v.div)}</td><td class="num">${fmt(-v.wht)}</td><td class="num">${fmt(Math.abs(v.wht)/2)}</td></tr>`).join('');
+
+  const posRows = m.pos.map(p=>`<tr><td>${p.sym}</td><td>${p.isin}</td><td class="num">${p.qty}</td><td class="num">${fmt(p.costUsd)}</td><td class="num">${fmt(p.valUsd)}</td><td class="num ${cls(p.unrUsd)}">${sign(p.unrUsd)}</td></tr>`).join('');
+
+  const gkRows = gk.map(([t,v])=>`<tr><td>Anlage GK (außerbilanziell)</td><td>${t}</td><td class="num">${sign(v)}</td></tr>`).join('');
+
+  r.innerHTML = `
+  <div class="band">
+    <div class="kicker">Steuerreport · Kapitalgesellschaft</div>
+    <h1>Steuerreport ${yr} — Depot ${m.meta.account||''}</h1>
+    <div style="opacity:.9;font-size:12px">Kapitalerträge eines Interactive-Brokers-/CapTrader-Depots — GmbH-gerecht aufbereitet</div>
+  </div>
+  <table class="meta">
+    <tr><td>Gesellschaft</td><td><b>${cName}</b> · ${cAddr}</td></tr>
+    <tr><td>Broker / Konto</td><td>Interactive Brokers (CapTrader), Depot ${m.meta.account||''}</td></tr>
+    <tr><td>Steuerjahr</td><td>${fmtDate(m.meta.from)} – ${fmtDate(m.meta.to)}</td></tr>
+    <tr><td>Datenbasis</td><td>IBKR Flex-Query XML · ${m.counts.trades} Trades · ${m.counts.pos} offene Positionen</td></tr>
+    <tr><td>Bewertung</td><td>FIFO je ISIN, EUR je Transaktion zum Handelstageskurs (fxRateToBase)</td></tr>
+    <tr><td>Annahme § 8b</td><td>${modeTxt}</td></tr>
+    <tr><td>Erstellt</td><td>${today}</td></tr>
+  </table>
+
+  <div class="note"><b>GmbH-Hinweis:</b> Übliche Broker-Steuerreports rechnen für Privatanleger (Anlage KAP, § 20 EStG). Für eine GmbH gilt das nicht — alle Erträge gehören in die GuV (KSt + GewSt); § 8b-Korrekturen erfolgen außerbilanziell in der Anlage GK. Keine Steuerberatung.</div>
+  ${warnHtml}
+
+  <h2>1. Steuerzusammenfassung</h2>
+  <table>
+    <tr><th>Kategorie</th><th class="num">Gewinn/Ertrag</th><th class="num">Verlust/Steuer</th><th class="num">Ergebnis</th><th>GmbH-Behandlung</th></tr>
+    <tr><td>Zinsen</td><td class="num">${fmt(m.interest)}</td><td class="num">–</td><td class="num pos">${sign(m.interest)}</td><td>voll steuerpflichtig</td></tr>
+    <tr><td>Dividenden (US)</td><td class="num">${fmt(m.dividends)}</td><td class="num">–</td><td class="num pos">${sign(m.dividends)}</td><td>§ 8b Abs. 4 Streubesitz → voll stpfl.</td></tr>
+    <tr><td>Aktien-Veräußerung</td><td class="num">${fmt(G)}</td><td class="num">${fmt(m.losses)}</td><td class="num ${cls(m.net)}">${sign(m.net)}</td><td>${abs7?'§ 8b Abs. 7 → voll steuerwirksam':'§ 8b Abs. 2/3 → 95 % steuerfrei / Verlust n. abzb.'}</td></tr>
+    <tr><td>Devisenergebnis (USD-Cash)</td><td class="num">–</td><td class="num">${fmt(m.fxResult)}</td><td class="num ${cls(m.fxResult)}">${sign(m.fxResult)}</td><td>voll wirksam (kein § 8b)</td></tr>
+    <tr class="tot"><td>Steuerpflichtiges Depot-Ergebnis (Näherung)</td><td class="num"></td><td class="num"></td><td class="num ${cls(stpfl)}">${sign(stpfl)}</td><td>nach § 8b-Überleitung</td></tr>
+  </table>
+
+  <h3>1.2 Ausländische Quellensteuern</h3>
+  <table>
+    <tr><th>Quelle</th><th class="num">Einbehalten</th><th class="num">DE anrechenbar</th><th>Hinweis</th></tr>
+    <tr><td>US-Dividenden (30 %)</td><td class="num">${fmt(-m.divWht)}</td><td class="num">${fmt(Math.abs(m.divWht)/2)}</td><td>DBA-Höchstsatz 15 %; Über-Einbehalt zurückfordern</td></tr>
+    <tr><td>Irische Zinsen (20 %)</td><td class="num">${fmt(-m.intWht)}</td><td class="num">0,00</td><td>DBA DE-IE Art. 11 → 0 %; Erstattung in IE via R-185</td></tr>
+  </table>
+
+  <h3>1.3 Übertragungshilfe</h3>
+  <table>
+    <tr><th>Ziel</th><th>Position</th><th class="num">Betrag (EUR)</th></tr>
+    <tr><td>GuV / Steuerbilanz</td><td>Zinserträge</td><td class="num">${sign(m.interest)}</td></tr>
+    <tr><td>GuV / Steuerbilanz</td><td>Dividendenerträge (brutto)</td><td class="num">${sign(m.dividends)}</td></tr>
+    <tr><td>GuV / Steuerbilanz</td><td>Ergebnis Wertpapierveräußerung (netto)</td><td class="num">${sign(m.net)}</td></tr>
+    <tr><td>GuV / Steuerbilanz</td><td>Währungsergebnis USD-Konto</td><td class="num">${sign(m.fxResult)}</td></tr>
+    ${gkRows}
+    <tr><td>Anrechnung (§ 26 KStG)</td><td>anrechenbare US-Quellensteuer (15 %)</td><td class="num">${fmt(Math.abs(m.divWht)/2)}</td></tr>
+  </table>
+
+  <div class="pagebreak"></div>
+  <h2>2. Realisierte Aktien-Veräußerungen ${yr} (EUR-FIFO)</h2>
+  <table>
+    <tr><th>Wert</th><th>ISIN</th><th>Verkauf</th><th class="num">Stück</th><th class="num">Erlös</th><th class="num">AK</th><th class="num">Ergebnis</th></tr>
+    ${realizedRows||'<tr><td colspan="7">Keine realisierten Verkäufe im Steuerjahr.</td></tr>'}
+    <tr class="tot"><td colspan="6">Summe (Gewinne ${fmt(G)} / Verluste ${fmt(m.losses)})</td><td class="num ${cls(m.net)}">${sign(m.net)}</td></tr>
+  </table>
+
+  <h2>3. Laufende Erträge</h2>
+  <h3>3.1 Zinsen</h3>
+  <p style="font-size:12px">Gesamt <b>${fmt(m.interest)} €</b>, irische Quellensteuer (20 %) <b>${fmt(-m.intWht)} €</b>. Voll steuerpflichtig.</p>
+  <h3>3.2 Dividenden &amp; Quellensteuer</h3>
+  <table>
+    <tr><th>Symbol</th><th>ISIN</th><th class="num">Dividende</th><th class="num">US-QSt (30 %)</th><th class="num">anrechenbar (15 %)</th></tr>
+    ${divRows||'<tr><td colspan="5">Keine Dividenden.</td></tr>'}
+    <tr class="tot"><td>Summe</td><td></td><td class="num">${fmt(m.dividends)}</td><td class="num">${fmt(-m.divWht)}</td><td class="num">${fmt(Math.abs(m.divWht)/2)}</td></tr>
+  </table>
+  <h3>3.3 Devisenergebnis (USD-Cash)</h3>
+  <p style="font-size:12px">Cash-FX-Translation lt. IBKR-Anpassung: <b class="${cls(m.fxResult)}">${sign(m.fxResult)} €</b>. Voll wirksamer Aufwand/Ertrag; keine § 8b-Relevanz (betrifft das Geldkonto). Abgrenzung realisiert/unrealisiert (§ 256a HGB) vom Steuerberater vornehmen.</p>
+
+  <div class="pagebreak"></div>
+  <h2>4. Offene Positionen zum ${fmtDate(m.meta.to)} (${m.pos.length} Werte)</h2>
+  <table>
+    <tr><th>Symbol</th><th>ISIN</th><th class="num">Stück</th><th class="num">AK (USD)</th><th class="num">Marktwert (USD)</th><th class="num">Unrealisiert (USD)</th></tr>
+    ${posRows}
+    <tr class="tot"><td>Summe (USD)</td><td></td><td class="num">${m.pos.reduce((s,p)=>s+p.qty,0)}</td><td class="num">${fmt(m.posTot && m.pos.reduce((s,p)=>s+p.costUsd,0))}</td><td class="num">${fmt(m.pos.reduce((s,p)=>s+p.valUsd,0))}</td><td class="num pos">${sign(m.pos.reduce((s,p)=>s+p.unrUsd,0))}</td></tr>
+    <tr class="tot"><td>in EUR (Stichtagskurs)</td><td></td><td class="num"></td><td class="num">${fmt(m.posTot.cost)}</td><td class="num">${fmt(m.posTot.val)}</td><td class="num pos">${sign(m.posTot.unr)}</td></tr>
+  </table>
+  <div class="note"><b>HGB-Bewertung (sofern § 8b Abs. 7 nicht greift):</b> Einzelbewertung, Imparitätsprinzip. Unrealisierte Gewinne bleiben unberücksichtigt; bei unrealisierten Verlusten Teilwertabschreibung nur bei voraussichtlich dauerhafter Wertminderung (§ 6 Abs. 1 Nr. 2 EStG). AK-Umrechnung hier zum Stichtagskurs — für die Bilanz historische Anschaffungstageskurse verwenden.</div>
+
+  <h2>5. Datengrundlage &amp; Methodik</h2>
+  <ul>
+    <li>Quelle: IBKR Flex-Query XML (${m.counts.trades} Trades, ${m.counts.divs} Dividendenbuchungen, ${m.counts.pos} offene Positionen).</li>
+    <li>Realisierte Ergebnisse: <b>FIFO je ISIN</b>, jede Kauf-/Verkaufsseite zum Handelstageskurs in EUR (entspricht der Methode des German Tax Report / der gesetzlichen Vorgabe; weicht bewusst von der reinen USD-P&amp;L×Spotkurs-Darstellung ab).</li>
+    <li>Erträge/Quellensteuern: aus <code>StatementOfFundsLine</code> (Basiswährung EUR). Quellensteuer getrennt nach irischer Zinssteuer und US-Dividendensteuer.</li>
+    <li>§ 8b Abs. 7 KStG (Handelsbestand/Finanzunternehmen): über den Schalter umschaltbar — Einordnung trifft der Steuerberater.</li>
+    <li>Keine Steuerberatung; strukturierte Datenaufbereitung. Optionen/Futures/Fonds (InvStG) werden nicht berechnet.</li>
+  </ul>
+
+  <div class="footer">${cName} · Depot ${m.meta.account||''} · Steuerjahr ${yr} · erstellt ${today} mit dem IBKR-Steuerreport-Tool (GmbH). Dies ist keine Steuerberatung.</div>
+  `;
+  $('#drop').classList.add('hidden');
+  $('#controls').classList.remove('hidden');
+  r.classList.remove('hidden');
+  document.title = `Steuerreport ${yr} – ${m.meta.account||''}`;
+}
+function fmtDate(d){ if(!d||d.length<8) return d||''; return d.slice(6,8)+'.'+d.slice(4,6)+'.'+d.slice(0,4); }
+</script>
+</body>
+</html>
