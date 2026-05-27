@@ -56,7 +56,21 @@
 }
 </script>
 
+<link rel="stylesheet" href="shared-tool-styles.css">
 <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Chrome neben dem Report: gleiche Gutter & Inhaltsbreite wie die übrigen Tools */
+  .content-col { flex: 1; min-width: 0; padding: 3rem 2rem; }
+  /* content-col liefert den Gutter; das geerbte main-Padding würde ihn verdoppeln */
+  .content-col > main { padding: 0; }
+  .content-col > main, #reportWrap { max-width: 1000px; margin-left: auto; margin-right: auto; }
+  @media (max-width: 768px) { .content-col { padding: 2rem 1rem; } }
+  @media print {
+    .site-header, .sidebar { display: none !important; }
+    .layout { display: block; }
+    .content-col { padding: 0 !important; }
+  }
+</style>
 <style>
   /* ---- Report-Styling (bildschirm + druck identisch) ---- */
   .rep { font-family: -apple-system,"Helvetica Neue",Arial,sans-serif; color:#1a2230; font-size:13px; line-height:1.55; }
@@ -86,21 +100,38 @@
   }
 </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="min-h-screen">
 
 <!-- ============ APP-CHROME (nicht gedruckt) ============ -->
-<div class="no-print">
-  <header class="bg-[#0f3d57] text-white">
-    <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-      <div>
-        <div class="text-[10px] tracking-[3px] uppercase opacity-70">Steuerreport-Tool · Kapitalgesellschaft</div>
-        <h1 class="text-xl font-bold">IBKR / CapTrader → GmbH-Steuerreport</h1>
-      </div>
-      <div class="text-xs opacity-80 text-right">FlexQuery-XML rein →<br>GmbH-Report als PDF raus</div>
-    </div>
-  </header>
+<header class="site-header no-print">
+  <a href="/" class="site-title">AS Toolbox</a>
+  <a href="/" class="site-home">Startseite</a>
+</header>
 
-  <main class="max-w-5xl mx-auto px-6 py-6">
+<div class="layout">
+  <aside class="sidebar no-print">
+    <nav class="tool-nav" aria-label="Tools">
+      <p class="nav-heading">Tools</p>
+      <ul>
+        <li><a href="toplevel-domain-filter.html">Toplevel Domain Filter</a></li>
+        <li><a href="divvy-diary-csv-tool.html">MoneyMoney zu DivvyDiary CSV Generator</a></li>
+        <li><a href="list-formatter-tool.html">List Formatter Tool</a></li>
+        <li><a href="zeitdifferenz-rechner.html">Zeitdifferenz-Rechner</a></li>
+        <li><a href="cloudflare-domain-preise.html">Cloudflare Domain Preise</a></li>
+        <li><a href="word-counter.html">Wörter zählen</a></li>
+        <li><a href="url-content-copy.html">URL Content Copy Tool</a></li>
+        <li><a href="desktop-website-viewer.html">Desktop Website Viewer</a></li>
+        <li><a href="sec-aktien-suche.html">SEC Aktien Ticker Suche</a></li>
+        <li><a href="ibkr-steuerreport-gmbh.html" class="active" aria-current="page">IBKR Steuerreport (GmbH)</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="content-col">
+  <main class="no-print">
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900">IBKR / CapTrader → GmbH-Steuerreport</h1>
+    <p class="text-slate-500 text-lg mt-1 mb-6">Flex-Query-XML hochladen und einen GmbH-gerechten Steuerreport (EUR-FIFO, § 8b KStG, Quellensteuer, offene Positionen) als PDF erstellen — alle Daten bleiben lokal im Browser.</p>
+
     <!-- HAFTUNGSAUSSCHLUSS -->
     <div class="mb-6 rounded-xl border-2 border-red-300 bg-red-50 p-5">
       <div class="flex items-start gap-3">
@@ -218,10 +249,11 @@
       <p class="mt-3 text-xs text-slate-500">Dieses Tool verarbeitet derzeit eine XML (ein Jahr) pro Durchlauf. Wurde ein verkaufter Posten in einem Vorjahr gekauft, lade bei Bedarf zusätzlich die XML des betreffenden Jahres.</p>
     </section>
   </main>
-</div>
 
-<!-- ============ REPORT ============ -->
-<div id="reportWrap" class="hidden max-w-5xl mx-auto bg-white shadow-lg my-6 px-10 py-8 rep"></div>
+  <!-- ============ REPORT ============ -->
+  <div id="reportWrap" class="hidden bg-white shadow-lg my-6 px-10 py-8 rep"></div>
+  </div><!-- /.content-col -->
+</div><!-- /.layout -->
 
 <script>
 const $ = s => document.querySelector(s);

@@ -164,11 +164,30 @@
     </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="/">Zurück zur Startseite</a>
-        </nav>
+    <header class="site-header">
+        <a href="/" class="site-title">AS Toolbox</a>
+        <a href="/" class="site-home">Startseite</a>
     </header>
+
+    <div class="layout">
+    <aside class="sidebar">
+        <nav class="tool-nav" aria-label="Tools">
+            <p class="nav-heading">Tools</p>
+            <ul>
+                <li><a href="toplevel-domain-filter.html">Toplevel Domain Filter</a></li>
+                <li><a href="divvy-diary-csv-tool.html">MoneyMoney zu DivvyDiary CSV Generator</a></li>
+                <li><a href="list-formatter-tool.html">List Formatter Tool</a></li>
+                <li><a href="zeitdifferenz-rechner.html">Zeitdifferenz-Rechner</a></li>
+                <li><a href="cloudflare-domain-preise.html" class="active" aria-current="page">Cloudflare Domain Preise</a></li>
+                <li><a href="word-counter.html">Wörter zählen</a></li>
+                <li><a href="url-content-copy.html">URL Content Copy Tool</a></li>
+                <li><a href="desktop-website-viewer.html">Desktop Website Viewer</a></li>
+                <li><a href="sec-aktien-suche.html">SEC Aktien Ticker Suche</a></li>
+                <li><a href="ibkr-steuerreport-gmbh.html">IBKR Steuerreport (GmbH)</a></li>
+            </ul>
+        </nav>
+    </aside>
+
 
     <main>
         <div class="container">
@@ -267,6 +286,7 @@
             </div>
         </div>
     </main>
+    </div>
 
     <script>
         const domainData = [
