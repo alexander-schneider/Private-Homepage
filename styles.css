@@ -18,11 +18,10 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--primary);
-    background: var(--background);
-    background-image: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(135, 206, 235, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(152, 251, 152, 0.05) 0%, transparent 50%);
+    background-color: var(--background);
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+    background-position: 0 0;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -432,10 +431,7 @@ h2 {
     }
     
     body {
-        background-image: 
-            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(135, 206, 235, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(152, 251, 152, 0.08) 0%, transparent 50%);
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
     }
     
     .tools-grid a,
