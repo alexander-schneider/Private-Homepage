@@ -153,12 +153,15 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            thead { background: #222; }
-            th:hover { background: #333; }
+            thead { background: #1a1d22; color: #e8eaed; }
+            th:hover { background: #262a31; }
+            .table-container { background: var(--input-bg); }
+            .download-btn { background: var(--primary); color: var(--background); }
+            .download-btn:hover { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
             .highlight-note {
-                background: #332d00;
-                border-color: #665a00;
-                color: #ffc107;
+                background: rgba(245, 158, 11, 0.08);
+                border-color: rgba(245, 158, 11, 0.4);
+                color: #e8d896;
             }
         }
     </style>

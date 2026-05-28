@@ -583,17 +583,36 @@ button:disabled {
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
     :root {
-        --primary: #fff;
-        --secondary: #999;
-        --background: #000;
-        --hover: #111;
-        --accent: #4d94ff;
-        --border: #333;
-        --input-bg: #0a0a0a;
-        --success: #10b981;
-        --success-hover: #34d399;
-        --danger: #ff6b6b;
+        --primary: #e8eaed;
+        --secondary: #9aa0a6;
+        --background: #0b0d10;
+        --hover: #1a1d22;
+        --accent: #5b9eff;
+        --border: #262a31;
+        --input-bg: #14171c;
+        --success: #34d399;
+        --success-hover: #10b981;
+        --danger: #f87171;
         --error: #f87171;
+    }
+
+    /* Slight surface tint helps depth: section cards sit on top of body */
+    .tool-content,
+    .tool-section,
+    .input-section,
+    .output-section,
+    .text-area-section,
+    .stats-section,
+    .calculator,
+    .disclaimer {
+        background: var(--input-bg);
+        border-color: var(--border);
+    }
+
+    .instructions,
+    .code-example {
+        background: #1a1d22;
+        border-color: var(--border);
     }
 
     textarea,
@@ -601,59 +620,76 @@ button:disabled {
     input[type="url"],
     .search-input,
     .url-input {
-        background: #111;
+        background: #0f1216;
         color: var(--primary);
+        border-color: var(--border);
+    }
+
+    textarea::placeholder,
+    input[type="text"]::placeholder,
+    input[type="url"]::placeholder {
+        color: #6b7177;
     }
 
     select {
-        background-color: #111;
+        background-color: #0f1216;
         color: var(--primary);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+        border-color: var(--border);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239aa0a6' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 0.75rem center;
     }
 
+    /* Solid primary button: invert so it pops on the dark surface */
     button {
         background: var(--primary);
-        color: var(--background);
+        color: #0b0d10;
+        border-color: var(--primary);
     }
 
     button:hover:not(:disabled) {
-        background: var(--background);
+        background: transparent;
         color: var(--primary);
         border-color: var(--primary);
     }
 
     .success-button {
         background: var(--success);
-        color: var(--background);
+        color: #0b0d10;
         border-color: var(--success);
     }
 
     .success-button:hover:not(:disabled) {
-        background: var(--background);
+        background: transparent;
         color: var(--success);
+        border-color: var(--success);
     }
 
     .secondary-button {
-        background: var(--background);
+        background: transparent;
         color: var(--primary);
+        border-color: var(--border);
     }
 
     .secondary-button:hover:not(:disabled) {
         background: var(--hover);
+        border-color: var(--primary);
     }
 
-    .instructions {
-        background: #0a0a0a;
+    /* Site header sits flush with body, but a touch of contrast helps */
+    .site-header {
+        background: rgba(11, 13, 16, 0.92);
+        backdrop-filter: saturate(140%) blur(8px);
+        -webkit-backdrop-filter: saturate(140%) blur(8px);
     }
 
-    .code-example {
-        background: #0a0a0a;
-        border: 1px solid var(--border);
+    .sidebar {
+        background: var(--background);
+        border-color: var(--border);
     }
 
     .error-message {
-        background: rgba(248, 113, 113, 0.1);
+        background: rgba(248, 113, 113, 0.08);
+        color: var(--error);
     }
 }

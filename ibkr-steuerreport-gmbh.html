@@ -98,6 +98,63 @@
     .rep .band { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     .rep th, .rep .tot td, .rep .note, .rep .band { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
+
+  /* ---- Dark-Mode-Overrides für Bildschirm (Druck bleibt hell) ---- */
+  @media screen and (prefers-color-scheme: dark) {
+    /* Tailwind-Utility-Klassen, die im Markup verwendet werden, an das Theme anpassen */
+    .bg-white { background-color: #14171c !important; }
+    .bg-red-50 { background-color: rgba(248, 113, 113, 0.08) !important; }
+    .bg-amber-50 { background-color: rgba(245, 158, 11, 0.08) !important; }
+    .bg-slate-50 { background-color: #1a1d22 !important; }
+    .bg-slate-100 { background-color: #1a1d22 !important; }
+    .bg-slate-200 { background-color: #262a31 !important; }
+
+    .border-red-300, .border-red-200 { border-color: rgba(248, 113, 113, 0.4) !important; }
+    .border-amber-200 { border-color: rgba(245, 158, 11, 0.4) !important; }
+    .border-slate-300, .border-slate-200 { border-color: #262a31 !important; }
+
+    .text-red-800, .text-red-900 { color: #fca5a5 !important; }
+    .text-slate-900 { color: #e8eaed !important; }
+    .text-slate-700 { color: #d2d5da !important; }
+    .text-slate-600 { color: #b6bac1 !important; }
+    .text-slate-500 { color: #9aa0a6 !important; }
+    .text-slate-400 { color: #7e848c !important; }
+
+    .shadow-sm, .shadow-lg {
+      box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 0 0 1px #262a31 !important;
+    }
+
+    #drop {
+      background-color: #14171c !important;
+      border-color: #2f343c !important;
+    }
+    #drop:hover { border-color: #5b9eff !important; }
+
+    /* Hover-Klassen, die per JS aktiviert werden */
+    .bg-slate-50.\\!bg-slate-50,
+    .hover\\:bg-slate-300:hover { background-color: #262a31 !important; }
+
+    /* Report (.rep) – auf Bildschirm in Dark Mode lesbar machen */
+    #reportWrap.rep, .rep {
+      color: #d2d5da !important;
+      background: #14171c !important;
+    }
+    .rep h2 { color: #8fbcff !important; border-bottom-color: #2f4a64 !important; }
+    .rep h3 { color: #a8cdff !important; }
+    .rep th { background: #1a2230 !important; color: #a8cdff !important; border-bottom-color: #2f4a64 !important; }
+    .rep td { border-bottom-color: #262a31 !important; }
+    .rep .tot td { background: #1a2230 !important; border-top-color: #2f4a64 !important; }
+    .rep .pos { color: #34d399 !important; }
+    .rep .neg { color: #f87171 !important; }
+    .rep .note {
+      background: rgba(245, 158, 11, 0.08) !important;
+      border-left-color: #e0a106 !important;
+      color: #e8eaed !important;
+    }
+    .rep .band { background: #0f3d57 !important; color: #fff !important; }
+    .rep .meta td:first-child { color: #9aa0a6 !important; }
+    .rep .footer { color: #7e848c !important; border-top-color: #262a31 !important; }
+  }
 </style>
 </head>
 <body class="min-h-screen">

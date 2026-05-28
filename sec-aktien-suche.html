@@ -216,12 +216,15 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            thead { background: #222; }
-            th:hover { background: #333; }
+            thead { background: #1a1d22; color: #e8eaed; }
+            th:hover { background: #262a31; }
+            .table-container { background: var(--input-bg); }
+            .download-btn { background: var(--primary); color: var(--background); }
+            .download-btn:hover { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
             .highlight-note {
-                background: #001a33;
-                border-color: #003366;
-                color: #b3d9f2;
+                background: rgba(91, 158, 255, 0.08);
+                border-color: rgba(91, 158, 255, 0.35);
+                color: #cdd6e2;
             }
         }
     </style>
