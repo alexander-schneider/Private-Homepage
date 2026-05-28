@@ -150,51 +150,63 @@ h2 {
 }
 
 .social-links a {
-    padding: 0.5rem 1.25rem;
+    padding: 0.75rem 1.125rem;
     border: 1px solid var(--border);
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
+    background: var(--background);
     color: var(--primary);
     text-decoration: none;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .social-links a:hover {
-    background: var(--primary);
-    color: var(--background);
     border-color: var(--primary);
+    background: var(--hover);
 }
 
-.tools-list {
+.tools-grid {
     list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
 }
 
-.tools-list li {
-    margin-bottom: 0.75rem;
+.tools-grid li {
+    margin: 0;
 }
 
-.tools-list a {
+.tools-grid a {
+    display: block;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--background);
     color: var(--primary);
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: color 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.tools-list a::before {
-    content: "→";
-    margin-right: 0.75rem;
+.tools-grid a:hover {
+    border-color: var(--primary);
+    background: var(--hover);
+}
+
+.tools-grid .tool-name {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    letter-spacing: -0.005em;
+    margin-bottom: 0.15rem;
+}
+
+.tools-grid .tool-desc {
+    display: block;
+    font-size: 0.8125rem;
     color: var(--secondary);
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.tools-list a:hover {
-    color: var(--accent);
-}
-
-.tools-list a:hover::before {
-    transform: translateX(0.25rem);
-    color: var(--accent);
+    line-height: 1.35;
 }
 
 /* Pitch Deck Drop Zone */
@@ -390,59 +402,22 @@ h2 {
     }
     
     .social-links {
-        gap: 0.75rem;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         width: 100%;
-    }
-    
-    .social-links a {
-        padding: 0.75rem 1.5rem;
-        text-align: center;
-        font-size: 0.9375rem;
-        border-radius: 0.5rem;
-        background: var(--hover);
-        border-color: transparent;
-        width: 100%;
-        max-width: 280px;
-    }
-    
-    .tools-list {
-        text-align: left;
         max-width: 280px;
         margin: 0 auto;
     }
-    
-    .tools-list li {
-        margin-bottom: 1rem;
+
+    .social-links a {
+        text-align: center;
     }
-    
-    .tools-list a {
-        font-size: 0.9375rem;
-        padding: 0.75rem 1rem;
-        background: var(--hover);
-        border-radius: 0.5rem;
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        align-items: center;
+
+    .tools-grid {
+        grid-template-columns: 1fr;
+        max-width: 280px;
+        margin: 0 auto;
         text-align: left;
-    }
-    
-    .tools-list a::before {
-        content: "";
-        order: 2;
-    }
-    
-    .tools-list a::after {
-        content: "→";
-        color: var(--secondary);
-        transition: transform 0.2s ease, color 0.2s ease;
-    }
-    
-    .tools-list a:hover::after {
-        transform: translateX(0.25rem);
-        color: var(--accent);
     }
 }
 
@@ -463,12 +438,17 @@ h2 {
             radial-gradient(circle at 40% 40%, rgba(152, 251, 152, 0.08) 0%, transparent 50%);
     }
     
+    .tools-grid a,
+    .social-links a {
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tools-grid a:hover,
     .social-links a:hover {
-        background: var(--primary);
-        color: var(--background);
+        background: rgba(255, 255, 255, 0.05);
         border-color: var(--primary);
     }
-    
+
     .pitch-drop-zone {
         border-color: var(--border);
         background: rgba(255, 255, 255, 0.02);
@@ -498,11 +478,4 @@ h2 {
         background: var(--border);
     }
 
-    @media (max-width: 640px) {
-        .social-links a,
-        .tools-list a {
-            background: var(--hover);
-            border-color: var(--border);
-        }
-    }
 }
