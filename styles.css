@@ -395,27 +395,23 @@ h2 {
         font-size: 0.9375rem;
     }
     
-    .pitch-drop-zone {
-        max-width: 280px;
-        margin: 0 auto;
-    }
-    
     .social-links {
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.625rem;
         width: 100%;
-        max-width: 280px;
-        margin: 0 auto;
     }
 
     .social-links a {
         text-align: center;
     }
 
+    .social-links a:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+
     .tools-grid {
         grid-template-columns: 1fr;
-        max-width: 280px;
-        margin: 0 auto;
         text-align: left;
     }
 }
