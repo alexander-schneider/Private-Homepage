@@ -398,16 +398,23 @@ function compute(xmlText){
   for(const l of divLines){ const s=A(l,'symbol')||'?'; (divBySym[s]=divBySym[s]||{isin:A(l,'isin'),div:0,wht:0}).div+=N(A(l,'amount')); }
   for(const l of frtax.filter(l=>!/Credit Interest/i.test(A(l,'activityDescription')||''))){ const s=A(l,'symbol')||'?'; (divBySym[s]=divBySym[s]||{isin:A(l,'isin'),div:0,wht:0}).wht+=N(A(l,'amount')); }
 
-  // Offene Positionen
-  const pos=[...doc.querySelectorAll('OpenPosition')].map(p=>({
-    sym:A(p,'symbol'), isin:A(p,'isin'), qty:N(A(p,'position')),
-    ccy:A(p,'currency'), fx:N(A(p,'fxRateToBase')),
-    costUsd:N(A(p,'costBasisMoney')), valUsd:N(A(p,'positionValue')), unrUsd:N(A(p,'fifoPnlUnrealized')),
-  }));
-  pos.forEach(p=>{ p.costEur=p.costUsd*p.fx; p.valEur=p.valUsd*p.fx; p.unrEur=p.unrUsd*p.fx; });
+  // Offene Positionen — Anschaffungskosten nach Durchschnittsmethode (gleitender Durchschnitt) aus dem Pool,
+  // in EUR zu historischen Handelstageskursen. Marktwert zum Stichtagskurs (IBKR fxRateToBase der Position).
+  // Ist der Pool unvollständig (fehlende Vorjahre, Pool-Stück ≠ IBKR-Bestand), wird auf IBKRs gemeldete AK zurückgegriffen.
+  const pos=[...doc.querySelectorAll('OpenPosition')].map(p=>{
+    const isin=A(p,'isin'), qty=N(A(p,'position')), fx=N(A(p,'fxRateToBase'));
+    const costUsd=N(A(p,'costBasisMoney')), valUsd=N(A(p,'positionValue')), unrUsd=N(A(p,'fifoPnlUnrealized'));
+    const pl=pool[isin];
+    const poolComplete = !!pl && Math.abs(pl.qty-qty) < Math.max(1e-4, Math.abs(qty)*1e-6);
+    const valEur=valUsd*fx;                               // Marktwert zum Stichtagskurs
+    const costEur = poolComplete ? pl.eur : costUsd*fx;   // Durchschnitts-AK (hist. Kurse) bzw. IBKR-Fallback
+    return { sym:A(p,'symbol'), isin, qty, ccy:A(p,'currency'), fx,
+             costUsd, valUsd, unrUsd, valEur, costEur, avgOk:poolComplete, unrEur:valEur-costEur };
+  });
   const posTot={cost:pos.reduce((s,p)=>s+p.costEur,0), val:pos.reduce((s,p)=>s+p.valEur,0), unr:pos.reduce((s,p)=>s+p.unrEur,0)};
   pos.sort((a,b)=>b.unrEur-a.unrEur);
   if(pos.some(p=>!p.costUsd)) warn.push('Mindestens eine offene Position ohne Anschaffungskosten — Vorjahresdaten prüfen.');
+  if(pos.some(p=>!p.avgOk)) warn.push('Bei mindestens einer offenen Position ließ sich die durchschnittliche Anschaffung nicht vollständig aus der Trade-Historie rekonstruieren (fehlende Vorjahre) — dort ist ersatzweise die von IBKR gemeldete AK angesetzt (mit * markiert). Für korrekte Durchschnitts-AK alle Vorjahre laden.');
 
   // Cash zum Jahresende (EUR-Äquivalent) für grobe Vermögensübersicht
   const cashRows=[...doc.querySelectorAll('CashReportCurrency')];
@@ -452,7 +459,7 @@ function run(xmlText){
   const divRows = Object.entries(m.divBySym).filter(([,v])=>v.div).sort((a,b)=>b[1].div-a[1].div)
     .map(([s,v])=>`<tr><td>${s}</td><td>${v.isin||''}</td><td class="num">${fmt(v.div)}</td><td class="num">${fmt(-v.wht)}</td><td class="num">${fmt(Math.abs(v.wht)/2)}</td></tr>`).join('');
 
-  const posRows = m.pos.map(p=>`<tr><td>${p.sym}</td><td>${p.isin}</td><td class="num">${p.qty}</td><td class="num">${fmt(p.costUsd)}</td><td class="num">${fmt(p.valUsd)}</td><td class="num ${cls(p.unrUsd)}">${sign(p.unrUsd)}</td></tr>`).join('');
+  const posRows = m.pos.map(p=>`<tr><td>${p.sym}</td><td>${p.isin}</td><td class="num">${p.qty}</td><td class="num">${fmt(p.costEur)}${p.avgOk?'':' *'}</td><td class="num">${fmt(p.valEur)}</td><td class="num ${cls(p.unrEur)}">${sign(p.unrEur)}</td><td class="num" style="opacity:.55">${fmt(p.costUsd)}</td></tr>`).join('');
 
   const gkRows = gk.map(([t,v])=>`<tr><td>Anlage GK (außerbilanziell)</td><td>${t}</td><td class="num">${sign(v)}</td></tr>`).join('');
 
@@ -526,12 +533,11 @@ function run(xmlText){
   <div class="pagebreak"></div>
   <h2>4. Offene Positionen zum ${fmtDate(m.meta.to)} (${m.pos.length} Werte)</h2>
   <table>
-    <tr><th>Symbol</th><th>ISIN</th><th class="num">Stück</th><th class="num">AK (USD)</th><th class="num">Marktwert (USD)</th><th class="num">Unrealisiert (USD)</th></tr>
+    <tr><th>Symbol</th><th>ISIN</th><th class="num">Stück</th><th class="num">AK Ø (EUR, hist.)</th><th class="num">Marktwert (EUR, Stichtag)</th><th class="num">Unrealisiert (EUR)</th><th class="num">AK USD (IBKR)</th></tr>
     ${posRows}
-    <tr class="tot"><td>Summe (USD)</td><td></td><td class="num">${m.pos.reduce((s,p)=>s+p.qty,0)}</td><td class="num">${fmt(m.posTot && m.pos.reduce((s,p)=>s+p.costUsd,0))}</td><td class="num">${fmt(m.pos.reduce((s,p)=>s+p.valUsd,0))}</td><td class="num pos">${sign(m.pos.reduce((s,p)=>s+p.unrUsd,0))}</td></tr>
-    <tr class="tot"><td>in EUR (Stichtagskurs)</td><td></td><td class="num"></td><td class="num">${fmt(m.posTot.cost)}</td><td class="num">${fmt(m.posTot.val)}</td><td class="num pos">${sign(m.posTot.unr)}</td></tr>
+    <tr class="tot"><td colspan="2">Summe (EUR)</td><td class="num">${m.pos.reduce((s,p)=>s+p.qty,0)}</td><td class="num">${fmt(m.posTot.cost)}</td><td class="num">${fmt(m.posTot.val)}</td><td class="num ${cls(m.posTot.unr)}">${sign(m.posTot.unr)}</td><td class="num" style="opacity:.55">${fmt(m.pos.reduce((s,p)=>s+p.costUsd,0))}</td></tr>
   </table>
-  <div class="note"><b>HGB-Bewertung (sofern § 8b Abs. 7 nicht greift):</b> Einzelbewertung, Imparitätsprinzip. Unrealisierte Gewinne bleiben unberücksichtigt; bei unrealisierten Verlusten Teilwertabschreibung nur bei voraussichtlich dauerhafter Wertminderung (§ 6 Abs. 1 Nr. 2 EStG). AK-Umrechnung hier zum Stichtagskurs — für die Bilanz historische Anschaffungstageskurse verwenden.</div>
+  <div class="note"><b>HGB-Bewertung (sofern § 8b Abs. 7 nicht greift):</b> Einzelbewertung, Imparitätsprinzip. Unrealisierte Gewinne bleiben unberücksichtigt; bei unrealisierten Verlusten Teilwertabschreibung nur bei voraussichtlich dauerhafter Wertminderung (§ 6 Abs. 1 Nr. 2 EStG). <b>AK Ø (EUR)</b> = durchschnittliche Rest-Anschaffungskosten je Wert nach der Durchschnittsmethode, in EUR zu den historischen Handelstageskursen (= Buchwert für die Bilanz, konsistent zu den realisierten Veräußerungen). Marktwert zum Stichtagskurs. Mit <b>*</b> markierte AK ließen sich nicht vollständig aus der Trade-Historie rekonstruieren (fehlende Vorjahre) und stammen ersatzweise von IBKR (FIFO) — dann alle Vorjahre nachladen.</div>
 
   <h2>5. Datengrundlage &amp; Methodik</h2>
   <ul>
