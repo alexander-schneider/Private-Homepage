@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>IBKR-Steuerreport für GmbHs – Flex-Query-XML auswerten (§ 8b KStG)</title>
-<meta name="description" content="Kostenloses Browser-Tool: Interactive-Brokers-/CapTrader-Flex-Query-XML hochladen und einen GmbH-gerechten Steuerreport erstellen – EUR-FIFO, § 8b KStG, Quellensteuer, offene Positionen, als PDF. Alle Daten bleiben lokal im Browser.">
-<meta name="keywords" content="IBKR Steuerreport GmbH, Interactive Brokers Steuer GmbH, CapTrader Steuererklärung, Flex Query auswerten, § 8b KStG Aktien, Kapitalgesellschaft Wertpapiere Steuer, EUR FIFO Aktien, Depot GmbH Steuer, IBKR XML Steuer">
+<meta name="description" content="Kostenloses Browser-Tool: Interactive-Brokers-/CapTrader-Flex-Query-XML hochladen und einen GmbH-gerechten Steuerreport erstellen – EUR-Durchschnittsmethode (gleitender Durchschnitt), § 8b KStG, Quellensteuer, offene Positionen, als PDF. Alle Daten bleiben lokal im Browser.">
+<meta name="keywords" content="IBKR Steuerreport GmbH, Interactive Brokers Steuer GmbH, CapTrader Steuererklärung, Flex Query auswerten, § 8b KStG Aktien, Kapitalgesellschaft Wertpapiere Steuer, Wertpapiere Betriebsvermögen Durchschnittsmethode, Depot GmbH Steuer, IBKR XML Steuer">
 <meta name="author" content="Alexander Schneider">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://alexander-schneider.org/ibkr-steuerreport-gmbh.html">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="IBKR-Steuerreport für GmbHs – Flex-Query-XML auswerten">
-<meta property="og:description" content="IBKR-/CapTrader-Flex-Query-XML rein, GmbH-gerechter Steuerreport (EUR-FIFO, § 8b KStG, offene Positionen) als PDF raus. Daten bleiben lokal im Browser.">
+<meta property="og:description" content="IBKR-/CapTrader-Flex-Query-XML rein, GmbH-gerechter Steuerreport (EUR-Durchschnittsmethode, § 8b KStG, offene Positionen) als PDF raus. Daten bleiben lokal im Browser.">
 <meta property="og:url" content="https://alexander-schneider.org/ibkr-steuerreport-gmbh.html">
 <meta property="og:image" content="https://alexander-schneider.org/img/alex-schneider.jpg">
 <meta property="og:locale" content="de_DE">
@@ -34,7 +34,7 @@
   "operatingSystem": "Web (Browser)",
   "inLanguage": "de",
   "url": "https://alexander-schneider.org/ibkr-steuerreport-gmbh.html",
-  "description": "Browser-Tool zur Auswertung eines Interactive-Brokers-/CapTrader-Flex-Query-XML-Exports für eine GmbH: realisierte Aktiengewinne per EUR-FIFO, Dividenden, Zinsen, Quellensteuer, Devisenergebnis, offene Positionen und § 8b-KStG-Überleitung – als PDF. Die Daten werden ausschließlich lokal im Browser verarbeitet.",
+  "description": "Browser-Tool zur Auswertung eines Interactive-Brokers-/CapTrader-Flex-Query-XML-Exports für eine GmbH: realisierte Aktiengewinne per EUR-Durchschnittsmethode (gleitender Durchschnitt), Dividenden, Zinsen, Quellensteuer, Devisenergebnis, offene Positionen und § 8b-KStG-Überleitung – als PDF. Die Daten werden ausschließlich lokal im Browser verarbeitet.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
   "author": { "@type": "Person", "name": "Alexander Schneider", "url": "https://alexander-schneider.org" },
   "publisher": { "@type": "Organization", "name": "Innos Capital GmbH" }
@@ -187,7 +187,7 @@
   <div class="content-col">
   <main class="no-print">
     <h1 class="text-3xl font-bold tracking-tight text-slate-900">IBKR / CapTrader → GmbH-Steuerreport</h1>
-    <p class="text-slate-500 text-lg mt-1 mb-6">Flex-Query-XML hochladen und einen GmbH-gerechten Steuerreport (EUR-FIFO, § 8b KStG, Quellensteuer, offene Positionen) als PDF erstellen — alle Daten bleiben lokal im Browser.</p>
+    <p class="text-slate-500 text-lg mt-1 mb-6">Flex-Query-XML hochladen und einen GmbH-gerechten Steuerreport (EUR-Durchschnittsmethode, § 8b KStG, Quellensteuer, offene Positionen) als PDF erstellen — alle Daten bleiben lokal im Browser.</p>
 
     <!-- HAFTUNGSAUSSCHLUSS -->
     <div class="mb-6 rounded-xl border-2 border-red-300 bg-red-50 p-5">
@@ -301,7 +301,7 @@
       </ul>
 
       <div class="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-[13px]">
-        <b>Typische Fehlerquelle: fehlende Vorjahre.</b> Selbst für ein einzelnes Steuerjahr werden frühere Jahre fast immer gebraucht — die Anschaffungskosten liegen oft in der Vergangenheit, offene Positionen ziehen sich über Jahresgrenzen, Fremdwährungsbestände laufen weiter und FIFO setzt die lückenlose Kauf-/Verkaufshistorie voraus. Daher: am besten alle verfügbaren Jahre exportieren.
+        <b>Typische Fehlerquelle: fehlende Vorjahre.</b> Selbst für ein einzelnes Steuerjahr werden frühere Jahre fast immer gebraucht — die Anschaffungskosten liegen oft in der Vergangenheit, offene Positionen ziehen sich über Jahresgrenzen, Fremdwährungsbestände laufen weiter und die Durchschnittsmethode setzt die lückenlose Kaufhistorie voraus (für den korrekten Durchschnittspreis je Wert). Daher: am besten alle verfügbaren Jahre exportieren.
       </div>
       <p class="mt-3 text-xs text-slate-500">Dieses Tool verarbeitet derzeit eine XML (ein Jahr) pro Durchlauf. Wurde ein verkaufter Posten in einem Vorjahr gekauft, lade bei Bedarf zusätzlich die XML des betreffenden Jahres.</p>
     </section>
@@ -341,7 +341,7 @@ const fmt = n => (n===null||n===undefined||isNaN(n)) ? '–' : n.toLocaleString(
 const cls = n => n<0?'neg':'pos';
 const sign = n => (n>=0?'+':'') + fmt(n);
 
-// ---------- Kernberechnung (validiert gegen German Tax Report) ----------
+// ---------- Kernberechnung (Erträge/Quellensteuern validiert gegen German Tax Report; Aktien: Durchschnittsmethode für GmbH-Betriebsvermögen, weicht bewusst vom FIFO des German Tax Report ab) ----------
 function compute(xmlText){
   const doc = new DOMParser().parseFromString(xmlText,'application/xml');
   if (doc.querySelector('parsererror')) throw new Error('XML konnte nicht gelesen werden.');
@@ -356,20 +356,26 @@ function compute(xmlText){
   const others=new Set(trades.map(t=>A(t,'assetCategory')).filter(c=>c!=='STK'&&c!=='CASH'));
   if(others.size) warn.push('Nicht abgedeckte Instrumente erkannt ('+[...others].join(', ')+') — Optionen/Futures/Anleihen/Fonds werden NICHT berechnet, bitte manuell ergänzen.');
 
-  // EUR-FIFO über Aktien (jede Seite zum eigenen Transaktionskurs)
+  // EUR-Durchschnittsmethode (gleitender Durchschnitt) je ISIN — für Wertpapiere im
+  // Betriebsvermögen einer GmbH maßgeblich (§ 252 Abs. 1 Nr. 3, § 255 HGB i.V.m. § 6 Abs. 1 Nr. 2 EStG).
+  // FIFO (§ 20 Abs. 4 S. 7 EStG) gilt nur für Privatanleger und wird hier bewusst NICHT verwendet.
   const stk=trades.filter(t=>A(t,'assetCategory')==='STK')
     .sort((a,b)=> (A(a,'tradeDate')+(A(a,'buySell')==='BUY'?'0':'1')).localeCompare(A(b,'tradeDate')+(A(b,'buySell')==='BUY'?'0':'1')) );
-  const lots={}; let gains=0, losses=0; const realized=[];
+  const pool={}; let gains=0, losses=0; const realized=[];   // pool[isin] = laufender Bestand {qty, eur}
   for(const t of stk){
     const isin=A(t,'isin'), q=N(A(t,'quantity')), fx=N(A(t,'fxRateToBase'));
-    lots[isin]=lots[isin]||[];
+    const p = pool[isin] = pool[isin] || {qty:0, eur:0};
     if(A(t,'buySell')==='BUY'){
       const eurCost=N(A(t,'cost'))*fx;            // cost in Handelswährung inkl. Provision → EUR
-      lots[isin].push({qty:q, eur:eurCost/q});
+      p.qty+=q; p.eur+=eurCost;                    // Zugang: Stück + EUR-AK in den Pool, Durchschnitt steigt/fällt
     } else {
-      let sq=-q; const eurProc=(N(A(t,'proceeds'))+N(A(t,'ibCommission')))*fx; let mc=0,mq=0;
-      while(sq>1e-9 && lots[isin] && lots[isin].length){ const l=lots[isin][0]; const take=Math.min(sq,l.qty); mc+=take*l.eur; mq+=take; l.qty-=take; sq-=take; if(l.qty<1e-9) lots[isin].shift(); }
-      if(sq>1e-9) warn.push('Verkauf ohne (vollständige) Vorjahres-Anschaffung bei '+A(t,'symbol')+' — Anschaffungskosten ggf. unvollständig.');
+      const sq=-q; const eurProc=(N(A(t,'proceeds'))+N(A(t,'ibCommission')))*fx;
+      const avg = p.qty>1e-9 ? p.eur/p.qty : 0;    // gleitende durchschnittliche AK pro Stück
+      const mq = Math.min(sq, p.qty);              // tatsächlich gedeckte Stückzahl
+      const mc = mq*avg;                           // anteilige Anschaffungskosten des Abgangs
+      p.qty-=mq; p.eur-=mc;
+      if(p.qty<1e-9){ p.qty=0; p.eur=0; }          // Rest-Rundungsreste glätten
+      if(sq-mq>1e-9) warn.push('Verkauf ohne (vollständige) Vorjahres-Anschaffung bei '+A(t,'symbol')+' — Anschaffungskosten ggf. unvollständig.');
       const pnl=eurProc-mc; if(pnl>=0) gains+=pnl; else losses+=pnl;
       realized.push({sym:A(t,'symbol'), isin, date:A(t,'tradeDate'), qty:mq, erloes:eurProc, ak:mc, pnl});
     }
@@ -461,7 +467,7 @@ function run(xmlText){
     <tr><td>Broker / Konto</td><td>Interactive Brokers (CapTrader), Depot ${m.meta.account||''}</td></tr>
     <tr><td>Steuerjahr</td><td>${fmtDate(m.meta.from)} – ${fmtDate(m.meta.to)}</td></tr>
     <tr><td>Datenbasis</td><td>IBKR Flex-Query XML · ${m.counts.trades} Trades · ${m.counts.pos} offene Positionen</td></tr>
-    <tr><td>Bewertung</td><td>FIFO je ISIN, EUR je Transaktion zum Handelstageskurs (fxRateToBase)</td></tr>
+    <tr><td>Bewertung</td><td>Durchschnittsmethode (gleitender Durchschnitt) je ISIN, EUR je Transaktion zum Handelstageskurs (fxRateToBase)</td></tr>
     <tr><td>Annahme § 8b</td><td>${modeTxt}</td></tr>
     <tr><td>Erstellt</td><td>${today}</td></tr>
   </table>
@@ -498,7 +504,7 @@ function run(xmlText){
   </table>
 
   <div class="pagebreak"></div>
-  <h2>2. Realisierte Aktien-Veräußerungen ${yr} (EUR-FIFO)</h2>
+  <h2>2. Realisierte Aktien-Veräußerungen ${yr} (EUR-Durchschnittsmethode)</h2>
   <table>
     <tr><th>Wert</th><th>ISIN</th><th>Verkauf</th><th class="num">Stück</th><th class="num">Erlös</th><th class="num">AK</th><th class="num">Ergebnis</th></tr>
     ${realizedRows||'<tr><td colspan="7">Keine realisierten Verkäufe im Steuerjahr.</td></tr>'}
@@ -530,7 +536,7 @@ function run(xmlText){
   <h2>5. Datengrundlage &amp; Methodik</h2>
   <ul>
     <li>Quelle: IBKR Flex-Query XML (${m.counts.trades} Trades, ${m.counts.divs} Dividendenbuchungen, ${m.counts.pos} offene Positionen).</li>
-    <li>Realisierte Ergebnisse: <b>FIFO je ISIN</b>, jede Kauf-/Verkaufsseite zum Handelstageskurs in EUR (entspricht der Methode des German Tax Report / der gesetzlichen Vorgabe; weicht bewusst von der reinen USD-P&amp;L×Spotkurs-Darstellung ab).</li>
+    <li>Realisierte Ergebnisse: <b>Durchschnittsmethode (gleitender Durchschnitt) je ISIN</b>, jede Kauf-/Verkaufsseite zum Handelstageskurs in EUR. Für Wertpapiere im Betriebsvermögen einer GmbH maßgeblich (Einzelbewertungsgrundsatz § 252 Abs. 1 Nr. 3, § 255 HGB i.V.m. § 6 Abs. 1 Nr. 2 EStG); die FIFO-Methode (§ 20 Abs. 4 S. 7 EStG) gilt nur für Privatanleger und wird hier bewusst nicht verwendet. Weicht bewusst auch von der reinen USD-P&amp;L×Spotkurs-Darstellung ab.</li>
     <li>Erträge/Quellensteuern: aus <code>StatementOfFundsLine</code> (Basiswährung EUR). Quellensteuer getrennt nach irischer Zinssteuer und US-Dividendensteuer.</li>
     <li>§ 8b Abs. 7 KStG (Handelsbestand/Finanzunternehmen): über den Schalter umschaltbar — Einordnung trifft der Steuerberater.</li>
     <li>Keine Steuerberatung; strukturierte Datenaufbereitung. Optionen/Futures/Fonds (InvStG) werden nicht berechnet.</li>
