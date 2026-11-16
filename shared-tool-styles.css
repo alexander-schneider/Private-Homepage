@@ -79,7 +79,7 @@
 
     /* Legacy aliases used by tool pages */
     --primary: var(--ink);
-    --secondary: var(--mute);
+    --secondary: var(--ink-soft);
     --background: var(--paper);
     --hover: #f0f0f0;
     --accent: var(--ink);
@@ -115,46 +115,118 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Header & Navigation */
-header {
+/* Site Header */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--line);
-    padding: 1.25rem var(--pad);
+    background: color-mix(in oklab, var(--paper) 92%, transparent);
+    backdrop-filter: saturate(140%) blur(8px);
+    -webkit-backdrop-filter: saturate(140%) blur(8px);
 }
 
-nav {
-    max-width: 56rem;
-    margin: 0 auto;
+.site-header .site-title {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
 }
 
-nav a {
+.site-header .site-sep {
+    color: var(--ink-soft);
+    opacity: 0.45;
+}
+
+.site-header .site-section {
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+}
+
+.site-header .site-home {
+    margin-left: auto;
+    font-size: 0.8125rem;
     color: var(--ink-soft);
     text-decoration: none;
-    font-size: 0.9375rem;
-    font-weight: 400;
-    transition: color 150ms ease-out;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
+    transition-property: color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
 }
 
-nav a:hover {
+.site-header .site-home:hover {
     color: var(--ink);
 }
 
-nav a::before {
-    content: "←";
-    color: var(--mute);
-    transition: transform 150ms var(--ease), color 150ms ease-out;
+/* Layout: left sidebar + main content */
+.layout {
+    display: flex;
+    flex: 1;
+    align-items: stretch;
+    width: 100%;
 }
 
-nav a:hover::before {
-    transform: translateX(-0.2rem);
+.sidebar {
+    flex: 0 0 240px;
+    width: 240px;
+    border-right: 1px solid var(--line);
+    padding: 1.75rem 1rem;
+    background: var(--paper);
+}
+
+.tool-nav .nav-heading {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 0 0 0.75rem 0.75rem;
+}
+
+.tool-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tool-nav li {
+    margin: 0;
+}
+
+.tool-nav a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.125rem;
+    border-radius: 2px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    transition-property: background-color, color;
+    transition-duration: 150ms;
+    transition-timing-function: ease-out;
+}
+
+.tool-nav a:hover {
+    background: var(--hover);
     color: var(--ink);
+}
+
+.tool-nav a.active,
+.tool-nav a[aria-current="page"] {
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 500;
 }
 
 /* Main Content */
 main {
     flex: 1;
+    min-width: 0;
     padding: clamp(2rem, 6vh, 3rem) var(--pad) 4rem;
 }
 
@@ -551,8 +623,48 @@ button:disabled {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    header {
-        padding: 1rem var(--pad);
+    .site-header {
+        padding: 0.875rem 1rem;
+    }
+
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        flex: none;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+        padding: 0.75rem 1rem;
+        position: sticky;
+        top: 3.5rem;
+        z-index: 15;
+        background: var(--paper);
+    }
+
+    .tool-nav .nav-heading {
+        display: none;
+    }
+
+    .tool-nav ul {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 0.25rem;
+    }
+
+    .tool-nav a {
+        white-space: nowrap;
+        margin-bottom: 0;
+        border: 1px solid var(--line);
+        padding: 0.4rem 0.75rem;
+    }
+
+    .tool-nav a.active,
+    .tool-nav a[aria-current="page"] {
+        border-color: var(--ink);
     }
 
     main {
@@ -587,10 +699,6 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
     button:active:not(:disabled) {
         scale: 1;
-    }
-
-    nav a:hover::before {
-        transform: none;
     }
 
     .spinner {
@@ -679,5 +787,19 @@ button:disabled {
 
     .error-message {
         background: rgba(240, 113, 103, 0.12);
+    }
+
+    .site-header {
+        background: color-mix(in oklab, var(--paper) 88%, transparent);
+    }
+
+    .sidebar {
+        background: var(--paper);
+        border-color: var(--line);
+    }
+
+    .tool-nav a.active,
+    .tool-nav a[aria-current="page"] {
+        color: #0f0f0f;
     }
 }
