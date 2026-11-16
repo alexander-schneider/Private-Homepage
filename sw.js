@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alexander-schneider-v1';
+const CACHE_NAME = 'alexander-schneider-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,8 +8,12 @@ const STATIC_ASSETS = [
   '/img/alex-schneider.jpg',
   '/img/alex-schneider.webp',
   '/img/alex-schneider-small.jpg',
-  '/fonts/asfont.woff',
-  '/fonts/asfont.woff2'
+  '/fonts/ibm-plex-sans/ibm-plex-sans-400.woff2',
+  '/fonts/ibm-plex-sans/ibm-plex-sans-400-latin-ext.woff2',
+  '/fonts/ibm-plex-sans/ibm-plex-sans-500.woff2',
+  '/fonts/ibm-plex-sans/ibm-plex-sans-500-latin-ext.woff2',
+  '/fonts/ibm-plex-sans/ibm-plex-sans-600.woff2',
+  '/fonts/ibm-plex-sans/ibm-plex-sans-600-latin-ext.woff2'
 ];
 
 // Install event - cache static assets

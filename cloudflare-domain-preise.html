@@ -54,7 +54,7 @@
         .table-container {
             overflow-x: auto;
             border: 1px solid var(--border);
-            border-radius: 0.375rem;
+            border-radius: 2px;
             background: var(--background);
         }
 
@@ -78,7 +78,7 @@
             white-space: nowrap;
         }
 
-        th:hover { background: #333; }
+        th:hover { background: #000; }
         th.sorted-asc::after { content: " ↑"; }
         th.sorted-desc::after { content: " ↓"; }
 
@@ -120,7 +120,7 @@
         .highlight-note {
             background: #fff3cd;
             border: 1px solid #ffc107;
-            border-radius: 0.375rem;
+            border-radius: 2px;
             padding: 1rem;
             margin-bottom: 1.5rem;
             font-size: 0.875rem;
@@ -134,7 +134,7 @@
             background: var(--primary);
             color: var(--background);
             border: none;
-            border-radius: 0.375rem;
+            border-radius: 2px;
             font-family: inherit;
             font-size: 1rem;
             font-weight: 600;
@@ -153,44 +153,22 @@
         }
 
         @media (prefers-color-scheme: dark) {
-            thead { background: #1a1d22; color: #e8eaed; }
-            th:hover { background: #262a31; }
-            .table-container { background: var(--input-bg); }
-            .download-btn { background: var(--primary); color: var(--background); }
-            .download-btn:hover { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+            thead { background: #222; }
+            th:hover { background: #000; }
             .highlight-note {
-                background: rgba(245, 158, 11, 0.08);
-                border-color: rgba(245, 158, 11, 0.4);
-                color: #e8d896;
+                background: #332d00;
+                border-color: #665a00;
+                color: #ffc107;
             }
         }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <a href="/" class="site-title">AS Toolbox</a>
-        <a href="/" class="site-home">Startseite</a>
-    </header>
-
-    <div class="layout">
-    <aside class="sidebar">
-        <nav class="tool-nav" aria-label="Tools">
-            <p class="nav-heading">Tools</p>
-            <ul>
-                <li><a href="toplevel-domain-filter.html">Toplevel Domain Filter</a></li>
-                <li><a href="divvy-diary-csv-tool.html">MoneyMoney zu DivvyDiary CSV Generator</a></li>
-                <li><a href="list-formatter-tool.html">List Formatter Tool</a></li>
-                <li><a href="zeitdifferenz-rechner.html">Zeitdifferenz-Rechner</a></li>
-                <li><a href="cloudflare-domain-preise.html" class="active" aria-current="page">Cloudflare Domain Preise</a></li>
-                <li><a href="word-counter.html">Wörter zählen</a></li>
-                <li><a href="url-content-copy.html">URL Content Copy Tool</a></li>
-                <li><a href="desktop-website-viewer.html">Desktop Website Viewer</a></li>
-                <li><a href="sec-aktien-suche.html">SEC Aktien Ticker Suche</a></li>
-                <li><a href="ibkr-steuerreport-gmbh.html">IBKR Steuerreport (GmbH)</a></li>
-            </ul>
+    <header>
+        <nav>
+            <a href="/">Zurück zur Startseite</a>
         </nav>
-    </aside>
-
+    </header>
 
     <main>
         <div class="container">
@@ -289,7 +267,6 @@
             </div>
         </div>
     </main>
-    </div>
 
     <script>
         const domainData = [
